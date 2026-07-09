@@ -1,0 +1,205 @@
+<!--
+  cat lies too -- safe terminal text tools showcase. AI-Assisted.
+  Source: https://github.com/org-ai-assisted/org-ai-assisted.github.io
+  Tools: Kicksecure/helper-scripts. Docs: kicksecure.com/wiki.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cat lies too -- safe terminal text tools</title>
+<meta name="description" content="Raw bytes can hide text, forge your prompt, or disguise a character. unicode-show, stcat and sanitize-string show you what is really there.">
+<link rel="stylesheet" href="/style.css">
+
+<header class="nav"><div class="wrap">
+  <a class="brand" href="/">output <b>lies</b></a>
+  <nav>
+    <a href="#unicode-show">unicode-show</a>
+    <a href="#stcat">stcat</a>
+    <a href="#sanitize">sanitize-string</a>
+    <a href="#family">The family</a>
+    <a class="cross" href="/git-diffs-lie/">Corpus</a>
+    <a class="cross hidemob" href="https://github.com/Kicksecure/helper-scripts">GitHub</a>
+  </nav>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <p class="kicker">Safe terminal text tools</p>
+  <h1>Your terminal believes<br>the file. You <span class="u">shouldn't</span>.</h1>
+  <p class="sub">Bytes from a log, a paste, or a download can hide text, forge
+    your prompt, or disguise what a character really is. <code>cat</code> obeys
+    them. These tools show you what is actually there.</p>
+  <div class="cta">
+    <a class="btn primary" href="#unicode-show">See the tools</a>
+    <a class="btn ghost" href="https://github.com/Kicksecure/helper-scripts/tree/master/usr/bin">Get them</a>
+    <a class="btn ghost" href="/git-diffs-lie/">The diff corpus</a>
+  </div>
+  <p class="coverage">reveal hidden Unicode &middot; defang escape sequences &middot; sanitize untrusted strings</p>
+</div></section>
+
+<section class="thesis"><div class="wrap">
+  <div class="grid">
+    <div class="see">
+      <h2>What <code>cat</code> shows you</h2>
+      <p>It renders the bytes as instructions. A control character reorders the
+        line, an escape erases text or repaints your prompt, a look-alike letter
+        passes for another. <code>cat</code> trusts the file completely.</p>
+    </div>
+    <div class="real">
+      <h2>What's really there</h2>
+      <p>The same bytes, revealed or rendered inert. Every suspicious codepoint
+        named, every escape defanged, every untrusted value stripped before it
+        reaches your screen -- or your logs.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- ============ unicode-show ============ -->
+<section class="cat" id="unicode-show"><div class="wrap">
+  <h2 class="catname">Reveal</h2>
+  <p class="catdesc">Hidden, invisible and look-alike characters are the whole
+    point of a Trojan-Source attack -- and <code>cat</code> never mentions them.</p>
+
+  <article class="issue">
+    <span class="tag">cat vs unicode-show</span>
+    <h3>See the characters, not the story</h3>
+    <p class="lead"><code>unicode-show</code> flags every byte outside printable
+      ASCII, every control character, trailing whitespace and a missing final
+      newline -- with line number, <code>[U+XXXX]</code> marker, name and
+      category.</p>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> cat</div><pre class="term"><span class="p">$</span> cat withdraw.py
+# Subtract funds from the account, then &#x2067;refund the user
+
+<span class="dim"># reads clean -- an isolate char quietly reorders it</span></pre></div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> unicode-show</div><pre class="term"><span class="p">$</span> unicode-show withdraw.py
+withdraw.py:1: # Subtract funds ... then <span class="cp">[U+2067]</span>refund the user
+   <span class="cp">-> U+2067 RIGHT-TO-LEFT ISOLATE (Cf)</span>
+<span class="p">$</span> echo $?
+<span class="w">1</span></pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> the exit code carries it too --
+      <code>0</code> clean, <code>1</code> suspicious, <code>2</code>
+      undecodable. Scriptable, not just visible.</p>
+  </article>
+</div></section>
+
+<!-- ============ stcat ============ -->
+<section class="cat" id="stcat"><div class="wrap">
+  <h2 class="catname">Defang</h2>
+  <p class="catdesc">"Dangerous terminal control codes can change what you see,
+    hide text, alter the prompt, or otherwise mislead you." <code>stcat</code>
+    is <code>cat</code> that refuses to be fooled.</p>
+
+  <article class="issue">
+    <span class="tag">cat vs stcat</span>
+    <h3>Colors survive. Cursor tricks don't.</h3>
+    <p class="lead">An escape sequence can erase a line and repaint it. To
+      <code>cat</code> that means "hide the failure". <code>stcat</code> turns
+      the ESC byte into an inert <code>_</code> and keeps only safe SGR color.</p>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> cat</div><pre class="term"><span class="p">$</span> cat build.log
+<span class="ok">[ ok ] all checks passed</span>
+
+<span class="dim"># an escape erased the FAILED line before it printed</span></pre></div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> stcat</div><pre class="term"><span class="p">$</span> stcat build.log
+<span class="e">FAILED: auth bypass</span><span class="neut">_</span>[2K<span class="neut">_</span><span class="ok">[ ok ] all checks passed</span></pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> the erase (<code>ESC[2K</code>) and the
+      carriage return are defanged to <code>_</code>, so the hidden
+      <code>FAILED</code> line is right there in plain sight.</p>
+  </article>
+</div></section>
+
+<!-- ============ sanitize-string ============ -->
+<section class="cat" id="sanitize"><div class="wrap">
+  <h2 class="catname">Sanitize</h2>
+  <p class="catdesc">Reading is one thing; <em>embedding</em> an untrusted value
+    into your own output is another. A value dropped into a log line or an HTML
+    tag can forge structure.</p>
+
+  <article class="issue">
+    <span class="tag">sanitize-string</span>
+    <h3>Make a value safe to put anywhere</h3>
+    <p class="lead"><code>sanitize-string</code> strips terminal escapes
+      <em>and</em> HTML markup, and caps the length. Safe for a terminal and for
+      HTML tag contents (not attributes).</p>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> raw</div><pre class="term"><span class="p">$</span> printf '[INFO] name: %s\n' "$name"
+[INFO] name: <span class="del">&lt;script&gt;alert(1)&lt;/script&gt;</span>
+
+<span class="dim"># and the value also recolored the whole log</span></pre></div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> sanitize-string</div><pre class="term"><span class="p">$</span> printf '[INFO] name: %s\n' \
+    "$(sanitize-string nolimit "$name")"
+[INFO] name: alert(1)
+
+<span class="p">$</span> sanitize-string nolimit '&lt;b&gt;Hello&lt;/b&gt;'   <span class="dim">-></span> Hello
+<span class="p">$</span> sanitize-string 10 'This is a long...'  <span class="dim">-></span> This is a </pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> it runs strip-markup + stdisplay
+      <em>twice</em>, so neither markup nor escapes can smuggle the other past
+      the sanitizer.</p>
+  </article>
+</div></section>
+
+<!-- ============ the family ============ -->
+<section class="cat" id="family"><div class="wrap">
+  <h2 class="catname">The family</h2>
+  <p class="catdesc">Safe drop-in replacements for the usual text commands.</p>
+  <article class="issue">
+    <table class="tbl">
+      <thead><tr><th>Tool</th><th>Replaces</th><th>Does</th></tr></thead>
+      <tbody>
+        <tr><td><code>unicode-show</code></td><td><code>cat</code> (audit)</td><td>reveals every suspicious codepoint by name; exit 0/1/2</td></tr>
+        <tr><td><code>stcat</code> / <code>stcatn</code></td><td><code>cat</code></td><td>display files/pipes safely; escapes defanged, colors kept</td></tr>
+        <tr><td><code>stecho</code></td><td><code>echo</code></td><td>print args safely, space-separated + newline</td></tr>
+        <tr><td><code>stprint</code></td><td><code>printf</code></td><td>print exactly as given, sanitized</td></tr>
+        <tr><td><code>sttee</code></td><td><code>tee</code></td><td>display and save a sanitized copy</td></tr>
+        <tr><td><code>stsponge</code></td><td><code>sponge</code></td><td>sanitize a file in place</td></tr>
+        <tr><td><code>sanitize-string</code></td><td>--</td><td>strip escapes + HTML markup, cap length</td></tr>
+      </tbody>
+    </table>
+    <p class="toolnote">All ship in Kicksecure's
+      <a href="https://github.com/Kicksecure/helper-scripts/tree/master/usr/bin">helper-scripts</a>.
+      Docs: <a href="https://www.kicksecure.com/wiki/Unicode-show">unicode-show</a>,
+      <a href="https://www.kicksecure.com/wiki/Stdisplay">stdisplay</a>.</p>
+  </article>
+
+  <div class="limits">
+    <h4>Honest about the limits</h4>
+    <p>These make <b>display</b> safe -- nothing more. They do not make
+      copy-pasting untrusted commands safe, do not sanitize data used inside
+      shell scripts, and their output must never be re-interpreted with
+      <code>echo -e</code> or <code>printf %b</code> (that re-enables the very
+      sequences they removed).</p>
+  </div>
+</div></section>
+
+<!-- ============ git review ============ -->
+<section class="cat" id="git-review"><div class="wrap">
+  <h2 class="catname">The same defense, for diffs</h2>
+  <p class="catdesc">Code review is just reading untrusted text with extra steps.
+    The same neutralization drives the safe git review tools.</p>
+  <article class="issue">
+    <h3>git-meld &middot; git-diff-review &middot; git-kdiff3</h3>
+    <p class="lead">External diff drivers that neutralize, surface and fail
+      closed on every trick a change can carry -- content, filename, mode,
+      symlink, submodule, ref name. See them, side by side, issue by issue.</p>
+    <p class="toolnote"><a href="/git-diffs-lie/">Open the git-diffs-lie corpus
+      &rarr;</a> &nbsp; or grab the tools in
+      <a href="https://github.com/Kicksecure/developer-meta-files/tree/master/usr/bin">developer-meta-files</a>.</p>
+  </article>
+</div></section>
+</main>
+
+<footer>
+  <div class="wrap ftop">
+    <span class="ftag">cat obeys the file. These tools don't.</span>
+    <a class="logo" href="https://github.com/Kicksecure/helper-scripts" aria-label="helper-scripts on GitHub"><svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg> helper-scripts</a>
+    <a href="/git-diffs-lie/">git diffs lie</a>
+    <a class="sp" href="/">Overview</a>
+  </div>
+  <div class="wrap fbot">
+    <span class="fcopy">Copyright 2026 - 2026 ENCRYPTED SUPPORT LLC</span>
+    <span class="fcopy">AI-assisted &middot; tools by Kicksecure &middot; for education only</span>
+  </div>
+</footer>

@@ -1,0 +1,91 @@
+<!--
+  output lies -- overview / index. AI-Assisted.
+  Source: https://github.com/org-ai-assisted/org-ai-assisted.github.io
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>output lies -- what you see is not always what's there</title>
+<meta name="description" content="Diffs, terminals and logs render untrusted bytes as instructions. A hub for the safe tools and demonstrations that make text honest again.">
+<link rel="stylesheet" href="/style.css">
+
+<header class="nav"><div class="wrap">
+  <a class="brand" href="/">output <b>lies</b></a>
+  <nav>
+    <a href="/tools/">Tools</a>
+    <a href="/git-diffs-lie/">Corpus</a>
+    <a href="#idea">The idea</a>
+    <a class="cross hidemob" href="https://github.com/Kicksecure/helper-scripts">GitHub</a>
+  </nav>
+</div></header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <p class="kicker">What you see is not always what's there</p>
+  <h1>The text on your screen<br>can <span class="u">lie</span> to you.</h1>
+  <p class="sub">A diff, a terminal, a log -- each renders raw bytes as
+    instructions. Hidden characters reorder code, escape sequences forge output,
+    look-alikes pass for the real thing. Here are the tools that make text
+    honest again, and the demonstrations that prove why you need them.</p>
+  <div class="cta">
+    <a class="btn primary" href="/tools/">Safe text tools</a>
+    <a class="btn ghost" href="/git-diffs-lie/">The diff corpus</a>
+  </div>
+  <p class="coverage">reveal &middot; defang &middot; sanitize &middot; review -- all safe to open</p>
+</div></section>
+
+<section class="cat"><div class="wrap">
+  <h2 class="catname">Explore</h2>
+  <p class="catdesc">Two ways in: the tools, and the tricks they defend against.</p>
+  <div class="cards">
+    <a class="pcard" href="/tools/">
+      <span class="ptag">Terminal &middot; logs</span>
+      <h3>cat lies <b>too</b></h3>
+      <p>Raw bytes can hide text, forge your prompt, or disguise a character.
+        <code>unicode-show</code>, <code>stcat</code> and
+        <code>sanitize-string</code>, side by side with plain <code>cat</code>.</p>
+      <div class="go">See the tools &rarr;</div>
+    </a>
+    <a class="pcard" href="/git-diffs-lie/">
+      <span class="ptag">Code review</span>
+      <h3>git diffs <b>lie</b></h3>
+      <p>A safe, browsable corpus of adversarial git diffs -- one surprise per
+        branch. What you see vs what git really applies, issue by issue, with the
+        safe review tools that catch each one.</p>
+      <div class="go">Open the corpus &rarr;</div>
+    </a>
+  </div>
+</div></section>
+
+<section class="cat" id="idea"><div class="wrap">
+  <h2 class="catname">The idea</h2>
+  <article class="issue">
+    <h3>Rendering is trust</h3>
+    <p class="lead">Whenever a tool turns bytes into something on your screen, it
+      makes a trust decision. An attacker who controls those bytes -- in a
+      commit, a log line, a filename, a fetched branch name -- can target that
+      rendering so what you <em>see</em> differs from what actually
+      <em>happens</em>. The fix is the same everywhere: neutralize the dangerous
+      bytes, name every anomaly out loud, and fail closed when you can't be
+      sure.</p>
+    <p class="toolnote">Tools:
+      <a href="https://github.com/Kicksecure/helper-scripts/tree/master/usr/bin">helper-scripts</a>
+      (safe text) and
+      <a href="https://github.com/Kicksecure/developer-meta-files/tree/master/usr/bin">developer-meta-files</a>
+      (git review). Docs on the
+      <a href="https://www.kicksecure.com/wiki/Unicode-show">Kicksecure wiki</a>.</p>
+  </article>
+</div></section>
+</main>
+
+<footer>
+  <div class="wrap ftop">
+    <span class="ftag">Neutralize. Surface. Fail closed.</span>
+    <a href="/tools/">Tools</a>
+    <a href="/git-diffs-lie/">Corpus</a>
+    <a class="logo sp" href="https://github.com/Kicksecure" aria-label="Kicksecure on GitHub"><svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path></svg> Kicksecure</a>
+  </div>
+  <div class="wrap fbot">
+    <span class="fcopy">Copyright 2026 - 2026 ENCRYPTED SUPPORT LLC</span>
+    <span class="fcopy">AI-assisted &middot; every demonstration is benign and for education only</span>
+  </div>
+</footer>
