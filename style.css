@@ -201,9 +201,18 @@ section{scroll-margin-top:0}
   opacity:0;transition:opacity .12s;font-size:.82em}
 .issue h3:hover a.cardanchor::after,.issue h3 a.cardanchor:focus::after{opacity:.5}
 .issue:target{box-shadow:0 0 0 2px var(--accent);border-color:var(--accent)}
-/* reproduce line -- the git command + branch that demonstrates a card */
-.repro{margin:14px 0 0;padding-top:12px;border-top:1px dashed var(--line);font-size:.9rem;color:#3a3c41}
-.repro b{color:var(--accent)}
-.repro .rc{font-family:var(--mono);font-size:.86em;background:var(--tbg);color:var(--tfg);
-  padding:2px 7px;border-radius:5px;user-select:all;-webkit-user-select:all}
-.repro a{color:var(--accent);white-space:nowrap}
+/* reproduce line -- header + a copybox with the git command that demonstrates a card */
+.repro{margin:15px 0 0;padding-top:13px;border-top:1px dashed var(--line)}
+.repro .reprohd{font-size:.9rem;color:#3a3c41;margin:0 0 7px}
+.repro .reprohd b{color:var(--accent)}
+.repro .reprohd a{color:var(--accent);white-space:nowrap}
+.repro .reprohd .rnote{color:var(--muted)}
+
+/* tidy the footer on small screens (no space-between gaps, tighter columns) */
+@media(max-width:700px){
+  footer .ftop{justify-content:flex-start;gap:22px 30px;padding:32px 0 22px}
+  footer .fbrand{flex-basis:100%}
+  footer .fcols{gap:26px 34px}
+  footer .fbot{gap:6px 14px;padding:14px 0 32px}
+  footer .fbot .sp{margin-left:0}
+}
