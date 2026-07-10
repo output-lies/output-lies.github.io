@@ -250,3 +250,12 @@ footer .fbot{padding-left:20px;padding-right:20px}
     gap:8px 16px;padding-top:7px;padding-bottom:7px}
   html{scroll-padding-top:150px}
 }
+
+/* ===================== polish pass 2 ===================== */
+/* stack the numbered 1-2-3 steps on small screens (3-across cramps on a phone) */
+@media(max-width:820px){ .steps{grid-template-columns:1fr} }
+/* reproduce line: "Reproduce" is the primary action; the GitHub link is secondary */
+.repro .reprohd a{color:var(--muted)}
+.repro .reprohd a.repro-try{color:var(--accent)}
+/* footer link columns: even 2-up grid on mobile instead of an uneven wrap */
+@media(max-width:640px){ footer .fcols{display:grid;grid-template-columns:1fr 1fr;gap:20px 22px} }
