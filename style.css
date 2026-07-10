@@ -179,4 +179,4 @@ section{scroll-margin-top:0}
 .copybox.demo{margin:0}
 .demonote{font-size:.82rem;color:var(--muted);margin:8px 0 0}
 /* off-screen text that is still copied (hidden-text demo) -- stays in textContent */
-.ghost{position:absolute;left:-9999px;top:0;white-space:pre}
+.offscreen{position:absolute;left:-9999px;top:0;white-space:pre}
