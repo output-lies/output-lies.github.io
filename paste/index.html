@@ -79,7 +79,7 @@
 
   <article class="issue" id="extra-line">
     <span class="tag">Hidden line</span>
-    <h3>The extra line you never saw</h3>
+    <h3><a class="cardanchor" href="#extra-line">The extra line you never saw</a></h3>
     <p class="lead">Text placed off-screen with CSS, or tucked into a zero-height
       element, is still part of what you select and copy. The page shows one
       command; the clipboard gets two. Like invisible ink on a page you photocopy
@@ -91,7 +91,7 @@
 
   <article class="issue" id="invisible-chars">
     <span class="tag">Invisible characters</span>
-    <h3>Characters that ride along unseen</h3>
+    <h3><a class="cardanchor" href="#invisible-chars">Characters that ride along unseen</a></h3>
     <p class="lead">Zero-width and control characters copy perfectly but display as
       nothing. A command that reads <code>pip install requests</code> can carry an
       invisible break, or a look-alike letter, so the thing your shell runs is not
@@ -102,7 +102,7 @@
 
   <article class="issue" id="autorun">
     <span class="tag">Auto-run on paste</span>
-    <h3>The paste that presses Enter for you</h3>
+    <h3><a class="cardanchor" href="#autorun">The paste that presses Enter for you</a></h3>
     <p class="lead">A snippet ending in a newline runs the moment it is pasted into
       a terminal. You meant to read it first; the newline did not wait. Modern
       terminals added bracketed-paste to blunt this, but plenty of setups and
@@ -121,7 +121,7 @@
   <article class="issue" id="clickfix">
     <span class="tag evi-wild">Seen in the wild</span>
     <span class="tag">Paste-and-run</span>
-    <h3>"ClickFix" -- the fake error that asks you to paste</h3>
+    <h3><a class="cardanchor" href="#clickfix">"ClickFix" -- the fake error that asks you to paste</a></h3>
     <p class="lead">A page shows a fake CAPTCHA or "fix this error" box and tells you to press Win+R (or open a terminal) and paste. The command was silently pre-loaded onto your clipboard by the page -- so you run the attacker's installer thinking you are just proving you are human.</p>
     <p class="backdoor"><b>Backdoor path:</b> the pasted one-liner fetches and runs an infostealer or RAT -- Lumma Stealer, DarkGate, NetSupport, AsyncRAT -- handing over your credentials, session, and a foothold.</p>
     <p class="wild"><b>Seen in the wild:</b> named by <a href="https://www.proofpoint.com/us/blog/threat-insight/security-brief-clickfix-social-engineering-technique-floods-threat-landscape">Proofpoint</a>, who coined "ClickFix" from a <a href="https://www.proofpoint.com/us/blog/threat-insight/clipboard-compromise-powershell-self-pwn">100,000-message campaign</a> by the broker TA571. It is now its own <a href="https://attack.mitre.org/techniques/T1204/004/">MITRE ATT&amp;CK technique (T1204.004)</a>, ranked by <a href="https://redcanary.com/threat-detection-report/techniques/malicious-copy-and-paste/">Red Canary</a> as the #2 initial-access vector of 2025, and adopted by nation-state actors -- <a href="https://www.proofpoint.com/us/blog/threat-insight/around-world-90-days-state-sponsored-actors-try-clickfix">Kimsuky (DPRK), MuddyWater (Iran) and APT28 (Russia)</a>. <a href="https://www.microsoft.com/en-us/security/blog/2025/08/21/think-before-you-clickfix-analyzing-the-clickfix-social-engineering-technique/">Microsoft</a> reports campaigns hitting thousands of devices daily.</p>
@@ -130,7 +130,7 @@
   <article class="issue" id="clipper">
     <span class="tag evi-wild">Seen in the wild</span>
     <span class="tag">Clipboard hijack</span>
-    <h3>Clipper malware -- your clipboard, quietly rewritten</h3>
+    <h3><a class="cardanchor" href="#clipper">Clipper malware -- your clipboard, quietly rewritten</a></h3>
     <p class="lead">Malware on the machine watches the clipboard and swaps what you copied for something else -- classically a cryptocurrency wallet address replaced with the attacker's look-alike -- so the value you paste is not the value you copied.</p>
     <p class="backdoor"><b>Backdoor path:</b> you copy a wallet address and paste it to send funds; the money goes to the attacker. The swap happens silently between copy and paste, with no visible change.</p>
     <p class="wild"><b>Seen in the wild:</b> a long-running malware class -- <a href="https://www.kaspersky.com/blog/cryptoshuffler-bitcoin-stealer/19976/">CryptoShuffler</a> (2017, ~$140k stolen) and the <a href="https://thehackernews.com/2022/11/new-laplas-clipper-malware-targeting.html">Laplas Clipper</a> malware-as-a-service (2022), which mints a look-alike address matching the first and last characters of yours. <a href="https://www.bleepingcomputer.com/news/security/new-clipboard-hijacker-replaces-crypto-wallet-addresses-with-lookalikes/">More reporting</a>.</p>
@@ -146,7 +146,7 @@
 
   <article class="issue">
     <span class="tag">Try it -- echo only, nothing runs</span>
-    <h3>Copy one line. Get two.</h3>
+    <h3><a class="cardanchor" href="#demo">Copy one line. Get two.</a></h3>
     <div class="panes">
       <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what the page shows</div>
         <div class="copybox demo"><code class="cmd">echo "installing helper..."<span class="offscreen">
