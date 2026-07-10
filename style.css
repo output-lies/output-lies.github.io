@@ -223,3 +223,7 @@ section{scroll-margin-top:0}
 .catname a.h-anchor::after,.outro h2 a.h-anchor::after{content:"#";margin-left:.3em;
   color:var(--muted);font-weight:400;opacity:0;transition:opacity .12s}
 .catname:hover a.h-anchor::after,.outro h2:hover a.h-anchor::after,a.h-anchor:focus::after{opacity:.5}
+
+/* footer brand: logo + wordmark row */
+footer .fbrand .ftag{display:inline-flex;align-items:center;gap:8px}
+footer .ftag .logo{display:block;flex:0 0 auto}
