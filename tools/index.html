@@ -13,6 +13,7 @@
   <a class="brand" href="/">output <b>lies</b></a>
   <nav>
     <a href="#unicode-show">unicode-show</a>
+    <a href="#grep">grep-find</a>
     <a href="#stcat">stcat</a>
     <a href="#sanitize">sanitize-string</a>
     <a href="#family">The family</a>
@@ -83,6 +84,40 @@ withdraw.py:1: # Subtract funds ... then <span class="cp">[U+2067]</span>refund 
   </article>
 </div></section>
 
+<!-- ============ grep-find-unicode ============ -->
+<section class="cat" id="grep"><div class="wrap">
+  <h2 class="catname">Find</h2>
+  <p class="catdesc">Before you can reveal a hidden character, you have to know
+    which file it is in. <code>unicode-show</code> inspects one file;
+    <code>grep-find-unicode-wrapper</code> hunts a whole tree.</p>
+
+  <article class="issue">
+    <span class="tag">grep vs grep-find-unicode-wrapper</span>
+    <h3>Which file is hiding it?</h3>
+    <p class="lead">A grep wrapper that walks files and folders for non-ASCII and
+      suspicious Unicode -- so you can audit an entire repository for injected
+      backdoors, not just the one file you already suspect.</p>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> grep</div><pre class="term"><span class="p">$</span> grep -rn "validate" src/
+<span class="p">$</span>
+
+<span class="dim"># nothing -- yet validate() is right there.
+# you searched the word you read; the byte
+# on disk is a Cyrillic look-alike.</span></pre></div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> grep-find-unicode-wrapper</div><pre class="term"><span class="p">$</span> grep-find-unicode-wrapper -r src/
+src/auth.js:8:  return v&#x430;lidate(token)
+src/pay.py:12:  # process the p&#x430;yment
+<span class="p">$</span> echo $?
+<span class="ok">0</span>   <span class="dim"># grep convention: 0 == matches found</span></pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> the flagged lines look ordinary -- each
+      hides a non-ASCII byte. And the exit code follows <code>grep</code>, not
+      <code>unicode-show</code>: <code>0</code> means it <em>found</em> suspicious
+      Unicode, non-zero means the tree is clean. Pipe the hits into
+      <code>unicode-show</code> to name the exact codepoint.</p>
+  </article>
+</div></section>
+
 <!-- ============ stcat ============ -->
 <section class="cat" id="stcat"><div class="wrap">
   <h2 class="catname">Defang</h2>
@@ -150,6 +185,7 @@ withdraw.py:1: # Subtract funds ... then <span class="cp">[U+2067]</span>refund 
       <thead><tr><th>Tool</th><th>Replaces</th><th>Does</th></tr></thead>
       <tbody>
         <tr><td><code>unicode-show</code></td><td><code>cat</code> (audit)</td><td>reveals every suspicious codepoint by name; exit 0/1/2</td></tr>
+        <tr><td><code>grep-find-unicode-wrapper</code></td><td><code>grep</code> (audit)</td><td>finds files/lines with suspicious Unicode across a whole tree; grep-style exit code</td></tr>
         <tr><td><code>stcat</code> / <code>stcatn</code></td><td><code>cat</code></td><td>display files/pipes safely; escapes defanged, colors kept</td></tr>
         <tr><td><code>stecho</code></td><td><code>echo</code></td><td>print args safely, space-separated + newline</td></tr>
         <tr><td><code>stprint</code></td><td><code>printf</code></td><td>print exactly as given, sanitized</td></tr>
