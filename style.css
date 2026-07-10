@@ -8,7 +8,7 @@
   --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{scroll-behavior:smooth;scroll-padding-top:112px}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
   line-height:1.55;-webkit-font-smoothing:antialiased}
 a{color:inherit}
@@ -53,7 +53,7 @@ section.cat{padding:52px 0 8px}
 .cat > .wrap > p.catdesc{margin:0 0 18px;color:var(--muted);max-width:62ch}
 
 .issue{background:var(--card);border:1px solid var(--line);border-radius:14px;
-  padding:22px;margin:18px 0;scroll-margin-top:104px}
+  padding:22px;margin:18px 0;scroll-margin-top:0}
 .issue h3{margin:0 0 4px;font-size:1.3rem;letter-spacing:-.01em}
 .issue .lead{margin:0 0 16px;color:#3a3c41;max-width:70ch}
 .tag{display:inline-block;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;
@@ -137,4 +137,4 @@ footer .fcopy{color:var(--muted);font-size:.84rem}
 .nav .subnav a{font-family:var(--mono);font-size:.78rem;color:var(--muted);text-decoration:none}
 .nav .subnav a:hover{color:var(--ink)}
 .nav nav a.active{color:var(--ink);font-weight:650}
-section{scroll-margin-top:104px}
+section{scroll-margin-top:0}
