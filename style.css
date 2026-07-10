@@ -227,3 +227,26 @@ section{scroll-margin-top:0}
 /* footer brand: logo + wordmark row */
 footer .fbrand .ftag{display:inline-flex;align-items:center;gap:8px}
 footer .ftag .logo{display:block;flex:0 0 auto}
+
+/* ===================== polish pass ===================== */
+/* harmonize the label lines under example cards (one size scale; drop brownish backdoor) */
+.catch{font-size:.92rem;color:#3a3c41}
+.backdoor{margin:10px 0 0;font-size:.92rem;color:#3a3c41}
+.wild,.onrecord{margin:8px 0 0;font-size:.88rem}
+/* reproduce line: tighter top space; "Reproduce" reads as a link */
+.repro{margin:13px 0 0;padding-top:10px}
+.repro .reprohd{margin:0 0 6px}
+.repro .reprohd a.repro-try{font-weight:650}
+.repro .reprohd .rnote{font-weight:400}
+/* footer: same horizontal gutter as the body (was 0 -> content touched the edges) */
+footer .ftop{padding-left:20px;padding-right:20px}
+footer .fbot{padding-left:20px;padding-right:20px}
+/* mobile: more side air; wrap the section sub-nav instead of scrolling it sideways */
+@media(max-width:640px){
+  .wrap{padding-left:22px;padding-right:22px}
+  footer .ftop{padding-left:22px;padding-right:22px}
+  footer .fbot{padding-left:22px;padding-right:22px}
+  .nav .subnav .wrap{flex-wrap:wrap;white-space:normal;overflow-x:visible;height:auto;
+    gap:8px 16px;padding-top:7px;padding-bottom:7px}
+  html{scroll-padding-top:150px}
+}
