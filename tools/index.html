@@ -67,7 +67,7 @@
 
 <!-- ============ unicode-show ============ -->
 <section class="cat" id="unicode-show"><div class="wrap">
-  <h2 class="catname">Reveal</h2>
+  <h2 class="catname"><a class="h-anchor" href="#unicode-show">Reveal</a></h2>
   <p class="catdesc">Hidden, invisible and look-alike characters are the whole
     point of a Trojan-Source attack -- and <code>cat</code> never mentions them.</p>
 
@@ -98,7 +98,7 @@ withdraw.py:1: # Subtract funds ... then <span class="cp">[U+2067]</span>refund 
 
 <!-- ============ grep-find-unicode ============ -->
 <section class="cat" id="grep"><div class="wrap">
-  <h2 class="catname">Find</h2>
+  <h2 class="catname"><a class="h-anchor" href="#grep">Find</a></h2>
   <p class="catdesc">Before you can reveal a hidden character, you have to know
     which file it is in. <code>unicode-show</code> inspects one file;
     <code>grep-find-unicode-wrapper</code> hunts a whole tree.</p>
@@ -133,7 +133,7 @@ src/pay.py:12:  # process the p&#x430;yment
 
 <!-- ============ text-safety-scan ============ -->
 <section class="cat" id="scan"><div class="wrap">
-  <h2 class="catname">Scan everything</h2>
+  <h2 class="catname"><a class="h-anchor" href="#scan">Scan everything</a></h2>
   <p class="catdesc">Unicode is not the only way a file reprograms the tool that
     opens it. <code>text-safety-scan</code> runs every safety check in one pass.</p>
 
@@ -171,7 +171,7 @@ src/pay.py:12:  # process the p&#x430;yment
 
 <!-- ============ stcat ============ -->
 <section class="cat" id="stcat"><div class="wrap">
-  <h2 class="catname">Neutralize</h2>
+  <h2 class="catname"><a class="h-anchor" href="#stcat">Neutralize</a></h2>
   <p class="catdesc"><a href="https://www.kicksecure.com/wiki/Stdisplay">Kicksecure's
     docs</a> put it plainly: "Dangerous terminal control codes can change what
     you see, hide text, alter the prompt, or otherwise mislead you."
@@ -199,7 +199,7 @@ src/pay.py:12:  # process the p&#x430;yment
 
 <!-- ============ sanitize-string ============ -->
 <section class="cat" id="sanitize"><div class="wrap">
-  <h2 class="catname">Sanitize</h2>
+  <h2 class="catname"><a class="h-anchor" href="#sanitize">Sanitize</a></h2>
   <p class="catdesc">Reading is one thing; <em>embedding</em> an untrusted value
     into your own output is another. A value dropped into a log line or an HTML
     tag can forge structure.</p>
@@ -231,7 +231,7 @@ src/pay.py:12:  # process the p&#x430;yment
 
 <!-- ============ the family ============ -->
 <section class="cat" id="family"><div class="wrap">
-  <h2 class="catname">The family</h2>
+  <h2 class="catname"><a class="h-anchor" href="#family">The family</a></h2>
   <p class="catdesc">Safe drop-in replacements for the usual text commands.</p>
   <article class="issue">
     <table class="tbl">
@@ -268,7 +268,7 @@ src/pay.py:12:  # process the p&#x430;yment
 
 <!-- ============ proof of concept ============ -->
 <section class="cat" id="record"><div class="wrap">
-  <h2 class="catname">Proof of concept</h2>
+  <h2 class="catname"><a class="h-anchor" href="#record">Proof of concept</a></h2>
   <p class="catdesc">Why safe display matters: merely viewing untrusted terminal output is a real, high-severity vulnerability class with a 20-year CVE trail. Honest caveat -- we found no confirmed in-the-wild exploitation, only CVEs and researcher demonstrations. High severity is not the same as actively abused.</p>
 
   <article class="issue" id="escape-rce">
@@ -292,7 +292,7 @@ src/pay.py:12:  # process the p&#x430;yment
 
 <!-- ============ git review ============ -->
 <section class="cat" id="git-review"><div class="wrap">
-  <h2 class="catname">The same defense, for diffs</h2>
+  <h2 class="catname"><a class="h-anchor" href="#git-review">The same defense, for diffs</a></h2>
   <p class="catdesc">Code review is just reading untrusted text with extra steps.
     The same neutralization drives the safe git review tools.</p>
   <article class="issue">
