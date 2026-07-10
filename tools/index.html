@@ -11,7 +11,7 @@
 
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="/">output <b>lies</b></a>
+    <a class="brand" href="/"><svg class="logo" width="24" height="24" viewBox="0 0 26 26" aria-hidden="true" focusable="false"><rect x="1.5" y="3" width="23" height="20" rx="4.5" fill="#14161b"/><path d="M6 9.5 L9.6 13 L6 16.5" fill="none" stroke="#cfd3da" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><rect x="11.6" y="14.9" width="7.4" height="2.3" rx="1.1" fill="#d83933"/></svg>output <b>lies</b></a>
     <nav>
       <a href="/tools/" class="active">Terminal</a>
       <a href="/git-diffs-lie/">Diffs</a>
@@ -24,6 +24,7 @@
     <a href="#scan">Scan</a>
     <a href="#stcat">Neutralize</a>
     <a href="#sanitize">Sanitize</a>
+    <a href="#record">Proof of concept</a>
   </div></div>
 </header>
 
@@ -259,6 +260,30 @@ src/pay.py:12:  # process the p&#x430;yment
       <code>echo -e</code> or <code>printf %b</code> (that re-enables the very
       sequences they removed).</p>
   </div>
+</div></section>
+
+<!-- ============ proof of concept ============ -->
+<section class="cat" id="record"><div class="wrap">
+  <h2 class="catname">Proof of concept</h2>
+  <p class="catdesc">Why safe display matters: merely viewing untrusted terminal output is a real, high-severity vulnerability class with a 20-year CVE trail. Honest caveat -- we found no confirmed in-the-wild exploitation, only CVEs and researcher demonstrations. High severity is not the same as actively abused.</p>
+
+  <article class="issue" id="escape-rce">
+    <span class="tag evi-rec">Proof of concept</span>
+    <span class="tag">Escape-sequence RCE</span>
+    <h3>Merely viewing a file can run commands</h3>
+    <p class="lead">Some terminals reflect certain query sequences -- a window-title report, a DECRQSS status, an OSC clipboard read -- back into their own input. A malicious file, log, or command output that a victim simply <code>cat</code>s or views can inject keystrokes, in the worst cases up to full command execution.</p>
+    <p class="backdoor"><b>Backdoor path:</b> ship a poisoned log, README, or git repo; when a developer or admin views it in a vulnerable terminal, attacker bytes are echoed into the shell and run.</p>
+    <p class="onrecord"><b>Proof of concept:</b> a well-documented class -- iTerm2 <a href="https://nvd.nist.gov/vuln/detail/CVE-2019-9535">CVE-2019-9535</a> and <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-45872">CVE-2022-45872</a> (RCE), xterm <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-27135">CVE-2021-27135</a>, Windows Terminal <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-44702">CVE-2022-44702</a>, and the <a href="https://dgl.cx/2023/09/ansi-terminal-security">ten CVEs</a> David Leadbeater catalogued in 2023. The origin paper is <a href="https://hdm.io/writing/termulation.txt">HD Moore's "Terminal Emulator Security Issues" (2003)</a>; see also <a href="https://www.cyberark.com/resources/threat-research-blog/dont-trust-this-title-abusing-terminal-emulators-with-ansi-escape-characters">CyberArk</a>. All responsibly disclosed; none observed in the wild.</p>
+  </article>
+
+  <article class="issue" id="log-injection">
+    <span class="tag evi-rec">Proof of concept</span>
+    <span class="tag">Logs as a surface</span>
+    <h3>Logs can attack the person reading them</h3>
+    <p class="lead">Escape sequences smuggled into a log line do nothing to the file -- but when an admin views that log in an ANSI-capable console, they can rewrite what is shown, forge entries, or manipulate the clipboard to trick the admin into running a command.</p>
+    <p class="backdoor"><b>Backdoor path:</b> get attacker-controlled text into a log -- via a crafted URL, a username, a header -- then wait for someone to read the log in a terminal.</p>
+    <p class="onrecord"><b>Proof of concept:</b> Apache Tomcat's <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-55754">CVE-2025-55754</a> did not escape ANSI in log messages. Note the honesty gap these tools argue against: NVD scores it <b>9.6</b>, but <a href="https://tomcat.apache.org/security-9.html">Apache rates it Low</a> ("no attack vector was found") -- theoretical, not demonstrated end to end. There is no ATT&amp;CK technique for this display-layer forgery; the nearest, <a href="https://attack.mitre.org/techniques/T1070/003/">T1070.003</a>, is about deleting logs, not deceiving the reader of an intact one.</p>
+  </article>
 </div></section>
 
 <!-- ============ git review ============ -->

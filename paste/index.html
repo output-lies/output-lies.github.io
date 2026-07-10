@@ -12,7 +12,7 @@
 
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="/">output <b>lies</b></a>
+    <a class="brand" href="/"><svg class="logo" width="24" height="24" viewBox="0 0 26 26" aria-hidden="true" focusable="false"><rect x="1.5" y="3" width="23" height="20" rx="4.5" fill="#14161b"/><path d="M6 9.5 L9.6 13 L6 16.5" fill="none" stroke="#cfd3da" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><rect x="11.6" y="14.9" width="7.4" height="2.3" rx="1.1" fill="#d83933"/></svg>output <b>lies</b></a>
     <nav>
       <a href="/tools/">Terminal</a>
       <a href="/git-diffs-lie/">Diffs</a>
@@ -21,6 +21,7 @@
   </div>
   <div class="subnav"><div class="wrap">
     <a href="#trick">The trick</a>
+    <a href="#wild">In the wild</a>
     <a href="#demo">Live demo</a>
     <a href="#how">Copy safely</a>
     <a href="#faq">FAQ</a>
@@ -112,6 +113,30 @@
   </article>
 </div></section>
 
+<!-- ===================== SEEN IN THE WILD ===================== -->
+<section class="cat" id="wild"><div class="wrap">
+  <h2 class="catname">Seen in the wild</h2>
+  <p class="catdesc">The copy-paste gap is not hypothetical. Two variants are in active, documented real-world use right now.</p>
+
+  <article class="issue" id="clickfix">
+    <span class="tag evi-wild">Seen in the wild</span>
+    <span class="tag">Paste-and-run</span>
+    <h3>"ClickFix" -- the fake error that asks you to paste</h3>
+    <p class="lead">A page shows a fake CAPTCHA or "fix this error" box and tells you to press Win+R (or open a terminal) and paste. The command was silently pre-loaded onto your clipboard by the page -- so you run the attacker's installer thinking you are just proving you are human.</p>
+    <p class="backdoor"><b>Backdoor path:</b> the pasted one-liner fetches and runs an infostealer or RAT -- Lumma Stealer, DarkGate, NetSupport, AsyncRAT -- handing over your credentials, session, and a foothold.</p>
+    <p class="wild"><b>Seen in the wild:</b> named by <a href="https://www.proofpoint.com/us/blog/threat-insight/security-brief-clickfix-social-engineering-technique-floods-threat-landscape">Proofpoint</a>, who coined "ClickFix" from a <a href="https://www.proofpoint.com/us/blog/threat-insight/clipboard-compromise-powershell-self-pwn">100,000-message campaign</a> by the broker TA571. It is now its own <a href="https://attack.mitre.org/techniques/T1204/004/">MITRE ATT&amp;CK technique (T1204.004)</a>, ranked by <a href="https://redcanary.com/threat-detection-report/techniques/malicious-copy-and-paste/">Red Canary</a> as the #2 initial-access vector of 2025, and adopted by nation-state actors -- <a href="https://www.proofpoint.com/us/blog/threat-insight/around-world-90-days-state-sponsored-actors-try-clickfix">Kimsuky (DPRK), MuddyWater (Iran) and APT28 (Russia)</a>. <a href="https://www.microsoft.com/en-us/security/blog/2025/08/21/think-before-you-clickfix-analyzing-the-clickfix-social-engineering-technique/">Microsoft</a> reports campaigns hitting thousands of devices daily.</p>
+  </article>
+
+  <article class="issue" id="clipper">
+    <span class="tag evi-wild">Seen in the wild</span>
+    <span class="tag">Clipboard hijack</span>
+    <h3>Clipper malware -- your clipboard, quietly rewritten</h3>
+    <p class="lead">Malware on the machine watches the clipboard and swaps what you copied for something else -- classically a cryptocurrency wallet address replaced with the attacker's look-alike -- so the value you paste is not the value you copied.</p>
+    <p class="backdoor"><b>Backdoor path:</b> you copy a wallet address and paste it to send funds; the money goes to the attacker. The swap happens silently between copy and paste, with no visible change.</p>
+    <p class="wild"><b>Seen in the wild:</b> a long-running malware class -- <a href="https://www.kaspersky.com/blog/cryptoshuffler-bitcoin-stealer/19976/">CryptoShuffler</a> (2017, ~$140k stolen) and the <a href="https://thehackernews.com/2022/11/new-laplas-clipper-malware-targeting.html">Laplas Clipper</a> malware-as-a-service (2022), which mints a look-alike address matching the first and last characters of yours. <a href="https://www.bleepingcomputer.com/news/security/new-clipboard-hijacker-replaces-crypto-wallet-addresses-with-lookalikes/">More reporting</a>.</p>
+  </article>
+</div></section>
+
 <!-- ===================== LIVE DEMO ===================== -->
 <section class="cat" id="demo"><div class="wrap">
   <h2 class="catname">Live demo -- completely safe</h2>
@@ -138,6 +163,7 @@ echo "GOTCHA: this second line was hidden in the copy -- imagine a real command 
       positioned off-screen so you cannot see it. Your eyes skip it; the clipboard
       does not. Both lines here are harmless <code>echo</code>s -- swap the second
       for something destructive and the lesson is the same.</p>
+    <p class="onrecord"><b>Proof of concept:</b> the web-page version of this -- shown text differs from the copied text via a JavaScript copy handler -- was demonstrated as <a href="https://github.com/dxa4481/Pastejacking">"pastejacking"</a> by Dylan Ayrey in 2016 (<a href="https://www.theregister.com/security/2016/05/25/pastejack-attack-turns-your-clipboard-into-a-threat/">press</a>). There is no CVE: it is inherent browser clipboard behavior, not a product bug. What went wild is the social-engineering cousin above.</p>
   </article>
 </div></section>
 

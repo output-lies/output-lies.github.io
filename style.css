@@ -17,7 +17,7 @@ a{color:inherit}
 header.nav{position:sticky;top:0;z-index:10;background:rgba(243,242,238,.93);
   backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .nav > .wrap{display:flex;align-items:center;gap:18px;height:56px}
-.brand{font-family:var(--mono);font-weight:700;letter-spacing:-.02em;text-decoration:none}
+.brand{font-family:var(--mono);font-weight:700;letter-spacing:-.02em;text-decoration:none;display:inline-flex;align-items:center;gap:9px}
 .brand b{color:var(--accent)}
 .nav nav{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap}
 .nav nav a{font-size:.9rem;color:var(--muted);text-decoration:none}
@@ -180,3 +180,16 @@ section{scroll-margin-top:0}
 .demonote{font-size:.82rem;color:var(--muted);margin:8px 0 0}
 /* off-screen text that is still copied (hidden-text demo) -- stays in textContent */
 .offscreen{position:absolute;left:-9999px;top:0;white-space:pre}
+
+.brand .logo{display:block;flex:0 0 auto}
+
+/* real-world / backdoor / evidence annotations on example cards (ported from the diffs page) */
+.backdoor{margin:12px 0 0;font-size:.93rem;color:#42322f}
+.backdoor b{color:var(--accent)}
+.wild{margin:7px 0 0;font-size:.87rem;color:var(--muted)}
+.wild b{color:var(--accent)} .wild a{color:var(--accent)}
+.onrecord{margin:7px 0 0;font-size:.87rem;color:var(--muted)}
+.onrecord b{color:var(--muted)} .onrecord a{color:var(--accent)}
+.tag.evi-wild{color:#fff;background:var(--accent);border-color:var(--accent)}
+.tag.evi-rec{color:var(--ink);background:var(--line);border-color:var(--line)}
+.issue .tag + .tag{margin-left:6px}
