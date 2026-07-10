@@ -83,7 +83,7 @@ withdraw.py:1: # Subtract funds ... then <span class="cp">[U+2067]</span>refund 
 <span class="p">$</span> echo $?
 <span class="w">1</span></pre></div>
     </div>
-    <p class="catch"><b>The catch:</b> the exit code carries it too --
+    <p class="catch"><b>The catch:</b> the exit code reports it too --
       <code>0</code> clean, <code>1</code> suspicious, <code>2</code>
       undecodable. Scriptable, not just visible.
       (<a href="https://www.kicksecure.com/wiki/Unicode-show">docs</a>)</p>
@@ -176,7 +176,7 @@ src/pay.py:12:  # process the p&#x430;yment
     <h3>Colors survive. Cursor tricks don't.</h3>
     <p class="lead">An escape sequence can erase a line and repaint it. To
       <code>cat</code> that means "hide the failure". <code>stcat</code> turns
-      the ESC byte into an inert <code>_</code> and keeps only safe SGR color.</p>
+      the ESC byte into an inert <code>_</code> and keeps only safe color codes.</p>
     <div class="panes">
       <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> cat</div><pre class="term"><span class="p">$</span> cat build.log
 <span class="ok">[ ok ] all checks passed</span>
