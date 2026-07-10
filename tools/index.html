@@ -14,14 +14,14 @@
     <a class="brand" href="/">output <b>lies</b></a>
     <nav>
       <a href="/tools/" class="active">Tools</a>
-      <a href="/git-diffs-lie/">Corpus</a>
+      <a href="/git-diffs-lie/">Examples</a>
     </nav>
   </div>
   <div class="subnav"><div class="wrap">
     <a href="#unicode-show">Reveal</a>
     <a href="#grep">Find</a>
     <a href="#scan">Scan</a>
-    <a href="#stcat">Defang</a>
+    <a href="#stcat">Neutralize</a>
     <a href="#sanitize">Sanitize</a>
   </div></div>
 </header>
@@ -36,9 +36,9 @@
   <div class="cta">
     <a class="btn primary" href="#unicode-show">See the tools</a>
     <a class="btn ghost" href="https://github.com/Kicksecure/helper-scripts">Get them</a>
-    <a class="btn ghost" href="/git-diffs-lie/">The diff corpus</a>
+    <a class="btn ghost" href="/git-diffs-lie/">See the examples</a>
   </div>
-  <p class="coverage">reveal hidden Unicode &middot; defang escape sequences &middot; sanitize untrusted strings</p>
+  <p class="coverage">reveal hidden Unicode &middot; neutralize escape sequences &middot; sanitize untrusted strings</p>
 </div></section>
 
 
@@ -53,7 +53,7 @@
     <div class="real">
       <h2>What's really there</h2>
       <p>The same bytes, revealed or rendered inert. Every suspicious codepoint
-        named, every escape defanged, every untrusted value stripped before it
+        named, every escape neutralized, every untrusted value stripped before it
         reaches your screen -- or your logs.</p>
     </div>
   </div>
@@ -165,7 +165,7 @@ src/pay.py:12:  # process the p&#x430;yment
 
 <!-- ============ stcat ============ -->
 <section class="cat" id="stcat"><div class="wrap">
-  <h2 class="catname">Defang</h2>
+  <h2 class="catname">Neutralize</h2>
   <p class="catdesc"><a href="https://www.kicksecure.com/wiki/Stdisplay">Kicksecure's
     docs</a> put it plainly: "Dangerous terminal control codes can change what
     you see, hide text, alter the prompt, or otherwise mislead you."
@@ -186,7 +186,7 @@ src/pay.py:12:  # process the p&#x430;yment
 <span class="e">FAILED: auth bypass</span><span class="neut">_</span>[2K<span class="neut">_</span><span class="ok">[ ok ] all checks passed</span></pre></div>
     </div>
     <p class="catch"><b>The catch:</b> the erase (<code>ESC[2K</code>) and the
-      carriage return are defanged to <code>_</code>, so the hidden
+      carriage return are neutralized to <code>_</code>, so the hidden
       <code>FAILED</code> line is right there in plain sight.</p>
   </article>
 </div></section>
@@ -236,7 +236,7 @@ src/pay.py:12:  # process the p&#x430;yment
         <tr><td><code>text-safety-scan</code></td><td>(all checks)</td><td>runs every safety plugin -- unicode-show + modeline-show -- on files/stdin; exit 0/1/2</td></tr>
         <tr><td><code>text-safety-scan-find</code></td><td><code>find</code> + scan</td><td>runs text-safety-scan across a whole tree; recursion via find expressions</td></tr>
         <tr><td><code>modeline-show</code></td><td>--</td><td>flags Vim/Emacs modelines that can reconfigure or execute in your editor</td></tr>
-        <tr><td><code>stcat</code> / <code>stcatn</code></td><td><code>cat</code></td><td>display files/pipes safely; escapes defanged, colors kept</td></tr>
+        <tr><td><code>stcat</code> / <code>stcatn</code></td><td><code>cat</code></td><td>display files/pipes safely; escapes neutralized, colors kept</td></tr>
         <tr><td><code>stecho</code></td><td><code>echo</code></td><td>print args safely, space-separated + newline</td></tr>
         <tr><td><code>stprint</code></td><td><code>printf</code></td><td>print exactly as given, sanitized</td></tr>
         <tr><td><code>sttee</code></td><td><code>tee</code></td><td>display and save a sanitized copy</td></tr>
@@ -270,7 +270,7 @@ src/pay.py:12:  # process the p&#x430;yment
     <p class="lead">External diff drivers that neutralize, surface and fail
       closed on every trick a change can carry -- content, filename, mode,
       symlink, submodule, ref name. See them, side by side, issue by issue.</p>
-    <p class="toolnote"><a href="/git-diffs-lie/">Open the git-diffs-lie corpus
+    <p class="toolnote"><a href="/git-diffs-lie/">Open the examples
       &rarr;</a> &nbsp; or grab the tools in
       <a href="https://github.com/Kicksecure/developer-meta-files">developer-meta-files</a>.</p>
   </article>
@@ -288,7 +288,7 @@ src/pay.py:12:  # process the p&#x430;yment
         <h4>Explore</h4>
         <a href="/">Home</a>
         <a href="/tools/">Tools</a>
-        <a href="/git-diffs-lie/">Corpus</a>
+        <a href="/git-diffs-lie/">Examples</a>
       </div>
       <div class="fcol">
         <h4>Source</h4>
