@@ -125,3 +125,11 @@ footer .fcopy{color:var(--muted);border:0}
   .nav nav{gap:12px;font-size:.82rem}
   .nav nav a.hidemob{display:none}
 }
+
+/* page-local sticky sub-nav (section jumps) + active global item */
+.subnav{position:sticky;top:56px;z-index:9;background:rgba(243,242,238,.94);
+  backdrop-filter:blur(8px);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.subnav .wrap{display:flex;gap:22px;height:42px;align-items:center;overflow-x:auto;white-space:nowrap}
+.subnav a{font-family:var(--mono);font-size:.78rem;color:var(--muted);text-decoration:none}
+.subnav a:hover{color:var(--ink)}
+.nav nav a.active{color:var(--ink);font-weight:650}
