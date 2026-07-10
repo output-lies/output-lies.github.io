@@ -14,6 +14,7 @@
   <nav>
     <a href="#unicode-show">unicode-show</a>
     <a href="#grep">grep-find</a>
+    <a href="#scan">scan</a>
     <a href="#stcat">stcat</a>
     <a href="#sanitize">sanitize-string</a>
     <a href="#family">The family</a>
@@ -120,6 +121,44 @@ src/pay.py:12:  # process the p&#x430;yment
   </article>
 </div></section>
 
+<!-- ============ text-safety-scan ============ -->
+<section class="cat" id="scan"><div class="wrap">
+  <h2 class="catname">Scan everything</h2>
+  <p class="catdesc">Unicode is not the only way a file reprograms the tool that
+    opens it. <code>text-safety-scan</code> runs every safety check in one pass.</p>
+
+  <article class="issue">
+    <span class="tag">text-safety-scan &middot; text-safety-scan-find</span>
+    <h3>One command, every check</h3>
+    <p class="lead">A single run fires all configured plugins -- today
+      <code>unicode-show</code> plus <code>modeline-show</code>, which flags
+      Vim/Emacs modelines: a comment like <code># vim: ...</code> that can
+      reconfigure -- historically, <em>execute code in</em> -- the editor that
+      opens the file. <code>text-safety-scan-find</code> walks a whole tree, with
+      recursion and pruning under your control via plain <code>find</code>
+      expressions.</p>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> one check at a time</div><pre class="term"><span class="p">$</span> unicode-show file      <span class="dim"># unicode only</span>
+
+<span class="dim"># but did you also check for editor
+# modelines? and every file in the repo?</span></pre></div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> text-safety-scan</div><pre class="term"><span class="p">$</span> text-safety-scan ./changelog
+<span class="dim"># runs unicode-show AND modeline-show</span>
+
+<span class="p">$</span> text-safety-scan-find /repo \
+      -not -path '*/.git/*' -size -1M
+<span class="p">$</span> echo $?
+<span class="w">1</span>   <span class="dim"># 0 clean, 1 finding, 2 hard error</span></pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> it is an <em>auditing</em> tool, not a
+      race-proof guard -- run it on a tree the attacker cannot write to during
+      the scan. Modelines are not hypothetical: opening a crafted file has meant
+      code execution
+      (<a href="https://www.cve.org/CVERecord?id=CVE-2019-12735">CVE-2019-12735</a>).
+      (<a href="https://github.com/Kicksecure/helper-scripts/blob/master/man/text-safety-scan.1.ronn">docs</a>)</p>
+  </article>
+</div></section>
+
 <!-- ============ stcat ============ -->
 <section class="cat" id="stcat"><div class="wrap">
   <h2 class="catname">Defang</h2>
@@ -190,6 +229,9 @@ src/pay.py:12:  # process the p&#x430;yment
       <tbody>
         <tr><td><code>unicode-show</code></td><td><code>cat</code> (audit)</td><td>reveals every suspicious codepoint by name; exit 0/1/2</td></tr>
         <tr><td><code>grep-find-unicode-wrapper</code></td><td><code>grep</code> (audit)</td><td>finds files/lines with suspicious Unicode across a whole tree; grep-style exit code</td></tr>
+        <tr><td><code>text-safety-scan</code></td><td>(all checks)</td><td>runs every safety plugin -- unicode-show + modeline-show -- on files/stdin; exit 0/1/2</td></tr>
+        <tr><td><code>text-safety-scan-find</code></td><td><code>find</code> + scan</td><td>runs text-safety-scan across a whole tree; recursion via find expressions</td></tr>
+        <tr><td><code>modeline-show</code></td><td>--</td><td>flags Vim/Emacs modelines that can reconfigure or execute in your editor</td></tr>
         <tr><td><code>stcat</code> / <code>stcatn</code></td><td><code>cat</code></td><td>display files/pipes safely; escapes defanged, colors kept</td></tr>
         <tr><td><code>stecho</code></td><td><code>echo</code></td><td>print args safely, space-separated + newline</td></tr>
         <tr><td><code>stprint</code></td><td><code>printf</code></td><td>print exactly as given, sanitized</td></tr>
