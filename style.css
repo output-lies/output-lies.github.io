@@ -259,3 +259,5 @@ footer .fbot{padding-left:20px;padding-right:20px}
 .repro .reprohd a.repro-try{color:var(--accent)}
 /* footer link columns: even 2-up grid on mobile instead of an uneven wrap */
 @media(max-width:640px){ footer .fcols{display:grid;grid-template-columns:1fr 1fr;gap:20px 22px} }
+
+.backdoor a{color:var(--accent)}

@@ -1,5 +1,5 @@
 <!--
-  paste lies -- copy-paste / hidden-text attacks. AI-Assisted.
+  paste lies: copy-paste / hidden-text attacks. AI-Assisted.
   Source: https://github.com/org-ai-assisted/org-ai-assisted.github.io
   Reference: https://www.kicksecure.com/wiki/Shell#Hidden_Text_Attacks
   Every payload on this page is benign (echo only) and for education only.
@@ -7,8 +7,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="ai-disclosure" content="ai-assisted">
-<title>paste lies -- what you copy is not what you paste</title>
-<meta name="description" content="A command copied from a web page can carry hidden lines and invisible characters your eyes never saw -- and a trailing newline runs them on paste. See it safely, and learn the safe-copy workflow.">
+<title>paste lies: what you copy is not what you paste</title>
+<meta name="description" content="A command copied from a web page can carry hidden lines and invisible characters your eyes never saw, and a trailing newline runs them on paste. See it safely, and learn the safe-copy workflow.">
+<link rel="canonical" href="https://org-ai-assisted.github.io/paste/">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="output lies">
+<meta property="og:title" content="paste lies: what you copy is not what you paste">
+<meta property="og:description" content="A command copied from a web page can carry hidden lines and invisible characters your eyes never saw, and a trailing newline runs them on paste. See it safely, and learn the safe-copy workflow.">
+<meta property="og:url" content="https://org-ai-assisted.github.io/paste/">
+<meta property="og:image" content="https://org-ai-assisted.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="output lies: what you see is not always what's there">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="paste lies: what you copy is not what you paste">
+<meta name="twitter:description" content="A command copied from a web page can carry hidden lines and invisible characters your eyes never saw, and a trailing newline runs them on paste. See it safely, and learn the safe-copy workflow.">
+<meta name="twitter:image" content="https://org-ai-assisted.github.io/og.png">
+<meta name="theme-color" content="#f3f2ee">
 <link rel="stylesheet" href="/style.css">
 
 <header class="nav">
@@ -35,7 +51,7 @@
   <h1>What you copy is not<br>always what you <span class="u">paste</span>.</h1>
   <p class="sub">You copy one harmless-looking command from a web page. What lands
     in your clipboard can carry extra lines and invisible characters you never
-    saw -- and a single trailing newline runs them the instant they hit a
+    saw, and a single trailing newline runs them the instant they hit a
     terminal.</p>
   <div class="cta">
     <a class="btn primary" href="#demo">See it happen (safely)</a>
@@ -48,7 +64,7 @@
 <section class="whatis"><div class="wrap">
   <p><b>What is this?</b> When a website shows you a command to run, you trust that
     the text you see is the text you copy. It isn't always. A page can hide extra
-    text inside the snippet -- off-screen, zero-width, or disguised -- so your
+    text inside the snippet (off-screen, zero-width, or disguised) so your
     clipboard receives more than your eyes did. This page shows the trick safely
     (every hidden payload here is a harmless <code>echo</code>) and the simple
     habit that defeats it.</p>
@@ -58,7 +74,7 @@
   <div class="grid">
     <div class="see">
       <h2>What the page shows you</h2>
-      <p>One tidy line -- an <code>apt install</code> from a README, a
+      <p>One tidy line: an <code>apt install</code> from a README, a
         <code>git config</code> from a setup guide, a fix pasted from a Stack
         Overflow answer or a chatbot. It looks like exactly what you need, so you
         select it and hit copy.</p>
@@ -83,10 +99,10 @@
     <h3><a class="cardanchor" href="#extra-line">The extra line you never saw</a></h3>
     <p class="lead">Text placed off-screen with CSS, or tucked into a zero-height
       element, is still part of what you select and copy. The page shows one
-      command; the clipboard gets two. Like invisible ink on a page you photocopy
-      -- the copy captures what your eyes skipped.</p>
+      command; the clipboard gets two. Like invisible ink on a page you photocopy:
+      the copy captures what your eyes skipped.</p>
     <p class="catch"><b>Why it bites:</b> if the hidden portion ends in a newline,
-      pasting it into a terminal <em>submits</em> it -- the second command runs
+      pasting it into a terminal <em>submits</em> it; the second command runs
       before you have read the first.</p>
   </article>
 
@@ -96,7 +112,7 @@
     <p class="lead">Zero-width and control characters copy perfectly but display as
       nothing. A command that reads <code>pip install requests</code> can carry an
       invisible break, or a look-alike letter, so the thing your shell runs is not
-      the thing you read -- an invisible extra character wedged inside a word.</p>
+      the thing you read: an invisible extra character wedged inside a word.</p>
     <p class="catch"><b>Why it bites:</b> the payload survives a glance, a code
       font, even a careful proofread. It is not on the screen to be seen.</p>
   </article>
@@ -109,7 +125,7 @@
       terminals added bracketed-paste to blunt this, but plenty of setups and
       terminal apps still submit multi-line pastes immediately.</p>
     <p class="catch"><b>Why it bites:</b> combined with a hidden line, there is no
-      pause to notice anything -- the copy, the paste, and the execution are one
+      pause to notice anything: the copy, the paste, and the execution are one
       motion.</p>
   </article>
 </div></section>
@@ -122,49 +138,49 @@
   <article class="issue" id="clickfix">
     <span class="tag evi-wild">Seen in the wild</span>
     <span class="tag">Paste-and-run</span>
-    <h3><a class="cardanchor" href="#clickfix">"ClickFix" -- the fake error that asks you to paste</a></h3>
-    <p class="lead">A page shows a fake CAPTCHA or "fix this error" box and tells you to press Win+R (or open a terminal) and paste. The command was silently pre-loaded onto your clipboard by the page -- so you run the attacker's installer thinking you are just proving you are human.</p>
-    <p class="backdoor"><b>Backdoor path:</b> the pasted one-liner fetches and runs an infostealer or RAT -- Lumma Stealer, DarkGate, NetSupport, AsyncRAT -- handing over your credentials, session, and a foothold.</p>
-    <p class="wild"><b>Seen in the wild:</b> named by <a href="https://www.proofpoint.com/us/blog/threat-insight/security-brief-clickfix-social-engineering-technique-floods-threat-landscape">Proofpoint</a>, who coined "ClickFix" from a <a href="https://www.proofpoint.com/us/blog/threat-insight/clipboard-compromise-powershell-self-pwn">100,000-message campaign</a> by the broker TA571. It is now its own <a href="https://attack.mitre.org/techniques/T1204/004/">MITRE ATT&amp;CK technique (T1204.004)</a>, ranked by <a href="https://redcanary.com/threat-detection-report/techniques/malicious-copy-and-paste/">Red Canary</a> as the #2 initial-access vector of 2025, and adopted by nation-state actors -- <a href="https://www.proofpoint.com/us/blog/threat-insight/around-world-90-days-state-sponsored-actors-try-clickfix">Kimsuky (DPRK), MuddyWater (Iran) and APT28 (Russia)</a>. <a href="https://www.microsoft.com/en-us/security/blog/2025/08/21/think-before-you-clickfix-analyzing-the-clickfix-social-engineering-technique/">Microsoft</a> reports campaigns hitting thousands of devices daily.</p>
+    <h3><a class="cardanchor" href="#clickfix">"ClickFix": the fake error that asks you to paste</a></h3>
+    <p class="lead">A page shows a fake CAPTCHA or "fix this error" box and tells you to press Win+R (or open a terminal) and paste. The command was silently pre-loaded onto your clipboard by the page, so you run the attacker's installer thinking you are just proving you are human.</p>
+    <p class="backdoor"><b>Backdoor path:</b> the pasted one-liner fetches and runs an infostealer or RAT (<a href="https://attack.mitre.org/software/S1213/">Lumma Stealer</a>, <a href="https://attack.mitre.org/software/S1111/">DarkGate</a>, <a href="https://malpedia.caad.fkie.fraunhofer.de/details/win.netsupportmanager_rat">NetSupport</a>, <a href="https://attack.mitre.org/software/S1087/">AsyncRAT</a>), handing over your credentials, session, and a foothold.</p>
+    <p class="wild"><b>Seen in the wild:</b> named by <a href="https://www.proofpoint.com/us/blog/threat-insight/security-brief-clickfix-social-engineering-technique-floods-threat-landscape">Proofpoint</a>, who coined "ClickFix" from a <a href="https://www.proofpoint.com/us/blog/threat-insight/clipboard-compromise-powershell-self-pwn">100,000-message campaign</a> by the broker TA571. It is now its own <a href="https://attack.mitre.org/techniques/T1204/004/">MITRE ATT&amp;CK technique (T1204.004)</a>, ranked by <a href="https://redcanary.com/threat-detection-report/techniques/malicious-copy-and-paste/">Red Canary</a> as the #2 initial-access vector of 2025, and adopted by nation-state actors: <a href="https://www.proofpoint.com/us/blog/threat-insight/around-world-90-days-state-sponsored-actors-try-clickfix">Kimsuky (DPRK), MuddyWater (Iran) and APT28 (Russia)</a>. <a href="https://www.microsoft.com/en-us/security/blog/2025/08/21/think-before-you-clickfix-analyzing-the-clickfix-social-engineering-technique/">Microsoft</a> reports campaigns hitting thousands of devices daily.</p>
   </article>
 
   <article class="issue" id="clipper">
     <span class="tag evi-wild">Seen in the wild</span>
     <span class="tag">Clipboard hijack</span>
-    <h3><a class="cardanchor" href="#clipper">Clipper malware -- your clipboard, quietly rewritten</a></h3>
-    <p class="lead">Malware on the machine watches the clipboard and swaps what you copied for something else -- classically a cryptocurrency wallet address replaced with the attacker's look-alike -- so the value you paste is not the value you copied.</p>
+    <h3><a class="cardanchor" href="#clipper">Clipper malware: your clipboard, quietly rewritten</a></h3>
+    <p class="lead">Malware on the machine watches the clipboard and swaps what you copied for something else (classically a cryptocurrency wallet address replaced with the attacker's look-alike), so the value you paste is not the value you copied.</p>
     <p class="backdoor"><b>Backdoor path:</b> you copy a wallet address and paste it to send funds; the money goes to the attacker. The swap happens silently between copy and paste, with no visible change.</p>
-    <p class="wild"><b>Seen in the wild:</b> a long-running malware class -- <a href="https://www.kaspersky.com/blog/cryptoshuffler-bitcoin-stealer/19976/">CryptoShuffler</a> (2017, ~$140k stolen) and the <a href="https://thehackernews.com/2022/11/new-laplas-clipper-malware-targeting.html">Laplas Clipper</a> malware-as-a-service (2022), which mints a look-alike address matching the first and last characters of yours. <a href="https://www.bleepingcomputer.com/news/security/new-clipboard-hijacker-replaces-crypto-wallet-addresses-with-lookalikes/">More reporting</a>.</p>
+    <p class="wild"><b>Seen in the wild:</b> a long-running malware class: <a href="https://www.kaspersky.com/blog/cryptoshuffler-bitcoin-stealer/19976/">CryptoShuffler</a> (2017, ~$140k stolen) and the <a href="https://thehackernews.com/2022/11/new-laplas-clipper-malware-targeting.html">Laplas Clipper</a> malware-as-a-service (2022), which mints a look-alike address matching the first and last characters of yours. <a href="https://www.bleepingcomputer.com/news/security/new-clipboard-hijacker-replaces-crypto-wallet-addresses-with-lookalikes/">More reporting</a>.</p>
   </article>
 </div></section>
 
 <!-- ===================== LIVE DEMO ===================== -->
 <section class="cat" id="demo"><div class="wrap">
-  <h2 class="catname"><a class="h-anchor" href="#demo">Live demo -- completely safe</a></h2>
+  <h2 class="catname"><a class="h-anchor" href="#demo">Live demo: completely safe</a></h2>
   <p class="catdesc">Copy the line below and paste it into a text editor (not a
     terminal). A second line you never saw comes with it. Here it is only an
-    <code>echo</code> -- but it could have been anything.</p>
+    <code>echo</code>, but it could have been anything.</p>
 
   <article class="issue">
-    <span class="tag">Try it -- echo only, nothing runs</span>
+    <span class="tag">Try it: echo only, nothing runs</span>
     <h3><a class="cardanchor" href="#demo">Copy one line. Get two.</a></h3>
     <div class="panes">
       <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what the page shows</div>
         <div class="copybox demo"><code class="cmd">echo "installing helper..."<span class="offscreen">
-echo "GOTCHA: this second line was hidden in the copy -- imagine a real command here"</span></code><button class="copybtn" type="button" hidden>Copy</button></div>
-        <p class="demonote">No JavaScript needed: click the command once -- that
-          selects both lines, the hidden one included -- then press Ctrl+C (Cmd+C on
+echo "GOTCHA: this second line was hidden in the copy; imagine a real command here"</span></code><button class="copybtn" type="button" hidden>Copy</button></div>
+        <p class="demonote">No JavaScript needed: click the command once (that
+          selects both lines, the hidden one included) then press Ctrl+C (Cmd+C on
           Mac). The button is only a shortcut; the pane at right shows exactly what
           you get either way.</p>
       </div>
       <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what your clipboard receives</div><pre class="term">echo "installing helper..."
-<span class="e">echo "GOTCHA: this second line was hidden in the copy -- imagine a real command here"</span></pre></div>
+<span class="e">echo "GOTCHA: this second line was hidden in the copy; imagine a real command here"</span></pre></div>
     </div>
     <p class="catch"><b>The catch:</b> the second line is real text in this page,
       positioned off-screen so you cannot see it. Your eyes skip it; the clipboard
-      does not. Both lines here are harmless <code>echo</code>s -- swap the second
+      does not. Both lines here are harmless <code>echo</code>s: swap the second
       for something destructive and the lesson is the same.</p>
-    <p class="onrecord"><b>Proof of concept:</b> the web-page version of this -- shown text differs from the copied text via a JavaScript copy handler -- was demonstrated as <a href="https://github.com/dxa4481/Pastejacking">"pastejacking"</a> by Dylan Ayrey in 2016 (<a href="https://www.theregister.com/security/2016/05/25/pastejack-attack-turns-your-clipboard-into-a-threat/">press</a>). There is no CVE: it is inherent browser clipboard behavior, not a product bug. What went wild is the social-engineering cousin above.</p>
+    <p class="onrecord"><b>Proof of concept:</b> the web-page version of this (shown text differs from the copied text via a JavaScript copy handler) was demonstrated as <a href="https://github.com/dxa4481/Pastejacking">"pastejacking"</a> by Dylan Ayrey in 2016 (<a href="https://www.theregister.com/security/2016/05/25/pastejack-attack-turns-your-clipboard-into-a-threat/">press</a>). There is no CVE: it is inherent browser clipboard behavior, not a product bug. What went wild is the social-engineering cousin above.</p>
   </article>
 </div></section>
 
@@ -173,18 +189,18 @@ echo "GOTCHA: this second line was hidden in the copy -- imagine a real command 
   <h2><a class="h-anchor" href="#how">How to copy commands safely</a></h2>
   <p style="max-width:66ch;color:#3a3c41;margin:0">Never paste a copied command
     straight into a terminal. Route it through a step where hidden bytes become
-    visible first -- the same safe-text tools used for logs and diffs.</p>
+    visible first: the same safe-text tools used for logs and diffs.</p>
   <div class="steps">
     <div class="step"><div class="num">01</div><h4>Paste into an editor</h4>
-      <p>Paste into a plain text editor and save to a file -- never straight into
+      <p>Paste into a plain text editor and save to a file, never straight into
         the shell. Now the bytes are sitting still, not running.</p></div>
     <div class="step"><div class="num">02</div><h4>Scan for hidden bytes</h4>
       <p>Run <code>unicode-show</code> (or <code>text-safety-scan</code>) on the
         file. Every invisible, control or look-alike character is named with its
-        codepoint -- the hidden line stops hiding.</p></div>
+        codepoint: the hidden line stops hiding.</p></div>
     <div class="step"><div class="num">03</div><h4>Read it, then run it</h4>
       <p>Display it with <code>stcat</code> so escapes are inert, read every line
-        you actually have, and only then run it -- deliberately, not by a stray
+        you actually have, and only then run it: deliberately, not by a stray
         newline.</p></div>
   </div>
   <p class="toolnote">All of these ship in Kicksecure's
@@ -202,7 +218,7 @@ echo "GOTCHA: this second line was hidden in the copy -- imagine a real command 
   <div class="qa" id="q-demo-safe">
     <h4><a class="qanchor" href="#q-demo-safe">Is the demo actually safe?</a></h4>
     <p>Yes. Both the visible line and the hidden line are <code>echo</code>
-      statements -- they only print text. Nothing here runs on its own, and even
+      statements: they only print text. Nothing here runs on its own, and even
       if you did paste it into a terminal it would just print two harmless
       messages. The point is to <em>show</em> the divergence, not to exploit it.</p>
   </div>
@@ -210,8 +226,8 @@ echo "GOTCHA: this second line was hidden in the copy -- imagine a real command 
   <div class="qa" id="q-why-autorun">
     <h4><a class="qanchor" href="#q-why-autorun">Why would a paste run on its own?</a></h4>
     <p>A terminal treats a newline the same whether you typed it or pasted it: as
-      "run this now". A snippet that ends in a newline -- or contains several lines
-      -- therefore executes on paste. Bracketed-paste mode (default in many modern
+      "run this now". A snippet that ends in a newline (or contains several lines)
+      therefore executes on paste. Bracketed-paste mode (default in many modern
       terminals) holds the input instead, but it is not universal, so the safe
       habit is to never paste command text directly into a shell.</p>
   </div>
@@ -231,7 +247,7 @@ echo "GOTCHA: this second line was hidden in the copy -- imagine a real command 
       lie</a> the deception happens while you <em>review</em> code; with
       <a href="/tools/">cat lies too</a> it happens while you <em>display</em> a
       file or log; here it happens while you <em>copy and paste</em> into a shell.
-      In every case, what is rendered is not what is really there -- and the same
+      In every case, what is rendered is not what is really there, and the same
       neutralize / surface / read-first defenses apply.</p>
   </div>
 
@@ -246,7 +262,7 @@ echo "GOTCHA: this second line was hidden in the copy -- imagine a real command 
 
   <div class="qa" id="q-built-with-ai">
     <h4><a class="qanchor" href="#q-built-with-ai">Was this built with AI?</a></h4>
-    <p>Yes -- this page and its demonstrations are AI-assisted.</p>
+    <p>Yes: this page and its demonstrations are AI-assisted.</p>
   </div>
 </div></section>
 </main>
@@ -289,7 +305,7 @@ echo "GOTCHA: this second line was hidden in the copy -- imagine a real command 
 <script>
 /* Progressive enhancement only: reveal "Copy" buttons when JS + the async
    Clipboard API are present. With JS off the commands remain plain, fully
-   selectable text -- nothing here is required to read or use the page.
+   selectable text: nothing here is required to read or use the page.
    All code is inline; no third-party origin is contacted. */
 (function () {
   if (!navigator.clipboard) return;
