@@ -138,3 +138,45 @@ footer .fcopy{color:var(--muted);font-size:.84rem}
 .nav .subnav a:hover{color:var(--ink)}
 .nav nav a.active{color:var(--ink);font-weight:650}
 section{scroll-margin-top:0}
+
+/* plain-language "what is this?" intro box */
+.whatis{background:var(--card);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.whatis .wrap{padding:22px 20px}
+.whatis p{margin:0;max-width:72ch;color:#33353a;font-size:1.02rem}
+.whatis b{color:var(--accent)}
+
+/* numbered defense steps */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.step h4{margin:0 0 6px;font-size:1rem}
+.step p{margin:0;color:#3a3c41;font-size:.92rem}
+.step .num{font-family:var(--mono);color:var(--accent);font-weight:700}
+
+/* FAQ with individually linkable questions */
+.qa{border-top:1px solid var(--line);padding:18px 2px}
+.qa:last-of-type{border-bottom:1px solid var(--line)}
+.qa h4{margin:0 0 6px;font-size:1.06rem}
+.qa p{margin:0;color:#3a3c41;max-width:72ch}
+.qa a{color:var(--accent)}
+.qa h4 a.qanchor{color:inherit;text-decoration:none}
+.qa h4 a.qanchor:hover{color:var(--accent)}
+.qa h4 a.qanchor::after{content:"#";margin-left:.4em;color:var(--muted);
+  font-weight:400;opacity:0;transition:opacity .12s}
+.qa h4:hover a.qanchor::after,.qa h4 a.qanchor:focus::after{opacity:.55}
+.qa:target{scroll-margin-top:120px}
+.qa:target h4 a.qanchor{color:var(--accent)}
+
+/* copy-paste-able command boxes -- button is a JS enhancement */
+.cmdlabel{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin:16px 0 5px}
+.copybox{display:flex;align-items:stretch;margin:7px 0;border:1px solid #23262e;
+  border-radius:9px;overflow:hidden;background:var(--tbg)}
+.copybox .cmd{flex:1 1 auto;font-family:var(--mono);font-size:.82rem;color:var(--tfg);
+  padding:11px 13px;overflow-x:auto;white-space:pre;user-select:all;-webkit-user-select:all}
+.copybox .copybtn{flex:0 0 auto;border:0;border-left:1px solid #23262e;background:#1c1f26;
+  color:#aab0bd;font:600 .72rem/1 var(--mono);padding:0 15px;cursor:pointer;letter-spacing:.05em}
+.copybox .copybtn:hover{background:#262b34;color:#fff}
+.copybox .copybtn.ok{color:var(--tadd)}
+.copybox.demo{margin:0}
+.demonote{font-size:.82rem;color:var(--muted);margin:8px 0 0}
+/* off-screen text that is still copied (hidden-text demo) -- stays in textContent */
+.ghost{position:absolute;left:-9999px;top:0;white-space:pre}

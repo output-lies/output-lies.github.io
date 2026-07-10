@@ -1,0 +1,286 @@
+<!--
+  paste lies -- copy-paste / hidden-text attacks. AI-Assisted.
+  Source: https://github.com/org-ai-assisted/org-ai-assisted.github.io
+  Reference: https://www.kicksecure.com/wiki/Shell#Hidden_Text_Attacks
+  Every payload on this page is benign (echo only) and for education only.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>paste lies -- what you copy is not what you paste</title>
+<meta name="description" content="A command copied from a web page can carry hidden lines and invisible characters your eyes never saw -- and a trailing newline runs them on paste. See it safely, and learn the safe-copy workflow.">
+<link rel="stylesheet" href="/style.css">
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/">output <b>lies</b></a>
+    <nav>
+      <a href="/tools/">Tools</a>
+      <a href="/git-diffs-lie/">Examples</a>
+      <a href="/paste/" class="active">Paste</a>
+    </nav>
+  </div>
+  <div class="subnav"><div class="wrap">
+    <a href="#trick">The trick</a>
+    <a href="#demo">Live demo</a>
+    <a href="#how">Copy safely</a>
+    <a href="#faq">FAQ</a>
+  </div></div>
+</header>
+
+<main>
+<section class="hero"><div class="wrap">
+  <p class="kicker">Copy-paste / hidden-text attacks</p>
+  <h1>What you copy is not<br>always what you <span class="u">paste</span>.</h1>
+  <p class="sub">You copy one harmless-looking command from a web page. What lands
+    in your clipboard can carry extra lines and invisible characters you never
+    saw -- and a single trailing newline runs them the instant they hit a
+    terminal.</p>
+  <div class="cta">
+    <a class="btn primary" href="#demo">See it happen (safely)</a>
+    <a class="btn ghost" href="#how">Copy safely</a>
+    <a class="btn ghost" href="/tools/">The tools that catch it</a>
+  </div>
+  <p class="coverage">hidden lines &middot; invisible characters &middot; auto-run on paste</p>
+</div></section>
+
+<section class="whatis"><div class="wrap">
+  <p><b>What is this?</b> When a website shows you a command to run, you trust that
+    the text you see is the text you copy. It isn't always. A page can hide extra
+    text inside the snippet -- off-screen, zero-width, or disguised -- so your
+    clipboard receives more than your eyes did. This page shows the trick safely
+    (every hidden payload here is a harmless <code>echo</code>) and the simple
+    habit that defeats it.</p>
+</div></section>
+
+<section class="thesis"><div class="wrap">
+  <div class="grid">
+    <div class="see">
+      <h2>What the page shows you</h2>
+      <p>One tidy line: <code>curl ... | sh</code>, an <code>apt</code> command, a
+        one-liner from a forum answer or a chatbot. It looks like exactly what you
+        need, so you select it and hit copy.</p>
+    </div>
+    <div class="real">
+      <h2>What your clipboard receives</h2>
+      <p>Possibly more: an appended command hidden off-screen, invisible Unicode
+        wedged into a word, or a trailing newline that presses <em>Enter</em> for
+        you. The terminal runs bytes, not the picture you looked at.</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- ===================== THE TRICK ===================== -->
+<section class="cat" id="trick"><div class="wrap">
+  <h2 class="catname">The trick</h2>
+  <p class="catdesc">A rendered snippet and its underlying text are two different
+    things. Three ways they come apart on the way to your shell.</p>
+
+  <article class="issue" id="extra-line">
+    <span class="tag">Hidden line</span>
+    <h3>The extra line you never saw</h3>
+    <p class="lead">Text placed off-screen with CSS, or tucked into a zero-height
+      element, is still part of what you select and copy. The page shows one
+      command; the clipboard gets two. Like invisible ink on a page you photocopy
+      -- the copy captures what your eyes skipped.</p>
+    <p class="catch"><b>Why it bites:</b> if the hidden portion ends in a newline,
+      pasting it into a terminal <em>submits</em> it -- the second command runs
+      before you have read the first.</p>
+  </article>
+
+  <article class="issue" id="invisible-chars">
+    <span class="tag">Invisible characters</span>
+    <h3>Characters that ride along unseen</h3>
+    <p class="lead">Zero-width and control characters copy perfectly but display as
+      nothing. A command that reads <code>pip install requests</code> can carry an
+      invisible break, or a look-alike letter, so the thing your shell runs is not
+      the thing you read -- an invisible extra character wedged inside a word.</p>
+    <p class="catch"><b>Why it bites:</b> the payload survives a glance, a code
+      font, even a careful proofread. It is not on the screen to be seen.</p>
+  </article>
+
+  <article class="issue" id="autorun">
+    <span class="tag">Auto-run on paste</span>
+    <h3>The paste that presses Enter for you</h3>
+    <p class="lead">A snippet ending in a newline runs the moment it is pasted into
+      a terminal. You meant to read it first; the newline did not wait. Modern
+      terminals added bracketed-paste to blunt this, but plenty of setups and
+      terminal apps still submit multi-line pastes immediately.</p>
+    <p class="catch"><b>Why it bites:</b> combined with a hidden line, there is no
+      pause to notice anything -- the copy, the paste, and the execution are one
+      motion.</p>
+  </article>
+</div></section>
+
+<!-- ===================== LIVE DEMO ===================== -->
+<section class="cat" id="demo"><div class="wrap">
+  <h2 class="catname">Live demo -- completely safe</h2>
+  <p class="catdesc">Copy the line below and paste it into a text editor (not a
+    terminal). A second line you never saw comes with it. Here it is only an
+    <code>echo</code> -- but it could have been anything.</p>
+
+  <article class="issue">
+    <span class="tag">Try it -- echo only, nothing runs</span>
+    <h3>Copy one line. Get two.</h3>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what the page shows</div>
+        <div class="copybox demo"><code class="cmd">echo "installing helper..."<span class="ghost">
+echo "GOTCHA: this second line was hidden in the copy -- imagine a real command here"</span></code><button class="copybtn" type="button" hidden>Copy</button></div>
+        <p class="demonote">With JavaScript off there is no button -- select the
+          line by hand and you copy the same hidden text.</p>
+      </div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what your clipboard receives</div><pre class="term">echo "installing helper..."
+<span class="e">echo "GOTCHA: this second line was hidden in the copy -- imagine a real command here"</span></pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> the second line is real text in this page,
+      positioned off-screen so you cannot see it. Your eyes skip it; the clipboard
+      does not. Both lines here are harmless <code>echo</code>s -- swap the second
+      for something destructive and the lesson is the same.</p>
+  </article>
+</div></section>
+
+<!-- ===================== COPY SAFELY ===================== -->
+<section class="outro" id="how"><div class="wrap">
+  <h2>How to copy commands safely</h2>
+  <p style="max-width:66ch;color:#3a3c41;margin:0">Never paste a copied command
+    straight into a terminal. Route it through a step where hidden bytes become
+    visible first -- the same safe-text tools used for logs and diffs.</p>
+  <div class="steps">
+    <div class="step"><div class="num">01</div><h4>Paste into an editor</h4>
+      <p>Paste into a plain text editor and save to a file -- never straight into
+        the shell. Now the bytes are sitting still, not running.</p></div>
+    <div class="step"><div class="num">02</div><h4>Scan for hidden bytes</h4>
+      <p>Run <code>unicode-show</code> (or <code>text-safety-scan</code>) on the
+        file. Every invisible, control or look-alike character is named with its
+        codepoint -- the hidden line stops hiding.</p></div>
+    <div class="step"><div class="num">03</div><h4>Read it, then run it</h4>
+      <p>Display it with <code>stcat</code> so escapes are inert, read every line
+        you actually have, and only then run it -- deliberately, not by a stray
+        newline.</p></div>
+  </div>
+  <p class="toolnote">All of these ship in Kicksecure's
+    <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a> and
+    are shown side by side on the <a href="/tools/">tools page</a>. The attack and
+    this workflow are documented on the
+    <a href="https://www.kicksecure.com/wiki/Shell#Hidden_Text_Attacks">Kicksecure
+    wiki</a>.</p>
+</div></section>
+
+<!-- ===================== FAQ ===================== -->
+<section class="cat faq" id="faq"><div class="wrap">
+  <h2 class="catname">FAQ</h2>
+
+  <div class="qa" id="q-demo-safe">
+    <h4><a class="qanchor" href="#q-demo-safe">Is the demo actually safe?</a></h4>
+    <p>Yes. Both the visible line and the hidden line are <code>echo</code>
+      statements -- they only print text. Nothing here runs on its own, and even
+      if you did paste it into a terminal it would just print two harmless
+      messages. The point is to <em>show</em> the divergence, not to exploit it.</p>
+  </div>
+
+  <div class="qa" id="q-why-autorun">
+    <h4><a class="qanchor" href="#q-why-autorun">Why would a paste run on its own?</a></h4>
+    <p>A terminal treats a newline the same whether you typed it or pasted it: as
+      "run this now". A snippet that ends in a newline -- or contains several lines
+      -- therefore executes on paste. Bracketed-paste mode (default in many modern
+      terminals) holds the input instead, but it is not universal, so the safe
+      habit is to never paste command text directly into a shell.</p>
+  </div>
+
+  <div class="qa" id="q-copy-safely">
+    <h4><a class="qanchor" href="#q-copy-safely">How do I copy commands safely?</a></h4>
+    <p>Paste into a text editor first, scan the file with
+      <a href="/tools/#unicode-show"><code>unicode-show</code></a> or
+      <a href="/tools/#scan"><code>text-safety-scan</code></a>, view it with
+      <a href="/tools/#stcat"><code>stcat</code></a>, read every line, and only
+      then run it. See the full <a href="#how">safe-copy steps</a> above.</p>
+  </div>
+
+  <div class="qa" id="q-same-topic">
+    <h4><a class="qanchor" href="#q-same-topic">How is this related to the other pages?</a></h4>
+    <p>Same root cause, different moment. On <a href="/git-diffs-lie/">git diffs
+      lie</a> the deception happens while you <em>review</em> code; with
+      <a href="/tools/">cat lies too</a> it happens while you <em>display</em> a
+      file or log; here it happens while you <em>copy and paste</em> into a shell.
+      In every case, what is rendered is not what is really there -- and the same
+      neutralize / surface / read-first defenses apply.</p>
+  </div>
+
+  <div class="qa" id="q-documented">
+    <h4><a class="qanchor" href="#q-documented">Where is this documented?</a></h4>
+    <p>Kicksecure's <a href="https://www.kicksecure.com/wiki/Shell#Hidden_Text_Attacks">Hidden
+      Text Attacks</a> section covers the copy-paste case and the safe workflow.
+      The invisible-character class was formalized as
+      <a href="https://trojansource.codes/">Trojan Source</a>
+      (<a href="https://www.cve.org/CVERecord?id=CVE-2021-42574">CVE-2021-42574</a>).</p>
+  </div>
+
+  <div class="qa" id="q-built-with-ai">
+    <h4><a class="qanchor" href="#q-built-with-ai">Was this built with AI?</a></h4>
+    <p>Yes -- this page and its demonstrations are AI-assisted.</p>
+  </div>
+</div></section>
+</main>
+
+<footer>
+  <div class="wrap ftop">
+    <div class="fbrand">
+      <span class="ftag">output <b>lies</b></span>
+      <p>Neutralize. Surface. Fail closed.</p>
+    </div>
+    <nav class="fcols">
+      <div class="fcol">
+        <h4>Explore</h4>
+        <a href="/">Home</a>
+        <a href="/tools/">Tools</a>
+        <a href="/git-diffs-lie/">Examples</a>
+        <a href="/paste/">Paste</a>
+      </div>
+      <div class="fcol">
+        <h4>Source</h4>
+        <a href="https://github.com/org-ai-assisted/git-diffs-lie">git-diffs-lie</a>
+        <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a>
+        <a href="https://github.com/Kicksecure/developer-meta-files">developer-meta-files</a>
+      </div>
+      <div class="fcol">
+        <h4>Docs</h4>
+        <a href="https://www.kicksecure.com/wiki/Shell#Hidden_Text_Attacks">Hidden Text Attacks</a>
+        <a href="https://www.kicksecure.com/wiki/Unicode-show">unicode-show</a>
+        <a href="https://www.kicksecure.com/wiki/Stdisplay">stdisplay</a>
+      </div>
+    </nav>
+  </div>
+  <div class="wrap fbot">
+    <span class="fcopy">Copyright 2026 - 2026 ENCRYPTED SUPPORT LLC</span>
+    <span class="fcopy sp">AI-assisted &middot; every demonstration is benign and for education only</span>
+  </div>
+</footer>
+
+<script>
+/* Progressive enhancement only: reveal "Copy" buttons when JS + the async
+   Clipboard API are present. With JS off the commands remain plain, fully
+   selectable text -- nothing here is required to read or use the page.
+   All code is inline; no third-party origin is contacted. */
+(function () {
+  if (!navigator.clipboard) return;
+  var boxes = document.querySelectorAll('.copybox');
+  for (var i = 0; i < boxes.length; i++) {
+    (function (box) {
+      var cmd = box.querySelector('.cmd');
+      var btn = box.querySelector('.copybtn');
+      if (!cmd || !btn) return;
+      btn.hidden = false;
+      btn.addEventListener('click', function () {
+        navigator.clipboard.writeText(cmd.textContent).then(function () {
+          var prev = btn.textContent;
+          btn.textContent = 'Copied';
+          btn.classList.add('ok');
+          setTimeout(function () {
+            btn.textContent = prev;
+            btn.classList.remove('ok');
+          }, 1200);
+        });
+      });
+    })(boxes[i]);
+  }
+})();
+</script>
