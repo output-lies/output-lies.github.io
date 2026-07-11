@@ -266,3 +266,10 @@ footer .fbot{padding-left:20px;padding-right:20px}
 code{font-family:var(--mono);font-size:.88em;background:rgba(23,24,27,.06);
   padding:.11em .4em;border-radius:5px}
 .copybox .cmd{font-size:.82rem;padding:11px 13px;border-radius:0}
+
+/* archive-link icon (Wayback Machine); CSS-masked inline SVG, no external asset */
+:root{--archmask:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23000'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M3%207.8%2012%203.2%2021%207.8'/%3E%3Cpath%20d='M4%2020.4h16'/%3E%3Cpath%20d='M6.5%2010.6v8M10.5%2010.6v8M14.5%2010.6v8M18.5%2010.6v8'/%3E%3C/svg%3E")}
+.arch{display:inline-block;width:.82em;height:.82em;margin-left:3px;vertical-align:-.06em;
+  background-color:var(--muted);-webkit-mask:var(--archmask) center/contain no-repeat;
+  mask:var(--archmask) center/contain no-repeat;opacity:.75}
+.arch:hover{background-color:var(--accent);opacity:1}

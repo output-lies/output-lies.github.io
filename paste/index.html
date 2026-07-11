@@ -140,8 +140,8 @@
     <span class="tag">Paste-and-run</span>
     <h3><a class="cardanchor" href="#clickfix">"ClickFix": the fake error that asks you to paste</a></h3>
     <p class="lead">A page shows a fake CAPTCHA or "fix this error" box and tells you to press Win+R (or open a terminal) and paste. The command was silently pre-loaded onto your clipboard by the page, so you run the attacker's installer thinking you are just proving you are human.</p>
-    <p class="backdoor"><b>Backdoor path:</b> the pasted one-liner fetches and runs an infostealer or RAT (<a href="https://attack.mitre.org/software/S1213/">Lumma Stealer</a>, <a href="https://attack.mitre.org/software/S1111/">DarkGate</a>, <a href="https://malpedia.caad.fkie.fraunhofer.de/details/win.netsupportmanager_rat">NetSupport</a>, <a href="https://attack.mitre.org/software/S1087/">AsyncRAT</a>), handing over your credentials, session, and a foothold.</p>
-    <p class="wild"><b>Seen in the wild:</b> named by <a href="https://www.proofpoint.com/us/blog/threat-insight/security-brief-clickfix-social-engineering-technique-floods-threat-landscape">Proofpoint</a>, who coined "ClickFix" from a <a href="https://www.proofpoint.com/us/blog/threat-insight/clipboard-compromise-powershell-self-pwn">100,000-message campaign</a> by the broker TA571. It is now its own <a href="https://attack.mitre.org/techniques/T1204/004/">MITRE ATT&amp;CK technique (T1204.004)</a>, ranked by <a href="https://redcanary.com/threat-detection-report/techniques/malicious-copy-and-paste/">Red Canary</a> as the #2 initial-access vector of 2025, and adopted by nation-state actors: <a href="https://www.proofpoint.com/us/blog/threat-insight/around-world-90-days-state-sponsored-actors-try-clickfix">Kimsuky (DPRK), MuddyWater (Iran) and APT28 (Russia)</a>. <a href="https://www.microsoft.com/en-us/security/blog/2025/08/21/think-before-you-clickfix-analyzing-the-clickfix-social-engineering-technique/">Microsoft</a> reports campaigns hitting thousands of devices daily.</p>
+    <p class="backdoor"><b>Backdoor path:</b> the pasted one-liner fetches and runs an infostealer or RAT (<a href="https://attack.mitre.org/software/S1213/">Lumma Stealer</a>, <a href="https://attack.mitre.org/software/S1111/">DarkGate</a><a class="arch" href="https://web.archive.org/web/20260603091721/https://attack.mitre.org/software/S1111/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, <a href="https://malpedia.caad.fkie.fraunhofer.de/details/win.netsupportmanager_rat">NetSupport</a>, <a href="https://attack.mitre.org/software/S1087/">AsyncRAT</a><a class="arch" href="https://web.archive.org/web/20260415164132/https://attack.mitre.org/software/S1087/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>), handing over your credentials, session, and a foothold.</p>
+    <p class="wild"><b>Seen in the wild:</b> named by <a href="https://www.proofpoint.com/us/blog/threat-insight/security-brief-clickfix-social-engineering-technique-floods-threat-landscape">Proofpoint</a>, who coined "ClickFix" from a <a href="https://www.proofpoint.com/us/blog/threat-insight/clipboard-compromise-powershell-self-pwn">100,000-message campaign</a><a class="arch" href="https://web.archive.org/web/20260630160348/https://www.proofpoint.com/us/blog/threat-insight/clipboard-compromise-powershell-self-pwn" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> by the broker TA571. It is now its own <a href="https://attack.mitre.org/techniques/T1204/004/">MITRE ATT&amp;CK technique (T1204.004)</a>, ranked by <a href="https://redcanary.com/threat-detection-report/techniques/malicious-copy-and-paste/">Red Canary</a><a class="arch" href="https://web.archive.org/web/20260610203819/https://redcanary.com/threat-detection-report/techniques/malicious-copy-and-paste/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> as the #2 initial-access vector of 2025, and adopted by nation-state actors: <a href="https://www.proofpoint.com/us/blog/threat-insight/around-world-90-days-state-sponsored-actors-try-clickfix">Kimsuky (DPRK), MuddyWater (Iran) and APT28 (Russia)</a><a class="arch" href="https://web.archive.org/web/20260630162730/https://www.proofpoint.com/us/blog/threat-insight/around-world-90-days-state-sponsored-actors-try-clickfix" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>. <a href="https://www.microsoft.com/en-us/security/blog/2025/08/21/think-before-you-clickfix-analyzing-the-clickfix-social-engineering-technique/">Microsoft</a><a class="arch" href="https://web.archive.org/web/20260704055718/https://www.microsoft.com/en-us/security/blog/2025/08/21/think-before-you-clickfix-analyzing-the-clickfix-social-engineering-technique/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> reports campaigns hitting thousands of devices daily.</p>
   </article>
 
   <article class="issue" id="clipper">
@@ -150,7 +150,7 @@
     <h3><a class="cardanchor" href="#clipper">Clipper malware: your clipboard, quietly rewritten</a></h3>
     <p class="lead">Malware on the machine watches the clipboard and swaps what you copied for something else (classically a cryptocurrency wallet address replaced with the attacker's look-alike), so the value you paste is not the value you copied.</p>
     <p class="backdoor"><b>Backdoor path:</b> you copy a wallet address and paste it to send funds; the money goes to the attacker. The swap happens silently between copy and paste, with no visible change.</p>
-    <p class="wild"><b>Seen in the wild:</b> a long-running malware class: <a href="https://www.kaspersky.com/blog/cryptoshuffler-bitcoin-stealer/19976/">CryptoShuffler</a> (2017, ~$140k stolen) and the <a href="https://thehackernews.com/2022/11/new-laplas-clipper-malware-targeting.html">Laplas Clipper</a> malware-as-a-service (2022), which mints a look-alike address matching the first and last characters of yours. <a href="https://www.bleepingcomputer.com/news/security/new-clipboard-hijacker-replaces-crypto-wallet-addresses-with-lookalikes/">More reporting</a>.</p>
+    <p class="wild"><b>Seen in the wild:</b> a long-running malware class: <a href="https://www.kaspersky.com/blog/cryptoshuffler-bitcoin-stealer/19976/">CryptoShuffler</a><a class="arch" href="https://web.archive.org/web/20260411044629/https://www.kaspersky.com/blog/cryptoshuffler-bitcoin-stealer/19976/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> (2017, ~$140k stolen) and the <a href="https://thehackernews.com/2022/11/new-laplas-clipper-malware-targeting.html">Laplas Clipper</a><a class="arch" href="https://web.archive.org/web/20260214231144/https://thehackernews.com/2022/11/new-laplas-clipper-malware-targeting.html" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> malware-as-a-service (2022), which mints a look-alike address matching the first and last characters of yours. <a href="https://www.bleepingcomputer.com/news/security/new-clipboard-hijacker-replaces-crypto-wallet-addresses-with-lookalikes/">More reporting</a><a class="arch" href="https://web.archive.org/web/20260228112147/https://www.bleepingcomputer.com/news/security/new-clipboard-hijacker-replaces-crypto-wallet-addresses-with-lookalikes/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.</p>
   </article>
 </div></section>
 
@@ -180,7 +180,7 @@ echo "GOTCHA: this second line was hidden in the copy; imagine a real command he
       positioned off-screen so you cannot see it. Your eyes skip it; the clipboard
       does not. Both lines here are harmless <code>echo</code>s: swap the second
       for something destructive and the lesson is the same.</p>
-    <p class="onrecord"><b>Proof of concept:</b> the web-page version of this (shown text differs from the copied text via a JavaScript copy handler) was demonstrated as <a href="https://github.com/dxa4481/Pastejacking">"pastejacking"</a> by Dylan Ayrey in 2016 (<a href="https://www.theregister.com/security/2016/05/25/pastejack-attack-turns-your-clipboard-into-a-threat/502661">press</a>). There is no CVE: it is inherent browser clipboard behavior, not a product bug. What went wild is the social-engineering cousin above.</p>
+    <p class="onrecord"><b>Proof of concept:</b> the web-page version of this (shown text differs from the copied text via a JavaScript copy handler) was demonstrated as <a href="https://github.com/dxa4481/Pastejacking">"pastejacking"</a><a class="arch" href="https://web.archive.org/web/20260525042730/https://github.com/dxa4481/Pastejacking" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> by Dylan Ayrey in 2016 (<a href="https://www.theregister.com/security/2016/05/25/pastejack-attack-turns-your-clipboard-into-a-threat/502661">press</a>). There is no CVE: it is inherent browser clipboard behavior, not a product bug. What went wild is the social-engineering cousin above.</p>
   </article>
 </div></section>
 
@@ -204,11 +204,11 @@ echo "GOTCHA: this second line was hidden in the copy; imagine a real command he
         newline.</p></div>
   </div>
   <p class="toolnote">All of these ship in Kicksecure's
-    <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a> and
+    <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a><a class="arch" href="https://web.archive.org/web/20260325044051/https://github.com/Kicksecure/helper-scripts" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> and
     are shown side by side on the <a href="/tools/">tools page</a>. The attack and
     this workflow are documented on the
     <a href="https://www.kicksecure.com/wiki/Shell#Hidden_Text_Attacks">Kicksecure
-    wiki</a>.</p>
+    wiki</a><a class="arch" href="https://web.archive.org/web/20260316015917/https://www.kicksecure.com/wiki/Shell" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.</p>
 </div></section>
 
 <!-- ===================== FAQ ===================== -->
@@ -254,10 +254,10 @@ echo "GOTCHA: this second line was hidden in the copy; imagine a real command he
   <div class="qa" id="q-documented">
     <h4><a class="qanchor" href="#q-documented">Where is this documented?</a></h4>
     <p>Kicksecure's <a href="https://www.kicksecure.com/wiki/Shell#Hidden_Text_Attacks">Hidden
-      Text Attacks</a> section covers the copy-paste case and the safe workflow.
+      Text Attacks</a><a class="arch" href="https://web.archive.org/web/20260316015917/https://www.kicksecure.com/wiki/Shell" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> section covers the copy-paste case and the safe workflow.
       The invisible-character class was formalized as
-      <a href="https://trojansource.codes/">Trojan Source</a>
-      (<a href="https://www.cve.org/CVERecord?id=CVE-2021-42574">CVE-2021-42574</a>).</p>
+      <a href="https://trojansource.codes/">Trojan Source</a><a class="arch" href="https://web.archive.org/web/20260616040501/https://trojansource.codes/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+      (<a href="https://www.cve.org/CVERecord?id=CVE-2021-42574">CVE-2021-42574</a><a class="arch" href="https://web.archive.org/web/20260303144948/https://www.cve.org/CVERecord?id=CVE-2021-42574" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>).</p>
   </div>
 
   <div class="qa" id="q-built-with-ai">
@@ -285,14 +285,14 @@ echo "GOTCHA: this second line was hidden in the copy; imagine a real command he
         <h4>Source</h4>
         <a href="https://github.com/org-ai-assisted/org-ai-assisted.github.io">org-ai-assisted.github.io</a>
         <a href="https://github.com/org-ai-assisted/git-diffs-lie">git-diffs-lie</a>
-        <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a>
-        <a href="https://github.com/Kicksecure/developer-meta-files">developer-meta-files</a>
+        <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a><a class="arch" href="https://web.archive.org/web/20260325044051/https://github.com/Kicksecure/helper-scripts" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+        <a href="https://github.com/Kicksecure/developer-meta-files">developer-meta-files</a><a class="arch" href="https://web.archive.org/web/20260219201723/https://github.com/Kicksecure/developer-meta-files" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
       </div>
       <div class="fcol">
         <h4>Docs</h4>
-        <a href="https://www.kicksecure.com/wiki/Shell#Hidden_Text_Attacks">Hidden Text Attacks</a>
-        <a href="https://www.kicksecure.com/wiki/Unicode-show">unicode-show</a>
-        <a href="https://www.kicksecure.com/wiki/Stdisplay">stdisplay</a>
+        <a href="https://www.kicksecure.com/wiki/Shell#Hidden_Text_Attacks">Hidden Text Attacks</a><a class="arch" href="https://web.archive.org/web/20260316015917/https://www.kicksecure.com/wiki/Shell" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+        <a href="https://www.kicksecure.com/wiki/Unicode-show">unicode-show</a><a class="arch" href="https://web.archive.org/web/20260311005257/https://www.kicksecure.com/wiki/Unicode-show" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+        <a href="https://www.kicksecure.com/wiki/Stdisplay">stdisplay</a><a class="arch" href="https://web.archive.org/web/20260706215954/https://www.kicksecure.com/wiki/Stdisplay" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
       </div>
     </nav>
   </div>

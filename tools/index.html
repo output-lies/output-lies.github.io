@@ -109,7 +109,7 @@ withdraw.py:1: # Subtract funds ... then <span class="cp">[U+2067]</span>refund 
     <p class="catch"><b>The catch:</b> the exit code reports it too:
       <code>0</code> clean, <code>1</code> suspicious, <code>2</code>
       undecodable. Scriptable, not just visible.
-      (<a href="https://www.kicksecure.com/wiki/Unicode-show">docs</a>)</p>
+      (<a href="https://www.kicksecure.com/wiki/Unicode-show">docs</a><a class="arch" href="https://web.archive.org/web/20260311005257/https://www.kicksecure.com/wiki/Unicode-show" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>)</p>
   </article>
 </div></section>
 
@@ -144,7 +144,7 @@ src/pay.py:12:  # process the p&#x430;yment
       <code>unicode-show</code>: <code>0</code> means it <em>found</em> suspicious
       Unicode, non-zero means the tree is clean. Pipe the hits into
       <code>unicode-show</code> to name the exact codepoint.
-      (<a href="https://www.kicksecure.com/wiki/Unicode#grep-find-unicode-wrapper">docs</a>)</p>
+      (<a href="https://www.kicksecure.com/wiki/Unicode#grep-find-unicode-wrapper">docs</a><a class="arch" href="https://web.archive.org/web/20260706215954/https://www.kicksecure.com/wiki/Unicode" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>)</p>
   </article>
 </div></section>
 
@@ -181,7 +181,7 @@ src/pay.py:12:  # process the p&#x430;yment
       race-proof guard. Run it on a tree the attacker cannot write to during
       the scan. Modelines are not hypothetical: opening a crafted file has meant
       code execution
-      (<a href="https://www.cve.org/CVERecord?id=CVE-2019-12735">CVE-2019-12735</a>).
+      (<a href="https://www.cve.org/CVERecord?id=CVE-2019-12735">CVE-2019-12735</a><a class="arch" href="https://web.archive.org/web/20260224131015/https://www.cve.org/CVERecord?id=CVE-2019-12735" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>).
       (<a href="https://github.com/Kicksecure/helper-scripts/blob/master/man/text-safety-scan.1.ronn">docs</a>)</p>
   </article>
 </div></section>
@@ -190,7 +190,7 @@ src/pay.py:12:  # process the p&#x430;yment
 <section class="cat" id="stcat"><div class="wrap">
   <h2 class="catname"><a class="h-anchor" href="#stcat">Neutralize</a></h2>
   <p class="catdesc"><a href="https://www.kicksecure.com/wiki/Stdisplay">Kicksecure's
-    docs</a> put it plainly: "Dangerous terminal control codes can change what
+    docs</a><a class="arch" href="https://web.archive.org/web/20260706215954/https://www.kicksecure.com/wiki/Stdisplay" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> put it plainly: "Dangerous terminal control codes can change what
     you see, hide text, alter the prompt, or otherwise mislead you."
     <code>stcat</code> is <code>cat</code> that refuses to be fooled.</p>
 
@@ -268,9 +268,9 @@ src/pay.py:12:  # process the p&#x430;yment
       </tbody>
     </table>
     <p class="toolnote">All ship in Kicksecure's
-      <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a>.
-      Docs: <a href="https://www.kicksecure.com/wiki/Unicode-show">unicode-show</a>,
-      <a href="https://www.kicksecure.com/wiki/Stdisplay">stdisplay</a>.</p>
+      <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a><a class="arch" href="https://web.archive.org/web/20260325044051/https://github.com/Kicksecure/helper-scripts" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.
+      Docs: <a href="https://www.kicksecure.com/wiki/Unicode-show">unicode-show</a><a class="arch" href="https://web.archive.org/web/20260311005257/https://www.kicksecure.com/wiki/Unicode-show" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>,
+      <a href="https://www.kicksecure.com/wiki/Stdisplay">stdisplay</a><a class="arch" href="https://web.archive.org/web/20260706215954/https://www.kicksecure.com/wiki/Stdisplay" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.</p>
   </article>
 
   <div class="limits">
@@ -294,7 +294,7 @@ src/pay.py:12:  # process the p&#x430;yment
     <h3><a class="cardanchor" href="#escape-rce">Merely viewing a file can run commands</a></h3>
     <p class="lead">Some terminals reflect certain query sequences (a window-title report, a DECRQSS status, an OSC clipboard read) back into their own input. A malicious file, log, or command output that a victim simply <code>cat</code>s or views can inject keystrokes, in the worst cases up to full command execution.</p>
     <p class="backdoor"><b>Backdoor path:</b> ship a poisoned log, README, or git repo; when a developer or admin views it in a vulnerable terminal, attacker bytes are echoed into the shell and run.</p>
-    <p class="onrecord"><b>Proof of concept:</b> a well-documented class: iTerm2 <a href="https://nvd.nist.gov/vuln/detail/CVE-2019-9535">CVE-2019-9535</a> and <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-45872">CVE-2022-45872</a> (RCE), xterm <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-27135">CVE-2021-27135</a>, Windows Terminal <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-44702">CVE-2022-44702</a>, and the <a href="https://dgl.cx/2023/09/ansi-terminal-security">ten CVEs</a> David Leadbeater catalogued in 2023. The origin paper is <a href="https://hdm.io/writing/termulation.txt">HD Moore's "Terminal Emulator Security Issues" (2003)</a>; see also <a href="https://www.cyberark.com/resources/threat-research-blog/dont-trust-this-title-abusing-terminal-emulators-with-ansi-escape-characters">CyberArk</a>. All responsibly disclosed; none observed in the wild.</p>
+    <p class="onrecord"><b>Proof of concept:</b> a well-documented class: iTerm2 <a href="https://nvd.nist.gov/vuln/detail/CVE-2019-9535">CVE-2019-9535</a><a class="arch" href="https://web.archive.org/web/20260414161101/https://nvd.nist.gov/vuln/detail/CVE-2019-9535" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> and <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-45872">CVE-2022-45872</a><a class="arch" href="https://web.archive.org/web/20260102055000/https://nvd.nist.gov/vuln/detail/CVE-2022-45872" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> (RCE), xterm <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-27135">CVE-2021-27135</a><a class="arch" href="https://web.archive.org/web/20260312102057/https://nvd.nist.gov/vuln/detail/CVE-2021-27135" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, Windows Terminal <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-44702">CVE-2022-44702</a><a class="arch" href="https://web.archive.org/web/20251210235445/https://nvd.nist.gov/vuln/detail/CVE-2022-44702" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, and the <a href="https://dgl.cx/2023/09/ansi-terminal-security">ten CVEs</a><a class="arch" href="https://web.archive.org/web/20260617084902/https://dgl.cx/2023/09/ansi-terminal-security" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> David Leadbeater catalogued in 2023. The origin paper is <a href="https://hdm.io/writing/termulation.txt">HD Moore's "Terminal Emulator Security Issues" (2003)</a><a class="arch" href="https://web.archive.org/web/20260617084903/https://hdm.io/writing/termulation.txt" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>; see also <a href="https://www.cyberark.com/resources/threat-research-blog/dont-trust-this-title-abusing-terminal-emulators-with-ansi-escape-characters">CyberArk</a><a class="arch" href="https://web.archive.org/web/20260511163824/https://www.cyberark.com/resources/threat-research-blog/dont-trust-this-title-abusing-terminal-emulators-with-ansi-escape-characters" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>. All responsibly disclosed; none observed in the wild.</p>
   </article>
 
   <article class="issue" id="log-injection">
@@ -303,7 +303,7 @@ src/pay.py:12:  # process the p&#x430;yment
     <h3><a class="cardanchor" href="#log-injection">Logs can attack the person reading them</a></h3>
     <p class="lead">Escape sequences smuggled into a log line do nothing to the file, but when an admin views that log in an ANSI-capable console, they can rewrite what is shown, forge entries, or manipulate the clipboard to trick the admin into running a command.</p>
     <p class="backdoor"><b>Backdoor path:</b> get attacker-controlled text into a log (via a crafted URL, a username, a header), then wait for someone to read the log in a terminal.</p>
-    <p class="onrecord"><b>Proof of concept:</b> Apache Tomcat's <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-55754">CVE-2025-55754</a> did not escape ANSI in log messages. Note the honesty gap these tools argue against: NVD scores it <b>9.6</b>, but <a href="https://tomcat.apache.org/security-9.html">Apache rates it Low</a> ("no attack vector was found"): theoretical, not demonstrated end to end. There is no ATT&amp;CK technique for this display-layer forgery; the nearest, <a href="https://attack.mitre.org/techniques/T1070/003/">T1070.003</a>, is about deleting logs, not deceiving the reader of an intact one.</p>
+    <p class="onrecord"><b>Proof of concept:</b> Apache Tomcat's <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-55754">CVE-2025-55754</a><a class="arch" href="https://web.archive.org/web/20260611002953/https://nvd.nist.gov/vuln/detail/CVE-2025-55754" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> did not escape ANSI in log messages. Note the honesty gap these tools argue against: NVD scores it <b>9.6</b>, but <a href="https://tomcat.apache.org/security-9.html">Apache rates it Low</a><a class="arch" href="https://web.archive.org/web/20260630151002/https://tomcat.apache.org/security-9.html" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> ("no attack vector was found"): theoretical, not demonstrated end to end. There is no ATT&amp;CK technique for this display-layer forgery; the nearest, <a href="https://attack.mitre.org/techniques/T1070/003/">T1070.003</a><a class="arch" href="https://web.archive.org/web/20260616003318/https://attack.mitre.org/techniques/T1070/003/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, is about deleting logs, not deceiving the reader of an intact one.</p>
   </article>
 </div></section>
 
@@ -319,7 +319,7 @@ src/pay.py:12:  # process the p&#x430;yment
       symlink, submodule, ref name. See them, side by side, issue by issue.</p>
     <p class="toolnote"><a href="/git-diffs-lie/">Open the examples
       &rarr;</a> &nbsp; or grab the tools in
-      <a href="https://github.com/Kicksecure/developer-meta-files">developer-meta-files</a>.</p>
+      <a href="https://github.com/Kicksecure/developer-meta-files">developer-meta-files</a><a class="arch" href="https://web.archive.org/web/20260219201723/https://github.com/Kicksecure/developer-meta-files" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.</p>
   </article>
 </div></section>
 </main>
@@ -342,13 +342,13 @@ src/pay.py:12:  # process the p&#x430;yment
         <h4>Source</h4>
         <a href="https://github.com/org-ai-assisted/org-ai-assisted.github.io">org-ai-assisted.github.io</a>
         <a href="https://github.com/org-ai-assisted/git-diffs-lie">git-diffs-lie</a>
-        <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a>
-        <a href="https://github.com/Kicksecure/developer-meta-files">developer-meta-files</a>
+        <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a><a class="arch" href="https://web.archive.org/web/20260325044051/https://github.com/Kicksecure/helper-scripts" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+        <a href="https://github.com/Kicksecure/developer-meta-files">developer-meta-files</a><a class="arch" href="https://web.archive.org/web/20260219201723/https://github.com/Kicksecure/developer-meta-files" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
       </div>
       <div class="fcol">
         <h4>Docs</h4>
-        <a href="https://www.kicksecure.com/wiki/Unicode-show">unicode-show</a>
-        <a href="https://www.kicksecure.com/wiki/Stdisplay">stdisplay</a>
+        <a href="https://www.kicksecure.com/wiki/Unicode-show">unicode-show</a><a class="arch" href="https://web.archive.org/web/20260311005257/https://www.kicksecure.com/wiki/Unicode-show" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+        <a href="https://www.kicksecure.com/wiki/Stdisplay">stdisplay</a><a class="arch" href="https://web.archive.org/web/20260706215954/https://www.kicksecure.com/wiki/Stdisplay" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
       </div>
     </nav>
   </div>
