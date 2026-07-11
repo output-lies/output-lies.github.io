@@ -261,3 +261,8 @@ footer .fbot{padding-left:20px;padding-right:20px}
 @media(max-width:640px){ footer .fcols{display:grid;grid-template-columns:1fr 1fr;gap:20px 22px} }
 
 .backdoor a{color:var(--accent)}
+
+/* idiomatic inline code: a subtle chip (copybox .cmd + .term panes keep their own dark styling) */
+code{font-family:var(--mono);font-size:.88em;background:rgba(23,24,27,.06);
+  padding:.11em .4em;border-radius:5px}
+.copybox .cmd{font-size:.82rem;padding:11px 13px;border-radius:0}
