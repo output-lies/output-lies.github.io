@@ -273,3 +273,9 @@ code{font-family:var(--mono);font-size:.88em;background:rgba(23,24,27,.06);
   background-color:var(--muted);-webkit-mask:var(--archmask) center/contain no-repeat;
   mask:var(--archmask) center/contain no-repeat;opacity:.75}
 .arch:hover{background-color:var(--accent);opacity:1}
+
+/* real-tool screenshot figure (e.g. unicode-show) */
+.shot{margin:18px 0 0}
+.shot img{display:block;width:100%;max-width:810px;height:auto;border-radius:11px;
+  border:1px solid #23262e;box-shadow:0 12px 34px rgba(0,0,0,.13)}
+.shot figcaption{margin-top:9px;font-size:.88rem;color:var(--muted);max-width:70ch}
