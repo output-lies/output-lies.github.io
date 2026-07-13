@@ -132,24 +132,29 @@ withdraw.py:1: # Subtract funds ... then <span class="cp">[U+2067]</span>refund 
       suspicious Unicode, so you can audit an entire repository for injected
       backdoors, not just the one file you already suspect.</p>
     <div class="panes">
-      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> grep</div><pre class="term"><span class="p">$</span> grep -rn "validate" src/
-<span class="p">$</span>
-
-<span class="dim"># nothing, yet validate() is right there.
-# you searched the word you read; the byte
-# on disk is a Cyrillic look-alike.</span></pre></div>
-      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> grep-find-unicode-wrapper</div><pre class="term"><span class="p">$</span> grep-find-unicode-wrapper -r src/
-src/auth.js:8:  return v&#x430;lidate(token)
-src/pay.py:12:  # process the p&#x430;yment
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> grep</div><pre class="term"><span class="p">$</span> grep --recursive "validate" src/
+src/clean.js:function ok(){ return validate(true) }
+<span class="dim"># grep matched the honest file and skipped
+# the backdoored calls: the byte you read as
+# "a" is a Cyrillic look-alike.</span></pre></div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> grep-find-unicode-wrapper</div><pre class="term"><span class="p">$</span> grep-find-unicode-wrapper --recursive src/
+src/auth.js
+src/pay.py
 <span class="p">$</span> echo $?
 <span class="ok">0</span>   <span class="dim"># grep convention: 0 == matches found</span></pre></div>
     </div>
-    <p class="catch"><b>The catch:</b> the flagged lines look ordinary. Each
-      hides a non-ASCII byte. And the exit code follows <code>grep</code>, not
-      <code>unicode-show</code>: <code>0</code> means it <em>found</em> suspicious
-      Unicode, non-zero means the tree is clean. Pipe the hits into
-      <code>unicode-show</code> to name the exact codepoint.
+    <p class="catch"><b>The catch:</b> the flagged files look ordinary, and the
+      wrapper reports file names, not lines. Each named file hides a non-ASCII
+      byte. The exit code follows <code>grep</code>, not <code>unicode-show</code>:
+      <code>0</code> means it <em>found</em> suspicious Unicode, non-zero means the
+      tree is clean. Pass each flagged file to <code>unicode-show</code> to name
+      the exact codepoint.
       (<a href="https://www.kicksecure.com/wiki/Unicode#grep-find-unicode-wrapper">docs</a><a class="arch" href="https://web.archive.org/web/20260706215954/https://www.kicksecure.com/wiki/Unicode" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>)</p>
+    <figure class="shot">
+      <img src="/grep-find-unicode-demo.png" width="850" height="315" loading="lazy"
+        alt="A terminal where plain grep for validate matches only src/clean.js and silently skips the backdoored files, while grep-find-unicode-wrapper --recursive src/ names src/auth.js and src/pay.py with exit 0, and unicode-show src/auth.js identifies the hidden character as U+0430 Cyrillic small letter a.">
+      <figcaption>The real tools: a plain <code>grep</code> for the word you read matches the honest file and skips the backdoored ones, <code>grep-find-unicode-wrapper</code> names the files that hide a look-alike, and <code>unicode-show</code> pins the exact codepoint.</figcaption>
+    </figure>
   </article>
 </div></section>
 
@@ -176,11 +181,10 @@ src/pay.py:12:  # process the p&#x430;yment
 # modelines? and every file in the repo?</span></pre></div>
       <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> text-safety-scan</div><pre class="term"><span class="p">$</span> text-safety-scan ./changelog
 <span class="dim"># runs unicode-show AND modeline-show</span>
-
-<span class="p">$</span> text-safety-scan-find /repo \
-      -not -path '*/.git/*' -size -1M
 <span class="p">$</span> echo $?
-<span class="w">1</span>   <span class="dim"># 0 clean, 1 finding, 2 hard error</span></pre></div>
+<span class="w">1</span>   <span class="dim"># 0 clean, 1 finding, 2 hard error</span>
+<span class="p">$</span> text-safety-scan-find /repo \
+      -not -path '*/.git/*'   <span class="dim"># whole tree</span></pre></div>
     </div>
     <p class="catch"><b>The catch:</b> it is an <em>auditing</em> tool, not a
       race-proof guard. Run it on a tree the attacker cannot write to during
@@ -188,6 +192,11 @@ src/pay.py:12:  # process the p&#x430;yment
       code execution
       (<a href="https://www.cve.org/CVERecord?id=CVE-2019-12735">CVE-2019-12735</a><a class="arch" href="https://web.archive.org/web/20260224131015/https://www.cve.org/CVERecord?id=CVE-2019-12735" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>).
       (<a href="https://github.com/Kicksecure/helper-scripts/blob/master/man/text-safety-scan.1.ronn">docs</a><a class="arch" href="https://web.archive.org/web/20260711194113/https://github.com/Kicksecure/helper-scripts/blob/master/man/text-safety-scan.1.ronn" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>)</p>
+    <figure class="shot">
+      <img src="/text-safety-scan-demo.png" width="950" height="296" loading="lazy"
+        alt="A terminal running text-safety-scan on ./repo/changelog. One pass fires both plugins: unicode-show names a hidden U+0430 Cyrillic character, and modeline-show warns that a Vim modeline was found, quoting the line. text-safety-scan then reports FAIL with two findings, and echo $? prints 1.">
+      <figcaption>The real tool: a single <code>text-safety-scan</code> run fires every plugin at once, here catching both a hidden Unicode character and a Vim modeline, and returns <code>1</code> (0 clean, 1 finding, 2 hard error). <code>text-safety-scan-find</code> runs the same checks over a whole tree.</figcaption>
+    </figure>
   </article>
 </div></section>
 
@@ -310,6 +319,11 @@ src/pay.py:12:  # process the p&#x430;yment
     <p class="lead">Some terminals reflect certain query sequences (a window-title report, a DECRQSS status, an OSC clipboard read) back into their own input. A malicious file, log, or command output that a victim simply <code>cat</code>s or views can inject keystrokes, in the worst cases up to full command execution.</p>
     <p class="backdoor"><b>Backdoor path:</b> ship a poisoned log, README, or git repo; when a developer or admin views it in a vulnerable terminal, attacker bytes are echoed into the shell and run.</p>
     <p class="onrecord"><b>Proof of concept:</b> a well-documented class: iTerm2 <a href="https://nvd.nist.gov/vuln/detail/CVE-2019-9535">CVE-2019-9535</a><a class="arch" href="https://web.archive.org/web/20260414161101/https://nvd.nist.gov/vuln/detail/CVE-2019-9535" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> and <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-45872">CVE-2022-45872</a><a class="arch" href="https://web.archive.org/web/20260102055000/https://nvd.nist.gov/vuln/detail/CVE-2022-45872" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> (RCE), xterm <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-27135">CVE-2021-27135</a><a class="arch" href="https://web.archive.org/web/20260312102057/https://nvd.nist.gov/vuln/detail/CVE-2021-27135" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, Windows Terminal <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-44702">CVE-2022-44702</a><a class="arch" href="https://web.archive.org/web/20251210235445/https://nvd.nist.gov/vuln/detail/CVE-2022-44702" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, and the <a href="https://dgl.cx/2023/09/ansi-terminal-security">ten CVEs</a><a class="arch" href="https://web.archive.org/web/20260617084902/https://dgl.cx/2023/09/ansi-terminal-security" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> David Leadbeater catalogued in 2023. The origin paper is <a href="https://hdm.io/writing/termulation.txt">HD Moore's "Terminal Emulator Security Issues" (2003)</a><a class="arch" href="https://web.archive.org/web/20260617084903/https://hdm.io/writing/termulation.txt" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>; see also <a href="https://www.cyberark.com/resources/threat-research-blog/dont-trust-this-title-abusing-terminal-emulators-with-ansi-escape-characters">CyberArk</a><a class="arch" href="https://web.archive.org/web/20260511163824/https://www.cyberark.com/resources/threat-research-blog/dont-trust-this-title-abusing-terminal-emulators-with-ansi-escape-characters" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>. All responsibly disclosed; none observed in the wild.</p>
+    <figure class="shot">
+      <img src="/escape-rce-demo.png" width="790" height="277" loading="lazy"
+        alt="A terminal where cat notice.txt prints only 'Update installed. System healthy.' while the file secretly carries an OSC terminal-control sequence. stcat reveals the hidden payload as _]0;attacker@evil:~# _ before the visible text, and unicode-show names the hidden bytes U+001B (ESC) and U+0007 (BEL).">
+      <figcaption>A safe demonstration of the mechanism: <code>cat</code> shows one innocuous line, but the file smuggles a terminal-control sequence that <code>cat</code> feeds straight to the terminal. <code>stcat</code> neutralizes it and <code>unicode-show</code> names the hidden ESC and BEL bytes. On a vulnerable terminal, this same channel is what escalates to injected keystrokes.</figcaption>
+    </figure>
   </article>
 
   <article class="issue" id="log-injection">
@@ -319,6 +333,11 @@ src/pay.py:12:  # process the p&#x430;yment
     <p class="lead">Escape sequences smuggled into a log line do nothing to the file, but when an admin views that log in an ANSI-capable console, they can rewrite what is shown, forge entries, or manipulate the clipboard to trick the admin into running a command.</p>
     <p class="backdoor"><b>Backdoor path:</b> get attacker-controlled text into a log (via a crafted URL, a username, a header), then wait for someone to read the log in a terminal.</p>
     <p class="onrecord"><b>Proof of concept:</b> Apache Tomcat's <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-55754">CVE-2025-55754</a><a class="arch" href="https://web.archive.org/web/20260611002953/https://nvd.nist.gov/vuln/detail/CVE-2025-55754" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> did not escape ANSI in log messages. Note the honesty gap these tools argue against: NVD scores it <b>9.6</b>, but <a href="https://tomcat.apache.org/security-9.html">Apache rates it Low</a><a class="arch" href="https://web.archive.org/web/20260630151002/https://tomcat.apache.org/security-9.html" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> ("no attack vector was found"): theoretical, not demonstrated end to end. There is no ATT&amp;CK technique for this display-layer forgery; the nearest, <a href="https://attack.mitre.org/techniques/T1070/003/">T1070.003</a><a class="arch" href="https://web.archive.org/web/20260616003318/https://attack.mitre.org/techniques/T1070/003/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, is about deleting logs, not deceiving the reader of an intact one.</p>
+    <figure class="shot">
+      <img src="/log-injection-demo.png" width="930" height="277" loading="lazy"
+        alt="A terminal where cat access.log prints a benign-looking line, 10.0.0.9 - GET /health 200 ok, while the log line hides an OSC 52 clipboard-write escape. stcat reveals the payload as _]52;c;ZWNobyBwd25lZAo=_ and unicode-show names the hidden U+001B (ESC) and U+0007 (BEL) bytes.">
+      <figcaption>A safe demonstration: viewing the log looks like a routine health check, but the line hides an OSC 52 sequence that silently loads the reader's clipboard (here with a harmless <code>echo pwned</code>). <code>stcat</code> and <code>unicode-show</code> expose what plain <code>cat</code> hid.</figcaption>
+    </figure>
   </article>
 </div></section>
 
