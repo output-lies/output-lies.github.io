@@ -216,6 +216,11 @@ src/pay.py:12:  # process the p&#x430;yment
     <p class="catch"><b>The catch:</b> the erase (<code>ESC[2K</code>) and the
       carriage return are neutralized to <code>_</code>, so the hidden
       <code>FAILED</code> line is right there in plain sight.</p>
+    <figure class="shot">
+      <img src="/stcat-demo.png" width="930" height="277" loading="lazy"
+        alt="A terminal comparing cat and stcat on build.log. cat shows three green [ ok ] lines including all checks passed, hiding the failure. stcat reveals the red FAILED: auth bypass in login() line, with the erase and carriage return neutralized to _[2K_ and the green [ ok ] all checks passed kept.">
+      <figcaption>The real tool: <code>cat</code> replays the escape and shows only the green pass, while <code>stcat</code> neutralizes the erase and carriage return to <code>_</code>, keeps the colors, and surfaces the hidden red FAILED line.</figcaption>
+    </figure>
   </article>
 </div></section>
 
@@ -248,6 +253,11 @@ src/pay.py:12:  # process the p&#x430;yment
       <em>twice</em>, so neither markup nor escapes can smuggle the other past
       the sanitizer.
       (<a href="https://github.com/Kicksecure/helper-scripts/blob/master/man/sanitize-string.1.ronn">docs</a><a class="arch" href="https://web.archive.org/web/20260711194126/https://github.com/Kicksecure/helper-scripts/blob/master/man/sanitize-string.1.ronn" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>)</p>
+    <figure class="shot">
+      <img src="/sanitize-demo.png" width="870" height="296" loading="lazy"
+        alt="A terminal showing sanitize-string. An untrusted value with an embedded escape prints as red DROP TABLE users when echoed raw; after sanitize-string the escape is inert (shown as _[31m...) and no longer recolors. sanitize-string on a script tag returns plain alert(1) with tags stripped, and sanitize-string 12 caps a long value to leak: secret.">
+      <figcaption>The real tool: an escape in an untrusted value recolors a raw log line (red), but the sanitized value is inert; HTML markup is stripped and the length is capped.</figcaption>
+    </figure>
   </article>
 </div></section>
 
