@@ -41,6 +41,8 @@
   <div class="subnav"><div class="wrap">
     <a href="#explore">Explore</a>
     <a href="#idea">The idea</a>
+    <a href="#cases">Case files</a>
+    <a href="#cheatsheet">Cheat sheet</a>
   </div></div>
 </header>
 
@@ -65,7 +67,7 @@
 
 <section class="cat" id="explore"><div class="wrap">
   <h2 class="catname"><a class="h-anchor" href="#explore">Explore</a></h2>
-  <p class="catdesc">Three places text lies to you, and the tools that catch it.</p>
+  <p class="catdesc">Where text lies to you, the tools that surface it, and ways to test yourself.</p>
   <div class="cards">
     <a class="pcard" href="/tools/">
       <span class="ptag">Terminal &middot; logs</span>
@@ -91,6 +93,20 @@
         safely, then learn the safe-copy habit.</p>
       <div class="go">See the demo &rarr;</div>
     </a>
+    <a class="pcard" href="/analyze/">
+      <span class="ptag">Playground</span>
+      <h3>x-ray <b>anything</b></h3>
+      <p>Paste a URL, filename, diff line or command and see every hidden codepoint
+        dissected in your browser: bidi, zero-width, homoglyphs, control bytes.</p>
+      <div class="go">Analyze text &rarr;</div>
+    </a>
+    <a class="pcard" href="/quiz/">
+      <span class="ptag">Test yourself</span>
+      <h3>spot the <b>lie</b></h3>
+      <p>Six real strings, rendered the way your tools would show them. Can you tell
+        the honest ones from the traps? Guess, then reveal the raw bytes.</p>
+      <div class="go">Take the quiz &rarr;</div>
+    </a>
   </div>
 </div></section>
 
@@ -112,6 +128,71 @@
       (git review). Docs on the
       <a href="https://www.kicksecure.com/wiki/Unicode-show">Kicksecure wiki</a><a class="arch" href="https://web.archive.org/web/20260311005257/https://www.kicksecure.com/wiki/Unicode-show" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.</p>
   </article>
+</div></section>
+
+<section class="cat" id="cases"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#cases">Case files</a></h2>
+  <p class="catdesc">Not hypothetical. Each of these shipped, earned a CVE or a name, and changed how tools behave.</p>
+
+  <article class="issue">
+    <h3>Trojan Source &mdash; a backdoor your eyes cannot see</h3>
+    <p class="lead">2021, CVE-2021-42574 (bidi) and CVE-2021-42694 (homoglyph), Boucher &amp; Anderson at Cambridge.
+      Bidirectional-override characters placed in source comments and strings reorder how code
+      <em>displays</em> without changing how the compiler <em>reads</em> it. A reviewer sees an early
+      <code>return</code> or a harmless comment; the compiler sees logic that ships a backdoor. It hit nearly
+      every compiler and language at once, because the deception lives in the text layer, below the language.</p>
+    <p class="backdoor"><b>The fix:</b> compilers and linters now warn on bidi controls in source; GitHub and
+      GitLab show a warning banner on affected files. Catch it before merge with <code>unicode-show</code> and
+      <code>check-ref-commits-for-unicode</code>.</p>
+    <p class="wild"><b>Source:</b> <a href="https://trojansource.codes/">trojansource.codes</a>
+      (CVE-2021-42574, CVE-2021-42694).</p>
+  </article>
+
+  <article class="issue">
+    <h3>Homoglyph domains &mdash; a padlock on the wrong site</h3>
+    <p class="lead">A registrable look-alike: <code>&#x0430;pple.com</code> begins with U+0430 CYRILLIC SMALL
+      LETTER A, not Latin <code>a</code>. It is a different domain that can hold its own valid TLS certificate and
+      padlock. Xudong Zheng's 2017 proof-of-concept registered a Cyrillic <code>apple.com</code> that Chrome and
+      Firefox then displayed indistinguishably from the real one.</p>
+    <p class="backdoor"><b>The fix:</b> browsers now show the punycode form (<code>xn--&hellip;</code>) for
+      mixed-script or confusable domains, and registrars restrict mixed-script registrations. The same trick still
+      works on package names and command names, which have no such guard.</p>
+    <p class="wild"><b>Source:</b>
+      <a href="https://www.xudongz.com/blog/2017/idn-phishing/">xudongz.com &mdash; Phishing with Unicode Domains</a>.</p>
+  </article>
+
+  <article class="issue">
+    <h3>Pastejacking &mdash; you copied one command, you ran another</h3>
+    <p class="lead">2016, Dylan Ayrey. A command shown on a web page is copied, but a JavaScript copy handler
+      (or CSS-hidden text, or a trailing newline) places something <em>else</em> on your clipboard. Paste it into
+      a terminal and a hidden trailing newline runs it immediately, before you can read it.</p>
+    <p class="backdoor"><b>The fix:</b> paste into an editor first, never straight into a shell; enable bracketed
+      paste so a pasted newline cannot auto-execute; and treat every "copy" button as untrusted. There is a live,
+      safe demonstration on the <a href="/paste/">Paste</a> page.</p>
+    <p class="wild"><b>Source:</b>
+      <a href="https://github.com/dxa4481/Pastejacking">github.com/dxa4481/Pastejacking</a>.</p>
+  </article>
+</div></section>
+
+<section class="cat" id="cheatsheet"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#cheatsheet">Cheat sheet</a></h2>
+  <p class="catdesc">The dangerous character classes, what each does, and how to catch it. Paste any example into
+    <a href="/analyze/">Analyze</a> to see it live.</p>
+  <div style="overflow-x:auto">
+  <table class="tbl">
+    <thead><tr><th>Class</th><th>Examples</th><th>What it does</th><th>Catch it</th></tr></thead>
+    <tbody>
+      <tr><td>Bidi overrides</td><td><code>U+202A</code>&ndash;<code>202E</code>, <code>U+2066</code>&ndash;<code>2069</code></td><td>Reorder display vs byte order (Trojan Source)</td><td><code>unicode-show</code>; editor / host warnings</td></tr>
+      <tr><td>Zero-width</td><td><code>U+200B</code> ZWSP, <code>U+200C/D</code>, <code>U+FEFF</code></td><td>Invisible; split or join tokens, hide in URLs and identifiers</td><td>any codepoint dump</td></tr>
+      <tr><td>Homoglyphs</td><td><code>U+0430</code> Cyrillic a, <code>U+03BF</code> Greek o</td><td>Look identical to ASCII; spoof domains, packages, commands</td><td>confusable check; restrict to ASCII</td></tr>
+      <tr><td>ASCII look-alikes</td><td><code>rn</code> = m, <code>l 1 I</code>, <code>0 O</code></td><td>No Unicode at all; the eye does the work</td><td>read character by character (a Unicode tool cannot help)</td></tr>
+      <tr><td>Control bytes</td><td><code>U+0000</code>&ndash;<code>001F</code>, <code>U+007F</code>, C1</td><td>NUL truncation, escape injection, prompt forging</td><td><code>stcat</code> strips them before display</td></tr>
+      <tr><td>ANSI / OSC-8</td><td><code>ESC[&hellip;m</code>, <code>ESC]8;;</code></td><td>Recolour or overwrite output, forge log lines, hide a link target</td><td><code>stcat</code>; allow only safe SGR</td></tr>
+      <tr><td>Combining marks</td><td><code>U+0300</code>&ndash;<code>036F</code></td><td>Stack onto letters (Zalgo), overflow, disguise</td><td>normalise; length-limit</td></tr>
+      <tr><td>Fullwidth forms</td><td><code>U+FF01</code>&ndash;<code>FF5E</code></td><td>Wide look-alikes of ASCII letters and punctuation</td><td>flag non-ASCII</td></tr>
+    </tbody>
+  </table>
+  </div>
 </div></section>
 </main>
 
