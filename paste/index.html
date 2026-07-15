@@ -190,6 +190,24 @@ echo "GOTCHA: this second line was hidden in the copy; imagine a real command he
       for something destructive and the lesson is the same.</p>
     <p class="onrecord"><b>Proof of concept:</b> the web-page version of this (shown text differs from the copied text via a JavaScript copy handler) was demonstrated as <a href="https://github.com/dxa4481/Pastejacking">"pastejacking"</a><a class="arch" href="https://web.archive.org/web/20260525042730/https://github.com/dxa4481/Pastejacking" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> by Dylan Ayrey in 2016 (<a href="https://www.theregister.com/security/2016/05/25/pastejack-attack-turns-your-clipboard-into-a-threat/502661">press</a><a class="arch" href="https://web.archive.org/web/20260711194112/https://www.theregister.com/security/2016/05/25/pastejack-attack-turns-your-clipboard-into-a-threat/502661" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>). There is no CVE: it is inherent browser clipboard behavior, not a product bug. What went wild is the social-engineering cousin above.</p>
   </article>
+
+  <article class="issue">
+    <span class="tag">Try it: invisible character</span>
+    <h3><a class="cardanchor" href="#demo">Copy a clean-looking command. Get a hidden character.</a></h3>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what the page shows</div>
+        <div class="copybox demo"><code class="cmd">pip install requ&#x200B;ests</code><button class="copybtn" type="button" hidden>Copy</button></div>
+        <p class="demonote">Looks exactly like <code>pip install requests</code>. Select and copy it, then paste it
+          into the <a href="/analyze/">Analyze</a> page (or run <code>unicode-show</code> on it) and watch the
+          hidden character appear.</p>
+      </div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what your clipboard receives</div><pre class="term">pip install requ<span class="neut">U+200B</span>ests</pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> a <span class="e">U+200B ZERO WIDTH SPACE</span> sits inside the package
+      name. The string is not <code>requests</code> but a look-identical typosquat that a package index can hold as
+      a separate name. It survives a glance, a code font and a careful proofread, because it is not on the screen
+      to be seen &mdash; only a byte-level tool surfaces it.</p>
+  </article>
 </div></section>
 
 <!-- ===================== COPY SAFELY ===================== -->
