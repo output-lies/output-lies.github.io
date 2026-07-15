@@ -154,8 +154,8 @@
       LETTER A, not Latin <code>a</code>. It is a different domain that can hold its own valid TLS certificate and
       padlock. Xudong Zheng's 2017 proof-of-concept registered a Cyrillic <code>apple.com</code> that Chrome and
       Firefox then displayed indistinguishably from the real one.</p>
-    <p class="backdoor"><b>The fix:</b> browsers now show the punycode form (<code>xn--&hellip;</code>) for
-      mixed-script or confusable domains, and registrars restrict mixed-script registrations. The same trick still
+    <p class="backdoor"><b>The fix:</b> Chrome, Safari and Edge now show the punycode form (<code>xn--&hellip;</code>) for
+      confusable domains, though Firefox still renders whole-script Cyrillic look-alikes by default; registrars also restrict mixed-script registrations. The same trick still
       works on package names and command names, which have no such guard.</p>
     <p class="wild"><b>Source:</b>
       <a href="https://www.xudongz.com/blog/2017/idn-phishing/">xudongz.com &mdash; Phishing with Unicode Domains</a>.</p>
@@ -182,7 +182,7 @@
   <table class="tbl">
     <thead><tr><th>Class</th><th>Examples</th><th>What it does</th><th>Catch it</th></tr></thead>
     <tbody>
-      <tr><td>Bidi overrides</td><td><code>U+202A</code>&ndash;<code>202E</code>, <code>U+2066</code>&ndash;<code>2069</code></td><td>Reorder display vs byte order (Trojan Source)</td><td><code>unicode-show</code>; editor / host warnings</td></tr>
+      <tr><td>Bidi controls</td><td><code>U+202A</code>&ndash;<code>202E</code>, <code>U+2066</code>&ndash;<code>2069</code></td><td>Reorder display vs byte order (Trojan Source)</td><td><code>unicode-show</code>; editor / host warnings</td></tr>
       <tr><td>Zero-width</td><td><code>U+200B</code> ZWSP, <code>U+200C/D</code>, <code>U+FEFF</code></td><td>Invisible; split or join tokens, hide in URLs and identifiers</td><td>any codepoint dump</td></tr>
       <tr><td>Homoglyphs</td><td><code>U+0430</code> Cyrillic a, <code>U+03BF</code> Greek o</td><td>Look identical to ASCII; spoof domains, packages, commands</td><td>confusable check; restrict to ASCII</td></tr>
       <tr><td>ASCII look-alikes</td><td><code>rn</code> = m, <code>l 1 I</code>, <code>0 O</code></td><td>No Unicode at all; the eye does the work</td><td>read character by character (a Unicode tool cannot help)</td></tr>
