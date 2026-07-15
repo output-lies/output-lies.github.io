@@ -279,3 +279,12 @@ code{font-family:var(--mono);font-size:.88em;background:rgba(23,24,27,.06);
 .shot img{display:block;width:100%;max-width:810px;height:auto;border-radius:11px;
   border:1px solid #23262e;box-shadow:0 12px 34px rgba(0,0,0,.13)}
 .shot figcaption{margin-top:9px;font-size:.88rem;color:var(--muted);max-width:70ch}
+
+/* review-status banner + masthead pill (AI-generated, pending human review) */
+.notice{background:#fbf3f2;border-bottom:1px solid #eccecb;color:#4a3c3b}
+.notice .wrap{padding:11px 20px;font-size:.92rem}
+.notice b{color:var(--accent)}
+.nav .status{margin-left:12px;font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;
+  text-transform:uppercase;color:#fff;background:var(--accent);border-radius:5px;
+  padding:3px 8px;white-space:nowrap}
+@media(max-width:640px){ .nav .status{font-size:.6rem;padding:2px 6px} }
