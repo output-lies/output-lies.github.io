@@ -396,6 +396,60 @@ src/pay.py
       </div>
     </nav>
   </div>
+  <div class="fshare">
+    <span class="fshare-l">Share:</span>
+    <a class="sh" data-net="x" rel="nofollow noopener">X</a>
+    <a class="sh" data-net="facebook" rel="nofollow noopener">Facebook</a>
+    <a class="sh" data-net="telegram" rel="nofollow noopener">Telegram</a>
+    <a class="sh" data-net="reddit" rel="nofollow noopener">Reddit</a>
+    <a class="sh" data-net="whatsapp" rel="nofollow noopener">WhatsApp</a>
+    <a class="sh" data-net="linkedin" rel="nofollow noopener">LinkedIn</a>
+    <a class="sh" data-net="hn" rel="nofollow noopener">Hacker News</a>
+    <a class="sh" data-net="mastodon" href="#" rel="nofollow noopener">Mastodon</a>
+    <a class="sh" data-net="email">Email</a>
+    <button class="sh" data-net="copy" type="button">Copy link</button>
+    <button class="sh" data-net="md" type="button">Copy as Markdown</button>
+    <span class="sh-msg" aria-live="polite"></span>
+  </div>
+  <script>
+    /* Local-only share links. No third-party script or resource is loaded; a
+       target opens only when the user clicks it. */
+    (function () {
+      var u = encodeURIComponent(location.href), t = encodeURIComponent(document.title);
+      var L = {
+        x: 'https://twitter.com/intent/tweet?url=' + u + '&text=' + t,
+        facebook: 'https://www.facebook.com/sharer/sharer.php?u=' + u,
+        telegram: 'https://t.me/share/url?url=' + u + '&text=' + t,
+        reddit: 'https://www.reddit.com/submit?url=' + u + '&title=' + t,
+        whatsapp: 'https://api.whatsapp.com/send?text=' + t + '%20' + u,
+        linkedin: 'https://www.linkedin.com/sharing/share-offsite/?url=' + u,
+        hn: 'https://news.ycombinator.com/submitlink?u=' + u + '&t=' + t,
+        email: 'mailto:?subject=' + t + '&body=' + u
+      };
+      document.querySelectorAll('.fshare a.sh').forEach(function (a) {
+        var n = a.getAttribute('data-net');
+        if (L[n]) { a.href = L[n]; if (n !== 'email') { a.target = '_blank'; } }
+      });
+      var m = document.querySelector('.fshare [data-net=mastodon]');
+      if (m) m.addEventListener('click', function (e) {
+        e.preventDefault();
+        var i = prompt('Your Mastodon instance (e.g. mastodon.social):');
+        if (i) { i = i.replace('https://', '').replace('http://', '').replace(/\/+$/, '');
+          window.open('https://' + i + '/share?text=' + t + '%20' + u, '_blank', 'noopener'); }
+      });
+      var msg = document.querySelector('.fshare .sh-msg');
+      function flash(x) { if (msg) { msg.textContent = x; setTimeout(function () { msg.textContent = ''; }, 2000); } }
+      var c = document.querySelector('.fshare [data-net=copy]');
+      if (c) c.addEventListener('click', function () {
+        if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(function () { flash('link copied'); });
+      });
+      var md = document.querySelector('.fshare [data-net=md]');
+      if (md) md.addEventListener('click', function () {
+        var text = '[' + document.title + '](' + location.href + ')';
+        if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { flash('markdown copied'); });
+      });
+    })();
+  </script>
   <div class="wrap fbot">
     <span class="fcopy">&copy; 2026 <a href="https://www.encrypted-support.com">ENCRYPTED SUPPORT LLC</a></span>
     <span class="fcopy">Operated by <a href="https://github.com/adrelanos">@adrelanos</a></span>
