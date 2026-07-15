@@ -64,6 +64,13 @@
   .axtra button{font:600 .85rem var(--sans);padding:8px 14px;border-radius:8px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
   .axtra button:hover{transform:translateY(-1px)}
   .cmsg{font-family:var(--mono);font-size:.82rem;color:var(--safe)}
+  .abox input[type=text]{width:100%;box-sizing:border-box;font:1rem/1.5 var(--mono);color:var(--ink);
+    background:var(--card);border:1px solid var(--line);border-radius:11px;padding:12px 16px}
+  .abox input[type=text]:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+  .btrow{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:12px 0 0;font-size:.9rem}
+  .btrow label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+  .btrow button{margin-left:auto;font:600 .9rem var(--sans);padding:9px 18px;border-radius:9px;
+    border:1px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer}
 </style>
 
 <header class="nav">
@@ -80,6 +87,8 @@
   </div>
   <div class="subnav"><div class="wrap">
     <a href="#tool">The x-ray</a>
+    <a href="#build">Build a trap</a>
+    <a href="#sandbox">Safe paste</a>
     <a href="#test">Test your own tool</a>
   </div></div>
 </header>
@@ -137,6 +146,49 @@
     its homoglyph heuristic is coarse (it flags whole non-ASCII scripts, not confusable pairs). For real work use
     <a href="https://www.kicksecure.com/wiki/Unicode-show"><code>unicode-show</code></a>, which is what this page imitates.</p>
   </div>
+</div></section>
+
+<section class="cat" id="build"><div class="wrap">
+  <h2 class="catname">Build a trap</h2>
+  <p class="catdesc">See how little effort it takes. Type something honest, pick a disguise, and watch it become a
+    lie the eye cannot catch. Everything here is benign and stays in your browser.</p>
+  <div class="abox">
+    <input id="bt-in" type="text" spellcheck="false" value="paypal.com/login" aria-label="benign text to disguise">
+    <div class="btrow">
+      <label><input type="radio" name="bt-mode" value="homoglyph" checked> homoglyph</label>
+      <label><input type="radio" name="bt-mode" value="zerowidth"> zero-width</label>
+      <label><input type="radio" name="bt-mode" value="bidi"> bidi</label>
+      <button id="bt-go" type="button">Forge</button>
+    </div>
+  </div>
+  <p class="verdictline" id="bt-verdict"></p>
+  <div class="xray" id="bt-out"></div>
+  <div class="axtra">
+    <button id="bt-copy" type="button">Copy the trap</button>
+    <button id="bt-send" type="button">Send to the x-ray</button>
+    <span class="cmsg" id="bt-msg" aria-live="polite"></span>
+  </div>
+  <div class="limits" style="margin-top:22px">
+    <h4>Why show this?</h4>
+    <p>Because "just look carefully" is not a defense. Forging a convincing lie takes one function and a lookup
+      table; catching it by eye is impossible. The payloads here are harmless demonstrations, benign by design.
+      Do not use them to deceive anyone.</p>
+  </div>
+</div></section>
+
+<section class="cat" id="sandbox"><div class="wrap">
+  <h2 class="catname">Safe-paste sandbox</h2>
+  <p class="catdesc">A preview of <b>secure-terminal</b> (coming soon): a place where paste is safe by
+    construction. Paste anything below. The left is what arrives; the right is what a terminal that accepts only
+    printable ASCII would keep.</p>
+  <textarea id="sb-in" spellcheck="false" placeholder="Paste a command here..."></textarea>
+  <div class="panes" style="margin-top:14px">
+    <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what you pasted</div>
+      <div class="xray" id="sb-raw" style="border-radius:0;border:0;min-height:96px"></div></div>
+    <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what a safe terminal keeps</div>
+      <pre class="term" id="sb-safe" style="min-height:96px"></pre></div>
+  </div>
+  <p class="tallies" id="sb-tallies"></p>
 </div></section>
 
 <section class="cat" id="test"><div class="wrap">
@@ -291,5 +343,104 @@
     });
 
     render();
+  })();
+</script>
+<script>
+  // Build-a-trap + safe-paste sandbox. Reuses the shared OL classifier.
+  (function () {
+    if (typeof OL === 'undefined') return;
+    var CLSMAP = { bidi:'m-bidi', zw:'m-zw', ctrl:'m-ctrl', space:'m-space',
+      homo:'m-homo', wide:'m-wide', comb:'m-comb', other:'m-other' };
+
+    function renderInto(el, str) {
+      el.textContent = '';
+      var res = OL.analyze(str);
+      res.items.forEach(function (it) {
+        if (it.safe !== undefined) {
+          var t = document.createElement('span'); t.className = 'safe'; t.textContent = it.safe; el.appendChild(t);
+        } else {
+          var s = document.createElement('span');
+          s.className = 'mark ' + (CLSMAP[it.info.cls] || 'm-other');
+          s.title = it.info.name + ' ' + OL.hex(it.cp);
+          if (it.info.visible) {
+            var g = document.createElement('span'); g.className = 'g'; g.textContent = it.ch;
+            s.appendChild(g); s.appendChild(document.createTextNode(' ' + OL.hex(it.cp)));
+          } else { s.textContent = OL.hex(it.cp); }
+          el.appendChild(s);
+        }
+      });
+      return res;
+    }
+
+    // ---- build a trap (benign, for education) --------------------------------
+    var HOMO = { a:0x0430, c:0x0441, e:0x0435, i:0x0456, j:0x0458, o:0x043E,
+      p:0x0440, s:0x0455, x:0x0445, y:0x0443 };
+    function forgeHomoglyph(s) {
+      return Array.from(s).map(function (ch) {
+        var m = HOMO[ch.toLowerCase()];
+        return m ? String.fromCodePoint(m) : ch;
+      }).join('');
+    }
+    function forgeZeroWidth(s) {
+      return s.replace(/([A-Za-z0-9]{2})([A-Za-z0-9])/, function (m, a, b) { return a + '\u200B' + b; });
+    }
+    function forgeBidi(s) {
+      var parts = s.split(/(\s+)/);
+      for (var i = parts.length - 1; i >= 0; i--) {
+        if (/\S/.test(parts[i])) { parts[i] = '\u202E' + parts[i] + '\u202C'; break; }
+      }
+      return parts.join('');
+    }
+
+    var btIn = document.getElementById('bt-in'), btOut = document.getElementById('bt-out'),
+        btV = document.getElementById('bt-verdict'), btMsg = document.getElementById('bt-msg');
+    var forged = '';
+    function btRun() {
+      var picked = document.querySelector('input[name=bt-mode]:checked');
+      var mode = picked ? picked.value : 'homoglyph';
+      var src = btIn.value;
+      forged = mode === 'homoglyph' ? forgeHomoglyph(src) : mode === 'zerowidth' ? forgeZeroWidth(src) : forgeBidi(src);
+      var res = renderInto(btOut, forged);
+      if (res.flagged) {
+        btV.textContent = 'Forged: renders as an honest string, carries ' + res.flagged +
+          ' hidden codepoint' + (res.flagged === 1 ? '' : 's') + '.';
+        btV.className = 'verdictline dirty';
+      } else {
+        btV.textContent = 'No change (nothing in that input to disguise with this mode).';
+        btV.className = 'verdictline';
+      }
+    }
+    document.getElementById('bt-go').addEventListener('click', btRun);
+    Array.prototype.forEach.call(document.querySelectorAll('input[name=bt-mode]'), function (r) {
+      r.addEventListener('change', btRun);
+    });
+    document.getElementById('bt-copy').addEventListener('click', function () {
+      if (!forged || !navigator.clipboard || !navigator.clipboard.writeText) return;
+      navigator.clipboard.writeText(forged).then(function () {
+        btMsg.textContent = 'copied'; setTimeout(function () { btMsg.textContent = ''; }, 2000);
+      });
+    });
+    document.getElementById('bt-send').addEventListener('click', function () {
+      var x = document.getElementById('in');
+      if (x && forged) { x.value = forged; x.dispatchEvent(new Event('input')); location.hash = '#tool'; }
+    });
+    btRun();
+
+    // ---- safe-paste sandbox (secure-terminal preview) ------------------------
+    var sbIn = document.getElementById('sb-in'), sbRaw = document.getElementById('sb-raw'),
+        sbSafe = document.getElementById('sb-safe'), sbT = document.getElementById('sb-tallies');
+    function sbRun() {
+      var str = sbIn.value;
+      renderInto(sbRaw, str);
+      var safe = OL.toAscii(str);
+      sbSafe.textContent = safe;
+      if (!str) { sbT.textContent = ''; return; }
+      var stripped = Array.from(str).length - Array.from(safe).length;
+      sbT.textContent = stripped
+        ? stripped + ' unsafe codepoint' + (stripped === 1 ? '' : 's') + ' would be refused.'
+        : 'All printable ASCII; a safe terminal accepts it unchanged.';
+    }
+    sbIn.addEventListener('input', sbRun);
+    sbRun();
   })();
 </script>
