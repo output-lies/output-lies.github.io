@@ -1,0 +1,22 @@
+<!--
+  Horizontal logo lockup source for output-lies. AI-Assisted.
+  Rendered headless (transparent) + trimmed to logo-wide.png, used as a single <img> in nav/footer
+  so the symbol+wordmark can never wrap or break apart.
+-->
+<meta charset="utf-8">
+<style>
+  html,body{margin:0;background:transparent}
+  body{display:inline-block}
+  .lock{display:inline-flex;align-items:center;gap:15px;padding:14px 18px;
+    font-family:"DejaVu Sans Mono","Cascadia Code",monospace;font-weight:700;font-size:74px;
+    color:#14161b;letter-spacing:-3.5px;white-space:nowrap}
+  .lock svg{width:82px;height:82px;flex:0 0 auto}
+  .wm .r{color:#d83933;font-style:italic}
+  .wm .tm{font-size:.4em;color:#6b6f76;font-weight:600;vertical-align:super;margin-left:5px}
+</style>
+<body>
+  <div class="lock">
+    <svg viewBox="0 0 26 26" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="22" height="22" rx="6" fill="#14161b"/><rect x="5.5" y="9" width="10.5" height="2.9" rx="1" fill="#cfd3da"/><rect x="9.5" y="14.1" width="10.5" height="2.9" rx="1" fill="#d83933"/></svg>
+    <span class="wm">output <span class="r">lies</span><span class="tm">&trade;</span></span>
+  </div>
+</body>
