@@ -68,6 +68,8 @@
     if (inRange(cp, 0xFE00, 0xFE0F) || inRange(cp, 0xE0100, 0xE01EF))
       return { cls: 'comb', name: 'variation selector', visible: false };
 
+    // combining grapheme joiner is a combining mark but has no glyph
+    if (cp === 0x034F) return { cls: 'comb', name: 'combining grapheme joiner', visible: false };
     // combining marks (Zalgo, overflow, disguise)
     if (inRange(cp, 0x0300, 0x036F) || inRange(cp, 0x1AB0, 0x1AFF) ||
         inRange(cp, 0x1DC0, 0x1DFF) || inRange(cp, 0x20D0, 0x20FF) || inRange(cp, 0xFE20, 0xFE2F))
