@@ -30,7 +30,7 @@ footer .ftag .tm{font-size:.72em;color:var(--muted);font-weight:600;margin-left:
 .nav nav a:hover{color:var(--ink)}
 .nav nav a.cross{color:var(--ink)}
 
-.hero{padding:76px 0 40px}
+.hero{padding:48px 0 40px}
 .kicker{font-family:var(--mono);font-size:.8rem;letter-spacing:.14em;
   text-transform:uppercase;color:var(--accent);margin:0 0 14px}
 .hero h1{font-size:clamp(2.3rem,7vw,4.4rem);line-height:1.02;letter-spacing:-.03em;
