@@ -1,0 +1,41 @@
+# AI-Assisted.
+# Runs the dist-ai web-analyzer test suite against this repo's analyze/analyzer.js.
+# The suite lives in org-ai-assisted/dist-ai (too high-volume for human review);
+# here we only check out both repos as siblings and point OUTPUT_LIES_REPO at this
+# checkout. debian:trixie-slim matches the dist-ai CI runtime.
+name: web-analyzer-tests
+
+on:
+  push:
+    paths:
+      - 'analyze/**'
+      - '.github/workflows/web-analyzer-tests.yml'
+  pull_request:
+    paths:
+      - 'analyze/**'
+      - '.github/workflows/web-analyzer-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  web-analyzer-tests:
+    runs-on: ubuntu-latest
+    container: debian:trixie-slim
+    steps:
+      - name: Install tools
+        run: apt-get update && apt-get install --yes --no-install-recommends git nodejs ca-certificates
+
+      - name: Check out output-lies.github.io
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          path: output-lies
+
+      - name: Check out dist-ai (test suite)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: org-ai-assisted/dist-ai
+          path: dist-ai
+
+      - name: Run web-analyzer-tests
+        run: OUTPUT_LIES_REPO="${GITHUB_WORKSPACE}/output-lies" bash dist-ai/usr/bin/web-analyzer-tests
