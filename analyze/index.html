@@ -53,12 +53,17 @@
   .m-wide{background:#123a52;color:#bfe6ff}
   .m-comb{background:#123a52;color:#bfe6ff}
   .m-other{background:#2a2f45;color:#c0caf5}
+  .m-space{background:#14351f;color:#bfe6c8}
   .mark .g{opacity:.9}
   .legend{display:flex;gap:14px 20px;flex-wrap:wrap;margin:16px 0 0;font-size:.86rem;color:var(--muted)}
   .legend span{display:inline-flex;align-items:center;gap:7px}
   .legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
   .tallies{margin:14px 0 0;font-family:var(--mono);font-size:.9rem;color:#33353a}
   .tallies b{color:var(--accent)}
+  .axtra{margin:16px 0 0;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .axtra button{font:600 .85rem var(--sans);padding:8px 14px;border-radius:8px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer}
+  .axtra button:hover{transform:translateY(-1px)}
+  .cmsg{font-family:var(--mono);font-size:.82rem;color:var(--safe)}
 </style>
 
 <header class="nav">
@@ -103,6 +108,8 @@
       <button data-k="zerowidth">zero-width package</button>
       <button data-k="bidi">bidi filename</button>
       <button data-k="ascii">ASCII lookalike</button>
+      <button data-k="space">no-break spaces</button>
+      <button data-k="combining">combining marks</button>
       <button data-k="clean">clean text</button>
       <button data-k="clear">clear</button>
     </div>
@@ -111,11 +118,16 @@
   <p class="verdictline" id="verdict"></p>
   <div class="xray" id="out" aria-live="polite"></div>
   <p class="tallies" id="tallies"></p>
+  <div class="axtra">
+    <button id="copyascii" type="button">Copy ASCII-only</button>
+    <span class="cmsg" id="copymsg" aria-live="polite"></span>
+  </div>
 
   <div class="legend">
     <span><i style="background:#7a1d1a"></i> bidi override</span>
     <span><i style="background:#5a3a12"></i> zero-width</span>
     <span><i style="background:#3a1030"></i> control byte</span>
+    <span><i style="background:#14351f"></i> deceptive space</span>
     <span><i style="background:#123a52"></i> non-ASCII / homoglyph</span>
   </div>
 
@@ -184,9 +196,11 @@
   </div>
 </footer>
 
+<script src="/analyze/analyzer.js"></script>
 <script>
-  // Client-side only. User input is rendered via DOM text nodes (never innerHTML),
-  // so pasted content can never inject markup.
+  // Client-side only. Classification lives in analyzer.js (shared with the
+  // dist-ai test suite). User input is rendered via DOM text nodes (never
+  // innerHTML), so pasted content can never inject markup.
   (function () {
     var input = document.getElementById('in');
     var out = document.getElementById('out');
@@ -198,46 +212,27 @@
       zerowidth: 'npm install expr\u200Bess',
       bidi: 'Downloaded: report\u202Ecod.exe\u202C',
       ascii: 'git clone https://github.com/exarnple/build-toolkit',
+      space: 'sudo\u00A0rm\u00A0-rf\u00A0/tmp/cache',
+      combining: 'de\u0301ploy\u0300 to\u0308 prod\u0301',
       clean: 'git commit -m "fix typo in README"',
       clear: ''
     };
 
-    function hex(cp) {
-      var h = cp.toString(16).toUpperCase();
-      while (h.length < 4) h = '0' + h;
-      return 'U+' + h;
-    }
-
-    // returns null for plain printable ASCII / ordinary whitespace, else {cls,name,visible}
-    function classify(cp) {
-      if (cp === 0x09 || cp === 0x0A || cp === 0x0D) return null;      // tab/newline
-      if (cp < 0x20 || cp === 0x7F) return {cls:'m-ctrl', name:'C0 control', visible:false};
-      if (cp <= 0x7E) return null;                                      // printable ASCII
-      if (cp >= 0x80 && cp <= 0x9F) return {cls:'m-ctrl', name:'C1 control', visible:false};
-      if (cp === 0x200B || cp === 0x200C || cp === 0x200D || cp === 0x2060 || cp === 0xFEFF)
-        return {cls:'m-zw', name:'zero-width', visible:false};
-      if ((cp >= 0x202A && cp <= 0x202E) || (cp >= 0x2066 && cp <= 0x2069) ||
-          cp === 0x200E || cp === 0x200F || cp === 0x061C)
-        return {cls:'m-bidi', name:'bidi control', visible:false};
-      if (cp >= 0x0400 && cp <= 0x04FF) return {cls:'m-homo', name:'Cyrillic', visible:true};
-      if (cp >= 0x0370 && cp <= 0x03FF) return {cls:'m-homo', name:'Greek', visible:true};
-      if (cp >= 0xFF01 && cp <= 0xFF5E) return {cls:'m-wide', name:'fullwidth', visible:true};
-      if (cp >= 0x0300 && cp <= 0x036F) return {cls:'m-comb', name:'combining mark', visible:true};
-      return {cls:'m-other', name:'non-ASCII', visible:true};
-    }
+    var CLSMAP = { bidi:'m-bidi', zw:'m-zw', ctrl:'m-ctrl', space:'m-space',
+      homo:'m-homo', wide:'m-wide', comb:'m-comb', other:'m-other' };
 
     function chip(ch, cp, info) {
       var s = document.createElement('span');
-      s.className = 'mark ' + info.cls;
-      s.title = info.name + ' ' + hex(cp);
+      s.className = 'mark ' + (CLSMAP[info.cls] || 'm-other');
+      s.title = info.name + ' ' + OL.hex(cp);
       if (info.visible) {
         var g = document.createElement('span');
         g.className = 'g';
         g.textContent = ch;
         s.appendChild(g);
-        s.appendChild(document.createTextNode(' ' + hex(cp)));
+        s.appendChild(document.createTextNode(' ' + OL.hex(cp)));
       } else {
-        s.textContent = hex(cp);
+        s.textContent = OL.hex(cp);
       }
       return s;
     }
@@ -245,41 +240,32 @@
     function render() {
       var str = input.value;
       out.textContent = '';
-      var flagged = 0, counts = {};
-      var chars = Array.from(str);          // iterates by codepoint
-      var runSafe = '';
-      function flushSafe() {
-        if (runSafe) { var t = document.createElement('span'); t.className = 'safe'; t.textContent = runSafe; out.appendChild(t); runSafe = ''; }
-      }
-      chars.forEach(function (ch) {
-        var cp = ch.codePointAt(0);
-        var info = classify(cp);
-        if (!info) { runSafe += ch; return; }
-        flushSafe();
-        out.appendChild(chip(ch, cp, info));
-        flagged++;
-        counts[info.name] = (counts[info.name] || 0) + 1;
+      var res = OL.analyze(str);
+      res.items.forEach(function (it) {
+        if (it.safe !== undefined) {
+          var t = document.createElement('span'); t.className = 'safe'; t.textContent = it.safe;
+          out.appendChild(t);
+        } else {
+          out.appendChild(chip(it.ch, it.cp, it.info));
+        }
       });
-      flushSafe();
 
       if (!str) {
-        verdict.textContent = '';
-        verdict.className = 'verdictline';
-        tallies.textContent = '';
+        verdict.textContent = ''; verdict.className = 'verdictline'; tallies.textContent = '';
         return;
       }
-      if (flagged === 0) {
+      if (res.flagged === 0) {
         verdict.textContent = 'Clean: printable ASCII only. Nothing hidden.';
         verdict.className = 'verdictline clean';
         tallies.textContent = '';
       } else {
-        verdict.textContent = flagged + ' suspicious codepoint' + (flagged === 1 ? '' : 's') + ' found. Do not trust the rendering.';
+        verdict.textContent = res.flagged + ' suspicious codepoint' + (res.flagged === 1 ? '' : 's') +
+          ' found. Do not trust the rendering.';
         verdict.className = 'verdictline dirty';
-        var parts = Object.keys(counts).map(function (k) { return counts[k] + ' ' + k; });
-        tallies.innerHTML = '';
+        var parts = Object.keys(res.counts).map(function (k) { return res.counts[k] + ' ' + k; });
+        tallies.textContent = '';
         tallies.appendChild(document.createTextNode('Breakdown: '));
-        var b = document.createElement('b');
-        b.textContent = parts.join(', ');
+        var b = document.createElement('b'); b.textContent = parts.join(', ');
         tallies.appendChild(b);
       }
     }
@@ -292,6 +278,18 @@
       render();
       input.focus();
     });
+
+    var copyBtn = document.getElementById('copyascii');
+    var copyMsg = document.getElementById('copymsg');
+    if (copyBtn) copyBtn.addEventListener('click', function () {
+      var safe = OL.toAscii(input.value);
+      function ok(m) { copyMsg.textContent = m; setTimeout(function () { copyMsg.textContent = ''; }, 2500); }
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(safe).then(function () { ok('copied ASCII-only version to clipboard'); },
+          function () { input.value = safe; render(); ok('clipboard blocked; stripped in place instead'); });
+      } else { input.value = safe; render(); ok('stripped in place'); }
+    });
+
     render();
   })();
 </script>
