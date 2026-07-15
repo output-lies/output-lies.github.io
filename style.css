@@ -21,8 +21,8 @@ header.nav{position:sticky;top:0;z-index:10;background:rgba(243,242,238,.93);
 .brand .logo{width:1.4em;height:1.4em;flex:0 0 auto}
 .brand b{color:var(--accent)}
 .brand i{font-style:italic}
-.brand .tm{font-size:.5em;color:var(--muted);vertical-align:super;font-weight:600;margin-left:.12em}
-footer .ftag .tm{font-size:.5em;color:var(--muted);vertical-align:super;font-weight:600;margin-left:.1em}
+.brand .tm{font-size:.72em;color:var(--muted);font-weight:600;margin-left:.14em;align-self:flex-start;line-height:1}
+footer .ftag .tm{font-size:.72em;color:var(--muted);font-weight:600;margin-left:.12em;align-self:flex-start;line-height:1}
 .nav nav{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap}
 .nav nav a{font-size:.9rem;color:var(--muted);text-decoration:none}
 .nav nav a:hover{color:var(--ink)}
