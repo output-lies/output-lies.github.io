@@ -1,0 +1,297 @@
+<!--
+  analyze: paste-and-reveal client-side text x-ray. AI-Assisted.
+  Source: https://github.com/output-lies/output-lies.github.io
+  Illustrative teaching aid. All analysis runs in your browser; nothing is sent
+  anywhere. The authoritative tool is Kicksecure's unicode-show.
+-->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ai-disclosure" content="ai-assisted">
+<title>analyze: paste anything, see what is hiding</title>
+<meta name="description" content="Paste any text and this page shows what is really there: bidi overrides, zero-width characters, homoglyphs, control bytes and their codepoints. Runs entirely in your browser.">
+<link rel="canonical" href="https://output-lies.github.io/analyze/">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="output lies">
+<meta property="og:title" content="analyze: paste anything, see what is hiding">
+<meta property="og:description" content="Paste any text and see what is really there: bidi overrides, zero-width, homoglyphs, control bytes and their codepoints. Runs entirely in your browser.">
+<meta property="og:url" content="https://output-lies.github.io/analyze/">
+<meta property="og:image" content="https://output-lies.github.io/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="analyze: paste anything, see what is hiding">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="analyze: paste anything, see what is hiding">
+<meta name="twitter:description" content="Paste any text and see what is really there. Runs entirely in your browser.">
+<meta name="twitter:image" content="https://output-lies.github.io/og.png">
+<meta name="theme-color" content="#f3f2ee">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+<style>
+  .abox{margin:22px 0 0}
+  .abox textarea{width:100%;min-height:120px;resize:vertical;box-sizing:border-box;
+    font:1rem/1.5 var(--mono);color:var(--ink);background:var(--card);
+    border:1px solid var(--line);border-radius:11px;padding:14px 16px}
+  .abox textarea:focus{outline:2px solid var(--accent);border-color:var(--accent)}
+  .samples{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 0}
+  .samples button{font:600 .8rem var(--sans);padding:7px 12px;border-radius:8px;border:1px solid var(--line);
+    background:var(--card);color:var(--ink);cursor:pointer}
+  .samples button:hover{border-color:var(--accent);color:var(--accent)}
+  .verdictline{margin:20px 0 10px;font-family:var(--mono);font-size:.95rem}
+  .verdictline.clean{color:var(--safe)}
+  .verdictline.dirty{color:var(--accent);font-weight:600}
+  /* output: render text as-is, but each flagged codepoint gets a chip. NOT bidi-isolated. */
+  .xray{background:var(--tbg);color:var(--tfg);font:1rem/2 var(--mono);
+    padding:16px;border-radius:11px;border:1px solid #23262e;overflow-x:auto;white-space:pre-wrap;word-break:break-all;min-height:56px}
+  .xray .safe{color:#aeb6c2}
+  .mark{display:inline-block;border-radius:4px;padding:0 4px;margin:0 1px;font-size:.82em;font-weight:700;
+    vertical-align:baseline;unicode-bidi:isolate;white-space:nowrap}
+  .m-bidi{background:#7a1d1a;color:#ffd9d6}
+  .m-zw{background:#5a3a12;color:#ffe6bf}
+  .m-ctrl{background:#3a1030;color:#f6c8ff}
+  .m-homo{background:#123a52;color:#bfe6ff}
+  .m-wide{background:#123a52;color:#bfe6ff}
+  .m-comb{background:#123a52;color:#bfe6ff}
+  .m-other{background:#2a2f45;color:#c0caf5}
+  .mark .g{opacity:.9}
+  .legend{display:flex;gap:14px 20px;flex-wrap:wrap;margin:16px 0 0;font-size:.86rem;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
+  .tallies{margin:14px 0 0;font-family:var(--mono);font-size:.9rem;color:#33353a}
+  .tallies b{color:var(--accent)}
+</style>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/"><img class="brandmark" src="/logo-wide.png" width="564" height="77" alt="output lies"></a>
+    <span class="status" title="This page is AI-generated and pending human review">needs human review</span>
+    <nav>
+      <a href="/tools/">Terminal</a>
+      <a href="/git-diffs-lie/">Diffs</a>
+      <a href="/paste/">Paste</a>
+      <a href="/analyze/" class="active">Analyze</a>
+      <a href="/quiz/">Quiz</a>
+    </nav>
+  </div>
+  <div class="subnav"><div class="wrap">
+    <a href="#tool">The x-ray</a>
+    <a href="#test">Test your own tool</a>
+  </div></div>
+</header>
+
+<div class="notice"><div class="wrap">
+  <b>Unreviewed draft, work in progress.</b> This page is AI-generated and pending human review.
+</div></div>
+
+<main>
+<section class="hero"><div class="wrap">
+  <p class="kicker">Bring your own text</p>
+  <h1>Paste anything. See what is <span class="u">hiding</span>.</h1>
+  <p class="sub">Type or paste a URL, a filename, a diff line, a copied command. This surfaces every codepoint that
+    is not plain printable ASCII: bidi overrides, zero-width characters, homoglyphs, control bytes. It runs
+    entirely in your browser; nothing is transmitted.</p>
+</div></section>
+
+<section class="cat" id="tool"><div class="wrap">
+  <h2 class="catname">The x-ray</h2>
+  <p class="catdesc">Paste below, or load a trap. Flagged codepoints are chipped inline.</p>
+
+  <div class="abox">
+    <textarea id="in" spellcheck="false" placeholder="Paste text here..."></textarea>
+    <div class="samples" id="samples">
+      <button data-k="homoglyph">homoglyph URL</button>
+      <button data-k="zerowidth">zero-width package</button>
+      <button data-k="bidi">bidi filename</button>
+      <button data-k="ascii">ASCII lookalike</button>
+      <button data-k="clean">clean text</button>
+      <button data-k="clear">clear</button>
+    </div>
+  </div>
+
+  <p class="verdictline" id="verdict"></p>
+  <div class="xray" id="out" aria-live="polite"></div>
+  <p class="tallies" id="tallies"></p>
+
+  <div class="legend">
+    <span><i style="background:#7a1d1a"></i> bidi override</span>
+    <span><i style="background:#5a3a12"></i> zero-width</span>
+    <span><i style="background:#3a1030"></i> control byte</span>
+    <span><i style="background:#123a52"></i> non-ASCII / homoglyph</span>
+  </div>
+
+  <div class="limits" style="margin-top:22px">
+    <h4>Illustrative aid, not the authority</h4>
+    <p>This is a teaching demo written in JavaScript. It flags codepoint classes; it does not decide intent, and
+    its homoglyph heuristic is coarse (it flags whole non-ASCII scripts, not confusable pairs). For real work use
+    <a href="https://www.kicksecure.com/wiki/Unicode-show"><code>unicode-show</code></a>, which is what this page imitates.</p>
+  </div>
+</div></section>
+
+<section class="cat" id="test"><div class="wrap">
+  <h2 class="catname">Test your own tool</h2>
+  <p class="catdesc">The interesting question is not this page. It is whether the tools you already trust warn you.</p>
+  <div class="issue">
+    <p>Load a trap above, copy it, and paste it into the things you make security decisions in. A safe tool either
+    refuses to hide the character or flags it; a deceptive one renders the lie silently.</p>
+    <ul class="repos" style="margin-top:10px">
+      <li><b>Your terminal:</b> does <code>cat</code> a file named with the bidi trap show the real name? (Kicksecure's
+        <code>stcat</code> and <code>unicode-show</code> do.)</li>
+      <li><b>Your editor / IDE:</b> paste the bidi filename or the homoglyph URL. Does it warn, or render it clean?
+        (Post-Trojan-Source, many now warn on bidi controls.)</li>
+      <li><b>Your code review (web):</b> open a diff containing the zero-width or bidi payload. GitHub and GitLab now
+        surface bidi warnings; older or self-hosted tools may not.</li>
+      <li><b>Your chat / issue tracker:</b> does the homoglyph URL become a clickable link to the spoofed domain?</li>
+    </ul>
+    <p class="toolnote">The lesson is not "distrust everything". It is "know which of your tools surface bytes and
+    which render lies", and route anything security-relevant through the ones that surface.</p>
+  </div>
+</div></section>
+</main>
+
+<footer>
+  <div class="wrap ftop">
+    <div class="fbrand">
+      <span class="ftag"><img class="brandmark" src="/logo-wide.png" width="564" height="77" alt="output lies"></span>
+      <p>Neutralize. Surface. Fail closed.</p>
+    </div>
+    <nav class="fcols">
+      <div class="fcol">
+        <h4>Explore</h4>
+        <a href="/">Home</a>
+        <a href="/tools/">Terminal</a>
+        <a href="/git-diffs-lie/">Diffs</a>
+        <a href="/paste/">Paste</a>
+        <a href="/analyze/">Analyze</a>
+        <a href="/quiz/">Quiz</a>
+      </div>
+      <div class="fcol">
+        <h4>Source</h4>
+        <a href="https://github.com/output-lies/output-lies.github.io">output-lies.github.io</a>
+        <a href="https://github.com/output-lies/git-diffs-lie">git-diffs-lie</a>
+        <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a>
+      </div>
+      <div class="fcol">
+        <h4>Docs</h4>
+        <a href="https://www.kicksecure.com/wiki/Unicode-show">unicode-show</a>
+        <a href="https://www.kicksecure.com/wiki/Stdisplay">stdisplay</a>
+      </div>
+    </nav>
+  </div>
+  <div class="wrap fbot">
+    <span class="fcopy">&copy; 2026 <a href="https://www.encrypted-support.com">ENCRYPTED SUPPORT LLC</a></span>
+    <span class="fcopy">Operated by <a href="https://github.com/adrelanos">@adrelanos</a></span>
+    <span class="fcopy sp"><a href="https://org-ai-assisted.github.io">Built with AI assistance</a></span>
+  </div>
+</footer>
+
+<script>
+  // Client-side only. User input is rendered via DOM text nodes (never innerHTML),
+  // so pasted content can never inject markup.
+  (function () {
+    var input = document.getElementById('in');
+    var out = document.getElementById('out');
+    var verdict = document.getElementById('verdict');
+    var tallies = document.getElementById('tallies');
+
+    var SAMPLES = {
+      homoglyph: 'https://payp\u0430l.com/account/login',
+      zerowidth: 'npm install expr\u200Bess',
+      bidi: 'Downloaded: report\u202Ecod.exe\u202C',
+      ascii: 'git clone https://github.com/exarnple/build-toolkit',
+      clean: 'git commit -m "fix typo in README"',
+      clear: ''
+    };
+
+    function hex(cp) {
+      var h = cp.toString(16).toUpperCase();
+      while (h.length < 4) h = '0' + h;
+      return 'U+' + h;
+    }
+
+    // returns null for plain printable ASCII / ordinary whitespace, else {cls,name,visible}
+    function classify(cp) {
+      if (cp === 0x09 || cp === 0x0A || cp === 0x0D) return null;      // tab/newline
+      if (cp < 0x20 || cp === 0x7F) return {cls:'m-ctrl', name:'C0 control', visible:false};
+      if (cp <= 0x7E) return null;                                      // printable ASCII
+      if (cp >= 0x80 && cp <= 0x9F) return {cls:'m-ctrl', name:'C1 control', visible:false};
+      if (cp === 0x200B || cp === 0x200C || cp === 0x200D || cp === 0x2060 || cp === 0xFEFF)
+        return {cls:'m-zw', name:'zero-width', visible:false};
+      if ((cp >= 0x202A && cp <= 0x202E) || (cp >= 0x2066 && cp <= 0x2069) ||
+          cp === 0x200E || cp === 0x200F || cp === 0x061C)
+        return {cls:'m-bidi', name:'bidi control', visible:false};
+      if (cp >= 0x0400 && cp <= 0x04FF) return {cls:'m-homo', name:'Cyrillic', visible:true};
+      if (cp >= 0x0370 && cp <= 0x03FF) return {cls:'m-homo', name:'Greek', visible:true};
+      if (cp >= 0xFF01 && cp <= 0xFF5E) return {cls:'m-wide', name:'fullwidth', visible:true};
+      if (cp >= 0x0300 && cp <= 0x036F) return {cls:'m-comb', name:'combining mark', visible:true};
+      return {cls:'m-other', name:'non-ASCII', visible:true};
+    }
+
+    function chip(ch, cp, info) {
+      var s = document.createElement('span');
+      s.className = 'mark ' + info.cls;
+      s.title = info.name + ' ' + hex(cp);
+      if (info.visible) {
+        var g = document.createElement('span');
+        g.className = 'g';
+        g.textContent = ch;
+        s.appendChild(g);
+        s.appendChild(document.createTextNode(' ' + hex(cp)));
+      } else {
+        s.textContent = hex(cp);
+      }
+      return s;
+    }
+
+    function render() {
+      var str = input.value;
+      out.textContent = '';
+      var flagged = 0, counts = {};
+      var chars = Array.from(str);          // iterates by codepoint
+      var runSafe = '';
+      function flushSafe() {
+        if (runSafe) { var t = document.createElement('span'); t.className = 'safe'; t.textContent = runSafe; out.appendChild(t); runSafe = ''; }
+      }
+      chars.forEach(function (ch) {
+        var cp = ch.codePointAt(0);
+        var info = classify(cp);
+        if (!info) { runSafe += ch; return; }
+        flushSafe();
+        out.appendChild(chip(ch, cp, info));
+        flagged++;
+        counts[info.name] = (counts[info.name] || 0) + 1;
+      });
+      flushSafe();
+
+      if (!str) {
+        verdict.textContent = '';
+        verdict.className = 'verdictline';
+        tallies.textContent = '';
+        return;
+      }
+      if (flagged === 0) {
+        verdict.textContent = 'Clean: printable ASCII only. Nothing hidden.';
+        verdict.className = 'verdictline clean';
+        tallies.textContent = '';
+      } else {
+        verdict.textContent = flagged + ' suspicious codepoint' + (flagged === 1 ? '' : 's') + ' found. Do not trust the rendering.';
+        verdict.className = 'verdictline dirty';
+        var parts = Object.keys(counts).map(function (k) { return counts[k] + ' ' + k; });
+        tallies.innerHTML = '';
+        tallies.appendChild(document.createTextNode('Breakdown: '));
+        var b = document.createElement('b');
+        b.textContent = parts.join(', ');
+        tallies.appendChild(b);
+      }
+    }
+
+    input.addEventListener('input', render);
+    document.getElementById('samples').addEventListener('click', function (e) {
+      var btn = e.target.closest('button');
+      if (!btn) return;
+      input.value = SAMPLES[btn.getAttribute('data-k')] || '';
+      render();
+      input.focus();
+    });
+    render();
+  })();
+</script>
