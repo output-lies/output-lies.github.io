@@ -209,6 +209,23 @@
     <p class="toolnote">The lesson is not "distrust everything". It is "know which of your tools surface bytes and
     which render lies", and route anything security-relevant through the ones that surface.</p>
   </div>
+
+  <div style="overflow-x:auto;margin-top:8px">
+  <table class="tbl">
+    <thead><tr><th>Tool (defaults, 2026)</th><th>Bidi override</th><th>Zero-width</th><th>Homoglyph</th></tr></thead>
+    <tbody>
+      <tr><td>VS Code</td><td>warns</td><td>warns</td><td>warns</td></tr>
+      <tr><td>GitHub / GitLab web diff</td><td>warns (banner)</td><td>renders silently</td><td>renders silently</td></tr>
+      <tr><td>Plain terminal (xterm, gnome-terminal)</td><td>applies the override</td><td>invisible</td><td>renders</td></tr>
+      <tr><td>Editor without a Unicode lint</td><td>renders</td><td>invisible</td><td>renders</td></tr>
+      <tr><td><code>unicode-show</code> / <code>stcat</code></td><td>detects / neutralizes</td><td>detects / neutralizes</td><td>detects / restricts</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="toolnote">Defaults as of 2026-07; behaviour varies by version and configuration, which is exactly why
+    the list above says <b>test your own</b>. VS Code has flagged invisible and confusable characters by default
+    since its 1.63 "unicode highlighting"; GitHub and GitLab added bidi warning banners after
+    <a href="https://trojansource.codes/">Trojan Source</a>. The row that never lies to you is the last one.</p>
 </div></section>
 </main>
 
