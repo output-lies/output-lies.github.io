@@ -141,8 +141,8 @@
       <em>displays</em> without changing how the compiler <em>reads</em> it. A reviewer sees an early
       <code>return</code> or a harmless comment; the compiler sees logic that ships a backdoor. It hit nearly
       every compiler and language at once, because the deception lives in the text layer, below the language.</p>
-    <p class="backdoor"><b>The fix:</b> compilers and linters now warn on bidi controls in source; GitHub and
-      GitLab show a warning banner on affected files. Catch it before merge with <code>unicode-show</code> and
+    <p class="backdoor"><b>The fix:</b> compilers and linters now warn on bidi controls in source; GitHub shows a
+      warning banner on affected files and GitLab highlights the characters inline. Catch it before merge with <code>unicode-show</code> and
       <code>check-ref-commits-for-unicode</code>.</p>
     <p class="wild"><b>Source:</b> <a href="https://trojansource.codes/">trojansource.codes</a>
       (CVE-2021-42574, CVE-2021-42694).</p>
