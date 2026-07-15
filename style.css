@@ -17,8 +17,11 @@ a{color:inherit}
 header.nav{position:sticky;top:0;z-index:10;background:rgba(243,242,238,.93);
   backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
 .nav > .wrap{display:flex;align-items:center;gap:18px;height:56px}
-.brand{font-family:var(--mono);font-weight:700;letter-spacing:-.02em;text-decoration:none;display:inline-flex;align-items:center;gap:9px}
+.brand{font-family:var(--mono);font-weight:700;letter-spacing:-.02em;text-decoration:none;display:inline-block}
 .brand b{color:var(--accent)}
+.brand i{font-style:italic}
+.brand .tm{font-size:.5em;color:var(--muted);vertical-align:super;font-weight:600;margin-left:.12em}
+footer .ftag .tm{font-size:.5em;color:var(--muted);vertical-align:super;font-weight:600;margin-left:.1em}
 .nav nav{margin-left:auto;display:flex;gap:16px;flex-wrap:wrap}
 .nav nav a{font-size:.9rem;color:var(--muted);text-decoration:none}
 .nav nav a:hover{color:var(--ink)}
@@ -225,7 +228,8 @@ section{scroll-margin-top:0}
 .catname:hover a.h-anchor::after,.outro h2:hover a.h-anchor::after,a.h-anchor:focus::after{opacity:.5}
 
 /* footer brand: logo + wordmark row */
-footer .fbrand .ftag{display:inline-flex;align-items:center;gap:8px}
+footer .fbrand .ftag{display:inline-block}
+footer .fbrand .ftag i{font-style:italic}
 footer .ftag .logo{display:block;flex:0 0 auto}
 
 /* ===================== polish pass ===================== */
