@@ -88,9 +88,16 @@ code,.term{unicode-bidi:isolate}
 .catch{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--line);
   font-size:.95rem;color:#33353a}
 .catch b{color:var(--accent)}
-.stfirst{margin:0 0 20px;padding:12px 16px;border-left:3px solid var(--safe);
-  background:rgba(31,138,84,.07);border-radius:0 6px 6px 0;font-size:.98rem}
-.stfirst a{color:var(--safe);font-weight:700}
+/* standardized cross-reference note (was a green "safe" box; neutral now so the
+   three secure-terminal notes read as consistent asides, not repeated banners) */
+.stfirst{margin:0 0 20px;padding:12px 16px;border:1px solid var(--line);
+  background:var(--card);border-radius:10px;font-size:.98rem}
+.stfirst a{color:var(--accent);font-weight:700}
+
+/* table caption used to fold a lead-in into the tools table itself */
+.tbl caption{caption-side:top;text-align:left;margin:0 0 10px;padding:0;
+  color:#3a3c41;font-size:.98rem}
+.tbl caption a{color:var(--accent);font-weight:700}
 
 .tbl{width:100%;border-collapse:collapse;margin:6px 0 0;font-size:.92rem}
 .tbl th,.tbl td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
@@ -128,6 +135,10 @@ footer .fcol{display:flex;flex-direction:column;gap:9px}
 footer .fcol h4{margin:0 0 3px;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
 footer .fcol a{color:var(--ink);text-decoration:none;font-size:.88rem}
 footer .fcol a:hover{color:var(--accent)}
+/* self-link: the current site appears in the uniform Family list but is not
+   clickable and is marked as the current page. */
+footer .fcol a.self{color:var(--muted);pointer-events:none;cursor:default;text-decoration:none}
+footer .fcol a.self::after{content:" (this site)";font-size:.8em;opacity:.7}
 footer .fbot{display:flex;gap:20px;flex-wrap:wrap;padding:16px 0 44px;border-top:1px solid var(--line);align-items:center}
 footer .fbot .sp{margin-left:auto}
 footer .fcopy{color:var(--muted);font-size:.84rem}

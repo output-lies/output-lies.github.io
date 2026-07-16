@@ -294,13 +294,13 @@ src/pay.py
 <section class="cat" id="family"><div class="wrap">
   <h2 class="catname"><a class="h-anchor" href="#family">The family</a></h2>
   <p class="catdesc">Safe drop-in replacements for the usual text commands.</p>
-  <p class="stfirst"><a href="https://secure-terminal.github.io">secure-terminal</a>
-    is the interactive terminal that builds all of this in: it interprets no
-    escape sequences, sanitizes what you paste, and can strip, show or reveal
-    unicode live. The commands below are the scriptable CLI tools for one-off
-    audits and pipelines.</p>
   <article class="issue">
     <table class="tbl">
+      <caption><a href="https://secure-terminal.github.io">secure-terminal</a>
+        is the interactive terminal that builds all of this in: it interprets no
+        escape sequences, sanitizes what you paste, and can strip, show or reveal
+        unicode live. The commands below are the scriptable CLI counterparts for
+        one-off audits and pipelines.</caption>
       <thead><tr><th>Tool</th><th>Replaces</th><th>Does</th></tr></thead>
       <tbody>
         <tr><td><code>unicode-show</code></td><td><code>cat</code> (audit)</td><td>reveals every suspicious codepoint by name; exit 0/1/2</td></tr>
@@ -460,7 +460,6 @@ ERROR: breach detected<span class="neut">_</span>INFO: system all-good!</pre>
         <a href="/paste/">Paste</a>
         <a href="/analyze/">Analyze</a>
         <a href="/quiz/">Quiz</a>
-        <a href="https://secure-terminal.github.io">secure-terminal</a>
       </div>
       <div class="fcol">
         <h4>Source</h4>
@@ -473,6 +472,12 @@ ERROR: breach detected<span class="neut">_</span>INFO: system all-good!</pre>
         <h4>Docs</h4>
         <a href="https://www.kicksecure.com/wiki/Unicode-show">unicode-show</a><a class="arch" href="https://web.archive.org/web/20260311005257/https://www.kicksecure.com/wiki/Unicode-show" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
         <a href="https://www.kicksecure.com/wiki/Stdisplay">stdisplay</a><a class="arch" href="https://web.archive.org/web/20260706215954/https://www.kicksecure.com/wiki/Stdisplay" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+      </div>
+      <div class="fcol">
+        <h4>Family</h4>
+        <a class="self" href="https://output-lies.github.io" aria-current="page">output lies</a>
+        <a href="https://secure-terminal.github.io">secure-terminal</a>
+        <a href="https://org-ai-assisted.github.io">org-ai-assisted</a>
       </div>
     </nav>
   </div>
@@ -527,23 +532,6 @@ ERROR: breach detected<span class="neut">_</span>INFO: system all-good!</pre>
       if (md) md.addEventListener('click', function () {
         var text = '[' + document.title + '](' + location.href + ')';
         if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { flash('markdown copied'); });
-      });
-    })();
-    /* Copy buttons on the reproduce boxes -- a progressive enhancement; the
-       command is selectable without it. Same behaviour as git-diffs-lie. */
-    (function () {
-      if (!navigator.clipboard) return;
-      document.querySelectorAll('.copybox').forEach(function (box) {
-        var cmd = box.querySelector('.cmd'), btn = box.querySelector('.copybtn');
-        if (!cmd || !btn) return;
-        btn.hidden = false;
-        btn.addEventListener('click', function () {
-          navigator.clipboard.writeText(cmd.textContent).then(function () {
-            var prev = btn.textContent;
-            btn.textContent = 'Copied'; btn.classList.add('ok');
-            setTimeout(function () { btn.textContent = prev; btn.classList.remove('ok'); }, 1200);
-          });
-        });
       });
     })();
   </script>
