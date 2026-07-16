@@ -96,6 +96,11 @@
   <h2 class="catname"><a class="h-anchor" href="#unicode-show">Reveal</a></h2>
   <p class="catdesc">Hidden, invisible and look-alike characters are the whole
     point of a Trojan-Source attack, and <code>cat</code> never mentions them.</p>
+  <p class="stfirst"><a href="https://secure-terminal.github.io">secure-terminal</a>
+    does this live: its Reveal mode shows every non-ASCII byte as a
+    <code>&lt;U+XXXX&gt;</code> badge as output arrives, so you see what a program
+    printed without re-running anything. The <code>unicode-show</code> command
+    below is the scriptable, one-file-at-a-time counterpart.</p>
 
   <article class="issue">
     <span class="tag">cat vs unicode-show</span>
@@ -216,6 +221,10 @@ src/pay.py
     docs</a><a class="arch" href="https://web.archive.org/web/20260706215954/https://www.kicksecure.com/wiki/Stdisplay" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> put it plainly: "Dangerous terminal control codes can change what
     you see, hide text, alter the prompt, or otherwise mislead you."
     <code>stcat</code> is <code>cat</code> that refuses to be fooled.</p>
+  <p class="stfirst"><a href="https://secure-terminal.github.io">secure-terminal</a>
+    is <code>stcat</code> for your whole session: in its default line mode every
+    escape sequence in program output is neutralized and only safe colours are
+    kept, so nothing a program prints can repaint or hide what you see.</p>
 
   <article class="issue">
     <span class="tag">cat vs stcat</span>
@@ -283,6 +292,11 @@ src/pay.py
 <section class="cat" id="family"><div class="wrap">
   <h2 class="catname"><a class="h-anchor" href="#family">The family</a></h2>
   <p class="catdesc">Safe drop-in replacements for the usual text commands.</p>
+  <p class="stfirst"><a href="https://secure-terminal.github.io">secure-terminal</a>
+    is the interactive terminal that builds all of this in: it interprets no
+    escape sequences, sanitizes what you paste, and can strip, show or reveal
+    unicode live. The commands below are the scriptable CLI tools for one-off
+    audits and pipelines.</p>
   <article class="issue">
     <table class="tbl">
       <thead><tr><th>Tool</th><th>Replaces</th><th>Does</th></tr></thead>
