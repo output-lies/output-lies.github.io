@@ -66,7 +66,7 @@
     <a class="btn ghost" href="https://github.com/Kicksecure/helper-scripts">Get them</a>
     <a class="btn ghost" href="/git-diffs-lie/">See the examples</a>
   </div>
-  <p class="coverage">reveal hidden Unicode &middot; neutralize escape sequences &middot; sanitize untrusted strings</p>
+  <p class="coverage">reveal hidden Unicode / neutralize escape sequences / sanitize untrusted strings</p>
 </div></section>
 
 
@@ -179,7 +179,7 @@ src/pay.py
     opens it. <code>text-safety-scan</code> runs every safety check in one pass.</p>
 
   <article class="issue">
-    <span class="tag">text-safety-scan &middot; text-safety-scan-find</span>
+    <span class="tag">text-safety-scan / text-safety-scan-find</span>
     <h3><a class="cardanchor" href="#scan">One command, every check</a></h3>
     <p class="lead">A single run fires all configured plugins: today
       <code>unicode-show</code> plus <code>modeline-show</code>, which flags
@@ -339,7 +339,7 @@ src/pay.py
     <span class="tag evi-rec">Proof of concept</span>
     <span class="tag">Escape-sequence RCE</span>
     <h3><a class="cardanchor" href="#escape-rce">Merely viewing a file can run commands</a></h3>
-    <p class="lead">A terminal is not only a display. Some escape sequences ask it a <em>question</em> &mdash; report the window title, a DECRQSS status, the cursor position &mdash; and the terminal answers the only way it can: by writing the reply to its own input, exactly as if you had typed it. A hostile file can set that answer to a command and then ask for it back, so merely <code>cat</code>ing a poisoned log or README (or <code>tail -f</code>-ing a booby-trapped log, even one arriving over SSH) injects keystrokes, and once a newline rides along, a full command runs.</p>
+    <p class="lead">A terminal is not only a display. Some escape sequences ask it a <em>question</em> - report the window title, a DECRQSS status, the cursor position - and the terminal answers the only way it can: by writing the reply to its own input, exactly as if you had typed it. A hostile file can set that answer to a command and then ask for it back, so merely <code>cat</code>ing a poisoned log or README (or <code>tail -f</code>-ing a booby-trapped log, even one arriving over SSH) injects keystrokes, and once a newline rides along, a full command runs.</p>
     <p class="backdoor"><b>Backdoor path:</b> ship a poisoned log, README, or git repo; when a developer or admin views it in a vulnerable terminal, attacker bytes are echoed into the shell and run.</p>
     <p class="onrecord"><b>Proof of concept:</b> a well-documented class: iTerm2 <a href="https://nvd.nist.gov/vuln/detail/CVE-2019-9535">CVE-2019-9535</a><a class="arch" href="https://web.archive.org/web/20260414161101/https://nvd.nist.gov/vuln/detail/CVE-2019-9535" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> and <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-45872">CVE-2022-45872</a><a class="arch" href="https://web.archive.org/web/20260102055000/https://nvd.nist.gov/vuln/detail/CVE-2022-45872" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> (RCE), xterm <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-27135">CVE-2021-27135</a><a class="arch" href="https://web.archive.org/web/20260312102057/https://nvd.nist.gov/vuln/detail/CVE-2021-27135" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, Windows Terminal <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-44702">CVE-2022-44702</a><a class="arch" href="https://web.archive.org/web/20251210235445/https://nvd.nist.gov/vuln/detail/CVE-2022-44702" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, and the <a href="https://dgl.cx/2023/09/ansi-terminal-security">ten CVEs</a><a class="arch" href="https://web.archive.org/web/20260617084902/https://dgl.cx/2023/09/ansi-terminal-security" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> David Leadbeater catalogued in 2023. And it keeps recurring: iTerm2 <a href="https://nvd.nist.gov/vuln/detail/CVE-2024-38396">CVE-2024-38396</a> and the brand-new terminal <a href="https://dgl.cx/2024/12/ghostty-terminal-title">Ghostty (CVE-2024-56803)</a> were both hit by the same window-title-into-keystrokes trick in 2024, with a public proof of concept that opens the calculator from a single <code>cat</code>. The origin paper is <a href="https://hdm.io/writing/termulation.txt">HD Moore's "Terminal Emulator Security Issues" (2003)</a><a class="arch" href="https://web.archive.org/web/20260617084903/https://hdm.io/writing/termulation.txt" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>; see also <a href="https://www.cyberark.com/resources/threat-research-blog/dont-trust-this-title-abusing-terminal-emulators-with-ansi-escape-characters">CyberArk</a><a class="arch" href="https://web.archive.org/web/20260511163824/https://www.cyberark.com/resources/threat-research-blog/dont-trust-this-title-abusing-terminal-emulators-with-ansi-escape-characters" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>. All responsibly disclosed; none observed in the wild.</p>
     <figure class="shot">
@@ -370,12 +370,12 @@ src/pay.py
   <p class="catdesc">Code review is just reading untrusted text with extra steps.
     The same neutralization drives the safe git review tools.</p>
   <article class="issue">
-    <h3><a class="cardanchor" href="#git-review">git-meld &middot; git-diff-review &middot; git-kdiff3</a></h3>
+    <h3><a class="cardanchor" href="#git-review">git-meld / git-diff-review / git-kdiff3</a></h3>
     <p class="lead">External diff drivers that neutralize, surface and fail
       closed on every trick a change can carry: content, filename, mode,
       symlink, submodule, ref name. See them, side by side, issue by issue.</p>
     <p class="toolnote"><a href="/git-diffs-lie/">Open the examples
-      &rarr;</a> &nbsp; or grab the tools in
+      -&gt;</a> &nbsp; or grab the tools in
       <a href="https://github.com/Kicksecure/developer-meta-files">developer-meta-files</a><a class="arch" href="https://web.archive.org/web/20260219201723/https://github.com/Kicksecure/developer-meta-files" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.</p>
   </article>
 </div></section>

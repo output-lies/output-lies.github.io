@@ -94,7 +94,7 @@
   <h1>Spot the <span class="u">lie</span>.</h1>
   <p class="sub">Each item is a real string as your terminal, browser or code review would render it.
     Decide: is it honest, or is it lying to you? Then reveal the raw bytes. No score is sent anywhere; it is all in your browser.</p>
-  <p class="coverage">6 items &middot; homoglyphs &middot; zero-width &middot; bidi override</p>
+  <p class="coverage">6 items / homoglyphs / zero-width / bidi override</p>
 </div></section>
 
 <section class="cat" id="quiz"><div class="wrap">
@@ -102,7 +102,7 @@
   <p class="catdesc">Read what is shown. Choose. Reveal.</p>
 
   <div class="q" data-answer="lie">
-    <div class="qn">Item 1 &middot; a link in an email</div>
+    <div class="qn">Item 1 / a link in an email</div>
     <h3>You are asked to log in here. Trust it?</h3>
     <div class="artifact" dir="ltr">https://ex&#x0430;mple.org/account/login</div>
     <div class="qopts">
@@ -118,7 +118,7 @@
   </div>
 
   <div class="q" data-answer="lie">
-    <div class="qn">Item 2 &middot; an install command</div>
+    <div class="qn">Item 2 / an install command</div>
     <h3>A README tells you to run this. Is it the package you think?</h3>
     <div class="artifact" dir="ltr">npm install expr&#x200B;ess</div>
     <div class="qopts">
@@ -128,13 +128,13 @@
     <div class="reveal">
       <span class="verdict"></span>
       <p>A <span class="cp">U+200B ZERO WIDTH SPACE</span> sits between <code>expr</code> and <code>ess</code>.
-      The package name is not <code>express</code> but <code>expr&#x200B;ess</code> &mdash; a typosquat that is
+      The package name is not <code>express</code> but <code>expr&#x200B;ess</code> - a typosquat that is
       pixel-identical to the real thing and can be registered separately.</p>
     </div>
   </div>
 
   <div class="q" data-answer="lie">
-    <div class="qn">Item 3 &middot; a downloaded file</div>
+    <div class="qn">Item 3 / a downloaded file</div>
     <h3>Your downloads folder shows this. A document, right?</h3>
     <div class="artifact" dir="ltr">Downloaded: report&#x202E;cod.exe&#x202C;</div>
     <div class="qopts">
@@ -144,13 +144,13 @@
     <div class="reveal">
       <span class="verdict"></span>
       <p>A <span class="cp">U+202E RIGHT-TO-LEFT OVERRIDE</span> after <code>report</code> flips the display of
-      <code>cod.exe</code> so it reads <code>exe.doc</code>. The real filename ends in <code>.exe</code> &mdash;
+      <code>cod.exe</code> so it reads <code>exe.doc</code>. The real filename ends in <code>.exe</code> -
       an executable wearing a document's name.</p>
     </div>
   </div>
 
   <div class="q" data-answer="safe">
-    <div class="qn">Item 4 &middot; a commit command</div>
+    <div class="qn">Item 4 / a commit command</div>
     <h3>Honest, or hiding something?</h3>
     <div class="artifact" dir="ltr">git commit -m "fix typo in README"</div>
     <div class="qopts">
@@ -159,13 +159,13 @@
     </div>
     <div class="reveal">
       <span class="verdict"></span>
-      <p>Honest. Pure ASCII, nothing hidden &mdash; exactly what it looks like. Not everything is a trap, and a
+      <p>Honest. Pure ASCII, nothing hidden - exactly what it looks like. Not everything is a trap, and a
       tool that cried wolf on this would be useless. The skill is telling this apart from items 1 to 3.</p>
     </div>
   </div>
 
   <div class="q" data-answer="lie">
-    <div class="qn">Item 5 &middot; a repository URL</div>
+    <div class="qn">Item 5 / a repository URL</div>
     <h3>No Unicode this time. Still, look closely.</h3>
     <div class="artifact" dir="ltr">git clone https://github.com/exarnple/build-toolkit</div>
     <div class="qopts">
@@ -174,14 +174,14 @@
     </div>
     <div class="reveal">
       <span class="verdict"></span>
-      <p>Lying &mdash; with plain ASCII. <code>exarnple</code> is e&#8209;x&#8209;a&#8209;<b>r</b>&#8209;<b>n</b>&#8209;p&#8209;l&#8209;e:
+      <p>Lying - with plain ASCII. <code>exarnple</code> is e-x-a-<b>r</b>-<b>n</b>-p-l-e:
       the <code>r</code>+<code>n</code> reads as <code>m</code>. Homoglyph attacks do not need Unicode; the human
       visual system does the work.</p>
     </div>
   </div>
 
   <div class="q" data-answer="safe">
-    <div class="qn">Item 6 &middot; a deploy command</div>
+    <div class="qn">Item 6 / a deploy command</div>
     <h3>Last one. Honest, or lying?</h3>
     <div class="artifact" dir="ltr">scp deploy.tar.gz web01:/var/www/releases/</div>
     <div class="qopts">
@@ -191,7 +191,7 @@
     <div class="reveal">
       <span class="verdict"></span>
       <p>Honest. Plain ASCII path and host, exactly as shown. Two of six were clean on purpose: the point is not
-      "everything lies", it is "you cannot tell by looking &mdash; you have to check the bytes".</p>
+      "everything lies", it is "you cannot tell by looking - you have to check the bytes".</p>
     </div>
   </div>
 
@@ -216,8 +216,8 @@
     instead of what it renders to. Paste any of them into the
     <a href="/analyze/">Analyze</a> page to see the codepoints, or use
     <a href="https://www.kicksecure.com/wiki/Unicode-show"><code>unicode-show</code></a> on the command line.
-    The rule is small: <b>never trust rendered text for a security decision</b> &mdash; a filename, a URL, a diff,
-    a pasted command &mdash; without surfacing its raw bytes first.</p>
+    The rule is small: <b>never trust rendered text for a security decision</b> - a filename, a URL, a diff,
+    a pasted command - without surfacing its raw bytes first.</p>
   </div>
 </div></section>
 </main>
