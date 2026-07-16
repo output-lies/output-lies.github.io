@@ -47,6 +47,7 @@
     <a href="#stcat">Neutralize</a>
     <a href="#sanitize">Sanitize</a>
     <a href="#record">Proof of concept</a>
+    <a href="#faq">FAQ</a>
   </div></div>
 </header>
 
@@ -409,6 +410,38 @@ ERROR: breach detected<span class="neut">_</span>INFO: system all-good!</pre>
       -&gt;</a> &nbsp; or grab the tools in
       <a href="https://github.com/Kicksecure/developer-meta-files">developer-meta-files</a><a class="arch" href="https://web.archive.org/web/20260219201723/https://github.com/Kicksecure/developer-meta-files" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.</p>
   </article>
+</div></section>
+
+<section class="cat faq" id="faq"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#faq">FAQ</a></h2>
+  <div class="qa" id="q-get-tools">
+    <h4><a class="qanchor" href="#q-get-tools">How do I get these tools?</a></h4>
+    <p>They are open-source Kicksecure utilities (<code>unicode-show</code>,
+      <code>stcat</code>, <code>sanitize-string</code> and friends). They ship in
+      <a href="https://www.kicksecure.com/">Kicksecure</a> and
+      <a href="https://www.whonix.org/">Whonix</a>; the source lives in Kicksecure's
+      <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a> and
+      <a href="https://github.com/Kicksecure/developer-meta-files">developer-meta-files</a>,
+      and each is documented on the
+      <a href="https://www.kicksecure.com/wiki/Unicode-show">Kicksecure wiki</a>.</p>
+  </div>
+  <div class="qa" id="q-safe-run">
+    <h4><a class="qanchor" href="#q-safe-run">Are these safe to run on untrusted files?</a></h4>
+    <p>That is the point: they exist to <em>read</em> untrusted output safely.
+      <code>unicode-show</code> and <code>text-safety-scan</code> only inspect and
+      report; <code>stcat</code> and <code>sanitize-string</code> neutralize the
+      dangerous characters instead of letting the terminal interpret them.</p>
+  </div>
+  <div class="qa" id="q-source">
+    <h4><a class="qanchor" href="#q-source">Is the source available?</a></h4>
+    <p>Yes. This site is static HTML and CSS on
+      <a href="https://github.com/output-lies/output-lies.github.io">GitHub</a>, and
+      the tools it points to are open-source Kicksecure projects.</p>
+  </div>
+  <div class="qa" id="q-ai">
+    <h4><a class="qanchor" href="#q-ai">Was this built with AI?</a></h4>
+    <p>Yes: this page and its demonstrations are AI-assisted.</p>
+  </div>
 </div></section>
 </main>
 
