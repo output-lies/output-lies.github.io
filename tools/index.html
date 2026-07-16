@@ -348,6 +348,23 @@ src/pay.py
         alt="A terminal where cat notice.txt prints only 'Update installed. System healthy.' while the file secretly carries an OSC terminal-control sequence. stcat reveals the hidden payload as _]0;attacker@evil:~# _ before the visible text, and unicode-show names the hidden bytes U+001B (ESC) and U+0007 (BEL).">
       <figcaption>A safe demonstration of the mechanism: <code>cat</code> shows one innocuous line, but the file smuggles a terminal-control sequence that <code>cat</code> feeds straight to the terminal. <code>stcat</code> neutralizes it and <code>unicode-show</code> names the hidden ESC and BEL bytes. On a vulnerable terminal, this same channel is what escalates to injected keystrokes.</figcaption>
     </figure>
+    <p class="lead" style="margin-top:18px"><b>Logs are the surface.</b> You <code>cat</code> and <code>tail</code> logs from places you do not control: CI output, container and <code>kubectl</code> logs, a remote server over SSH, a honeypot. A log is just a file an attacker can write into. Build a safe stand-in and watch it neutralized (no real terminal is harmed, the payload only sets a title and erases a line):</p>
+    <pre class="term"><span class="dim"># write a "log" that hides a title-change and a line-erase redraw</span>
+<span class="p">$</span> printf 'deploy: OK\n\033]0;pwned\007\033[2K\rbuild: FAILED\n' &gt; demo.log
+
+<span class="dim"># cat obeys the bytes: the window title is hijacked and FAILED is erased</span>
+<span class="p">$</span> cat demo.log
+deploy: OK
+
+<span class="dim"># stcat neutralizes every escape to _, so nothing is hidden or run</span>
+<span class="p">$</span> stcat demo.log
+deploy: OK
+<span class="neut">_</span>]0;pwned<span class="neut">_</span><span class="neut">_</span>[2K<span class="neut">_</span>build: FAILED
+
+<span class="dim"># unicode-show names the smuggled bytes with line numbers</span>
+<span class="p">$</span> unicode-show demo.log
+demo.log:2: <span class="cp">[U+001B]</span>]0;pwned<span class="cp">[U+0007]</span>...
+   <span class="cp">-&gt; U+001B ESCAPE (Cc), U+0007 BELL (Cc)</span></pre>
   </article>
 
   <article class="issue" id="log-injection">
