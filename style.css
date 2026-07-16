@@ -309,3 +309,10 @@ footer .fshare .fshare-l{color:var(--muted)}
 footer .fshare .sh{color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:7px;padding:4px 10px;background:transparent;cursor:pointer;font:inherit}
 footer .fshare .sh:hover{border-color:var(--accent);color:var(--accent)}
 footer .fshare .sh-msg{color:var(--safe);font-family:var(--mono);font-size:.8rem}
+
+/* freedom-software footer badges (OSI + GNU), open source / AGPL */
+.ffree{display:flex;align-items:center;gap:12px 26px;flex-wrap:wrap;padding:14px 0 2px}
+.freebadge{display:inline-flex;align-items:center;gap:9px;color:var(--muted);text-decoration:none;font-size:.85rem}
+.freebadge img{height:32px;width:auto;opacity:.8}
+.freebadge:hover{color:var(--ink)}
+.freebadge:hover img{opacity:1}
