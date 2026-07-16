@@ -91,6 +91,7 @@
     <a href="#build">Build a trap</a>
     <a href="#sandbox">Safe paste</a>
     <a href="#test">Test your own tool</a>
+    <a href="#faq">FAQ</a>
   </div></div>
 </header>
 
@@ -227,6 +228,32 @@
     the list above says <b>test your own</b>. VS Code has flagged invisible and confusable characters by default
     since its 1.63 "unicode highlighting"; GitHub and GitLab added bidi warning banners after
     <a href="https://trojansource.codes/">Trojan Source</a>. The row that never lies to you is the last one.</p>
+</div></section>
+
+<section class="cat faq" id="faq"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#faq">FAQ</a></h2>
+  <div class="qa" id="q-sent">
+    <h4><a class="qanchor" href="#q-sent">Does what I paste get sent anywhere?</a></h4>
+    <p>No. The analysis runs entirely in your browser in JavaScript: nothing you
+      paste is transmitted, logged or stored, and the page makes no network
+      request with your input. Disconnect from the network and it still works.</p>
+  </div>
+  <div class="qa" id="q-sensitive">
+    <h4><a class="qanchor" href="#q-sensitive">Is it safe to paste sensitive text here?</a></h4>
+    <p>Your text does not leave your machine, so this page will not expose it. The
+      usual browser caveats still apply (a compromised browser or extension can
+      read any page you have open), but nothing here uploads what you paste.</p>
+  </div>
+  <div class="qa" id="q-source">
+    <h4><a class="qanchor" href="#q-source">Is the source available?</a></h4>
+    <p>Yes. The whole site is static HTML, CSS and JavaScript on
+      <a href="https://github.com/output-lies/output-lies.github.io">GitHub</a> -
+      read it, save the page, run it offline.</p>
+  </div>
+  <div class="qa" id="q-ai">
+    <h4><a class="qanchor" href="#q-ai">Was this built with AI?</a></h4>
+    <p>Yes: this page and its analyzer are AI-assisted.</p>
+  </div>
 </div></section>
 </main>
 
