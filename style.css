@@ -316,3 +316,6 @@ footer .fshare .sh-msg{color:var(--safe);font-family:var(--mono);font-size:.8rem
 .freebadge img{height:32px;width:auto;opacity:.8}
 .freebadge:hover{color:var(--ink)}
 .freebadge:hover img{opacity:1}
+@media(max-width:640px){
+  .ffree{flex-direction:column;align-items:flex-start;gap:11px;padding-bottom:10px}
+}
