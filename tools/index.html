@@ -365,6 +365,7 @@ deploy: OK
 <span class="p">$</span> unicode-show demo.log
 demo.log:2: <span class="cp">[U+001B]</span>]0;pwned<span class="cp">[U+0007]</span>...
    <span class="cp">-&gt; U+001B ESCAPE (Cc), U+0007 BELL (Cc)</span></pre>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> / <a href="https://github.com/output-lies/git-diffs-lie/compare/master...content/ansi-escape">view the diff on GitHub -&gt;</a></div><div class="copybox"><code class="cmd">git diff master..content/ansi-escape</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 
   <article class="issue" id="log-injection">
@@ -390,6 +391,7 @@ INFO: system all-good!
 <span class="dim"># stcat neutralizes the CR to _, so the real ERROR is right there</span>
 <span class="p">$</span> stcat access.log
 ERROR: breach detected<span class="neut">_</span>INFO: system all-good!</pre>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> / <a href="https://github.com/output-lies/git-diffs-lie/compare/master...content/lone-cr">view the diff on GitHub -&gt;</a></div><div class="copybox"><code class="cmd">git diff master..content/lone-cr</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 </div></section>
 
@@ -492,6 +494,23 @@ ERROR: breach detected<span class="neut">_</span>INFO: system all-good!</pre>
       if (md) md.addEventListener('click', function () {
         var text = '[' + document.title + '](' + location.href + ')';
         if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { flash('markdown copied'); });
+      });
+    })();
+    /* Copy buttons on the reproduce boxes -- a progressive enhancement; the
+       command is selectable without it. Same behaviour as git-diffs-lie. */
+    (function () {
+      if (!navigator.clipboard) return;
+      document.querySelectorAll('.copybox').forEach(function (box) {
+        var cmd = box.querySelector('.cmd'), btn = box.querySelector('.copybtn');
+        if (!cmd || !btn) return;
+        btn.hidden = false;
+        btn.addEventListener('click', function () {
+          navigator.clipboard.writeText(cmd.textContent).then(function () {
+            var prev = btn.textContent;
+            btn.textContent = 'Copied'; btn.classList.add('ok');
+            setTimeout(function () { btn.textContent = prev; btn.classList.remove('ok'); }, 1200);
+          });
+        });
       });
     })();
   </script>
