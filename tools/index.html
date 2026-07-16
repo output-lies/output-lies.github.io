@@ -59,8 +59,9 @@
   <p class="kicker">Safe terminal text tools</p>
   <h1>Your terminal believes<br>the file. You <span class="u">shouldn't</span>.</h1>
   <p class="sub">Bytes from a log, a paste, or a download can hide text, forge
-    your prompt, or disguise what a character really is. <code>cat</code> obeys
-    them. These tools show you what is actually there.</p>
+    your prompt, disguise what a character really is, and on a vulnerable
+    terminal run commands. "Lie" undersells it: <code>cat</code> does not just
+    believe the file, it obeys it. These tools show you what is actually there.</p>
   <div class="cta">
     <a class="btn primary" href="#unicode-show">See the tools</a>
     <a class="btn ghost" href="https://github.com/Kicksecure/helper-scripts">Get them</a>
@@ -333,7 +334,7 @@ src/pay.py
 <!-- ============ proof of concept ============ -->
 <section class="cat" id="record"><div class="wrap">
   <h2 class="catname"><a class="h-anchor" href="#record">Proof of concept</a></h2>
-  <p class="catdesc">Why safe display matters: merely viewing untrusted terminal output is a real, high-severity vulnerability class with a 20-year CVE trail. Honest caveat: we found no confirmed in-the-wild exploitation, only CVEs and researcher demonstrations. High severity is not the same as actively abused.</p>
+  <p class="catdesc">Why safe display matters: merely viewing untrusted terminal output is a real, high-severity vulnerability class with a 20-year CVE trail. Honest caveat: for this specific escape-sequence class we found no confirmed in-the-wild exploitation, only CVEs and researcher demonstrations; high severity is not the same as actively abused. But the wider idea it belongs to, weaponizing characters your eyes and tools render differently from the parser, is being exploited right now: the <a href="https://www.aikido.dev/blog/glassworm-returns-unicode-attack-github-npm-vscode">GlassWorm</a> supply-chain worm (2025-2026) hid live malware in invisible Unicode across 400+ code repositories. Different mechanism, same blind spot.</p>
 
   <article class="issue" id="escape-rce">
     <span class="tag evi-rec">Proof of concept</span>
