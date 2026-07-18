@@ -59,7 +59,7 @@ section.cat{padding:clamp(26px,6vw,52px) 0 8px}
 .cat > .wrap > p.catdesc{margin:0 0 18px;color:var(--muted);max-width:62ch}
 
 .issue{background:var(--card);border:1px solid var(--line);border-radius:14px;
-  padding:22px;margin:18px 0;scroll-margin-top:0}
+  padding:22px;margin:18px 0;scroll-margin-top:0;overflow-x:auto}
 .issue h3{margin:0 0 4px;font-size:1.3rem;letter-spacing:-.01em}
 .issue .lead{margin:0 0 16px;color:#3a3c41;max-width:70ch}
 .tag{display:inline-block;font-family:var(--mono);font-size:.68rem;letter-spacing:.08em;
