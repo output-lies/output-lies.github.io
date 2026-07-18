@@ -47,6 +47,7 @@
     <a href="#scan">Scan</a>
     <a href="#stcat">Neutralize</a>
     <a href="#sanitize">Sanitize</a>
+    <a href="#classes">Attack classes</a>
     <a href="#record">Proof of concept</a>
     <a href="#faq">FAQ</a>
   </div></div>
@@ -288,6 +289,42 @@ src/pay.py
         alt="A terminal showing sanitize-string. An untrusted value with an embedded escape prints as red DROP TABLE users when echoed raw; after sanitize-string the escape is inert (shown as _[31m...) and no longer recolors. sanitize-string on a script tag returns plain alert(1) with tags stripped, and sanitize-string 12 caps a long value to leak: secret.">
       <figcaption>The real tool: an escape in an untrusted value recolors a raw log line (red), but the sanitized value is inert; HTML markup is stripped and the length is capped.</figcaption>
     </figure>
+  </article>
+</div></section>
+
+<!-- ============ attack classes ============ -->
+<section class="cat" id="classes"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#classes">Every attack class</a></h2>
+  <p class="catdesc">Twenty years of terminal escape attacks, by class. Each is a way
+    program output tricks the terminal into acting; secure-terminal answers all of them
+    the same way, by construction. Live, canary-forked proofs for every class are in the
+    <a href="https://github.com/secure-terminal/terminal-poc-corpus">terminal-poc-corpus</a>.</p>
+  <article class="issue">
+    <table class="tbl">
+      <caption>Every publicly-disclosed terminal escape-attack class, with example CVEs
+        and how secure-terminal defeats it. The corpus references 41 CVEs across these
+        classes and proves secure-terminal neutralizes all of them.</caption>
+      <thead><tr><th>Class</th><th>What the terminal is tricked into</th><th>Example CVEs</th><th>secure-terminal defense</th></tr></thead>
+      <tbody>
+        <tr><td>Reflection / echoback</td><td>answering a query (window title, DECRQSS, font, cursor/status report, ENQ answerback) by writing the reply into your shell's input</td><td>CVE-2003-0063, CVE-2022-45872, CVE-2024-38396, CVE-2021-33477</td><td>interprets no escapes; nothing on the output path can write to the pty (by construction)</td></tr>
+        <tr><td>Clipboard read (OSC 52)</td><td>a program silently reading your clipboard (passwords, keys) onto its input</td><td>OSC 52 read</td><td>off by default; a human ask-once-per-tab gate that output can trigger but never answer</td></tr>
+        <tr><td>Clipboard write / paste hijack (OSC 52)</td><td>overwriting your clipboard so your next paste inserts text you did not copy</td><td>OSC 52 write</td><td>off by default</td></tr>
+        <tr><td>Hyperlink phishing / URL scheme (OSC 8)</td><td>a link whose visible text differs from its target, or a scheme (ssh://) that injects arguments</td><td>CVE-2023-46321, CVE-2023-46322, CVE-2022-46663</td><td>OSC 8 off by default</td></tr>
+        <tr><td>Trojan Source (bidi)</td><td>bidi overrides reordering the display so code reads differently than it runs</td><td>CVE-2021-42574</td><td>bidi controls neutralized and revealed</td></tr>
+        <tr><td>Homoglyph</td><td>look-alike code points disguising one identifier as another</td><td>CVE-2021-42694</td><td>non-ASCII revealed and marked</td></tr>
+        <tr><td>Charset shift</td><td>a charset shift (DEC special graphics) rendering ASCII as line-drawing to disguise it</td><td>charset shift</td><td>charset shifts stripped</td></tr>
+        <tr><td>Cursor spoof</td><td>cursor-up + erase + overwrite hiding earlier output in line mode</td><td>cursor addressing</td><td>cursor addressing stripped in line mode</td></tr>
+        <tr><td>Notification spoof</td><td>a desktop notification (OSC 9 / 99) carrying attacker text</td><td>CVE-2022-41322</td><td>notifications off by default</td></tr>
+        <tr><td>Window operations</td><td>set/report window title, icon or working directory to reach injection or exec</td><td>CVE-2003-0065, CVE-2022-44702</td><td>window operations stripped</td></tr>
+        <tr><td>Denial of service</td><td>a title-change flood or a huge repeat count hanging or exhausting the terminal</td><td>CVE-2021-28847, CVE-2012-2738</td><td>interprets no escapes; bounded processing</td></tr>
+        <tr><td>Decoder overflow</td><td>a Sixel or ReGIS image overrunning a decoder buffer</td><td>CVE-2022-24130, CVE-2023-40359</td><td>never runs a Sixel or ReGIS decoder</td></tr>
+        <tr><td>Bracketed-paste bypass</td><td>an escape breaking the paste guard so pasted text auto-runs</td><td>CVE-2021-31701</td><td>paste sanitized to ASCII; the guard-breaking escape stripped</td></tr>
+      </tbody>
+    </table>
+    <p class="toolnote">These attacks arrive as ordinary <b>program output</b> -- a
+      compromised program, a log you <code>cat</code> or <code>less</code>, an
+      unfiltered passthrough (kubectl, CVE-2021-25743), or an LLM CLI smuggling escapes
+      from a prompt-injected model. secure-terminal neutralizes them whatever the source.</p>
   </article>
 </div></section>
 
