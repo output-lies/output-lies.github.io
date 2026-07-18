@@ -9,11 +9,7 @@
 name: web-consistency-tests
 
 on:
-  push:
-    paths:
-      - '**/*.html'
-      - 'style.css'
-      - '.github/workflows/web-consistency-tests.yml'
+  # Push testing + the gated deploy are in pages.yml; this covers PRs.
   pull_request:
     paths:
       - '**/*.html'

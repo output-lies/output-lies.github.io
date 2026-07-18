@@ -1,0 +1,58 @@
+# AI-Assisted.
+# Gated GitHub Pages deploy: the consistency test runs FIRST, and the site is
+# published only if it passes. Replaces the legacy branch-build (which deployed on
+# every push regardless of any test) so a broken page never goes live. The static
+# consistency suite lives in org-ai-assisted/dist-ai.
+name: pages
+
+on:
+  push:
+    branches: [ master ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: debian:trixie-slim
+    steps:
+      - name: Install tools
+        run: apt-get update && apt-get install --yes --no-install-recommends git python3 ca-certificates
+      - name: Check out output-lies.github.io
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          path: output-lies
+      - name: Check out dist-ai (test suite)
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+        with:
+          repository: org-ai-assisted/dist-ai
+          path: dist-ai
+      - name: Run website-tests (gate)
+        run: OUTPUT_LIES_REPO="${GITHUB_WORKSPACE}/output-lies" bash dist-ai/usr/bin/website-tests
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
+      - name: Configure Pages
+        uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b  # v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa  # v3
+        with:
+          path: .
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e  # v4
