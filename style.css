@@ -31,6 +31,10 @@ footer .ftag .tm{font-size:.72em;color:var(--muted);font-weight:600;margin-left:
 .nav nav a.cross{color:var(--ink)}
 
 .hero{padding:clamp(28px,7vw,48px) 0 clamp(22px,5vw,40px)}
+/* tight: hero sits directly above the primary interactive tool (analyze, quiz),
+   so drop the stacked hero-bottom + section-top gap that reads as dead space */
+.hero.tight{padding-bottom:clamp(8px,2vw,14px)}
+.hero.tight + section.cat{padding-top:clamp(10px,2.5vw,20px)}
 .kicker{font-family:var(--mono);font-size:.8rem;letter-spacing:.14em;
   text-transform:uppercase;color:var(--accent);margin:0 0 14px}
 .hero h1{font-size:clamp(2.3rem,7vw,4.4rem);line-height:1.02;letter-spacing:-.03em;
