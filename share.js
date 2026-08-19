@@ -35,3 +35,14 @@
     if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { flash('markdown copied'); });
   });
 })();
+
+/* Progressive enhancement: dismiss the open mobile nav on scroll, or when the
+   viewport grows to the desktop inline layout. Without JS the Menu button and
+   the full-screen scrim still open and close it. */
+(function () {
+  var nt = document.getElementById('navtoggle');
+  if (!nt) { return; }
+  function closeNav() { if (nt.checked) { nt.checked = false; } }
+  window.addEventListener('scroll', closeNav, { passive: true });
+  window.addEventListener('resize', closeNav);
+})();
