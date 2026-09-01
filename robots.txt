@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://output-lies.github.io/sitemap.xml
