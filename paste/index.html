@@ -69,6 +69,7 @@
     <li><a href="#trick">The trick</a></li>
     <li><a href="#wild">In the wild</a></li>
     <li><a href="#demo">Live demo</a></li>
+    <li><a href="#try">Try it yourself</a></li>
     <li><a href="#how">Copy safely</a></li>
     <li><a href="#faq">FAQ</a></li>
   </ul>
@@ -146,6 +147,7 @@
     <p class="catch"><b>Why it bites:</b> combined with a hidden line, there is no
       pause to notice anything: the copy, the paste, and the execution are one
       motion.</p>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; the tool prints the exact xclip/paste steps</span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/paste-trailing-newline-autoexec" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">POC_CORPUS_IN_SANDBOX=1 tools/reproduce.py paste-trailing-newline-autoexec</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
   </div>
 </div></section>
@@ -222,6 +224,24 @@ echo "GOTCHA: this second line was hidden in the copy; imagine a real command he
       a separate name. It survives a glance, a code font and a careful proofread, because it is not on the screen
       to be seen - only a byte-level tool surfaces it.</p>
   </article>
+</div></section>
+
+<!-- ===================== TRY IT YOURSELF ===================== -->
+<section class="cat try" id="try"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#try">Try it yourself</a></h2>
+  <p class="lead">Every paste trick here is a real, canary-forked test fixture. Reproduce one in a
+    throwaway sandbox VM, watch a plain terminal auto-run it - then see it held for review, or x-rayed, instead.</p>
+  <p class="cmdlabel">Clone the corpus (read SAFETY.md first) and list every class:</p>
+  <div class="copybox"><code class="cmd">git clone https://github.com/secure-terminal/terminal-poc-corpus</code><button class="copybtn" type="button" hidden>Copy</button></div>
+  <div class="copybox"><code class="cmd">cd terminal-poc-corpus &amp;&amp; tools/reproduce.py --list</code><button class="copybtn" type="button" hidden>Copy</button></div>
+  <p class="cmdlabel">Reproduce a pastejacking payload - it prints the exact xclip/paste steps (sandbox VM only):</p>
+  <div class="copybox"><code class="cmd">POC_CORPUS_IN_SANDBOX=1 tools/reproduce.py paste-trailing-newline-autoexec</code><button class="copybtn" type="button" hidden>Copy</button></div>
+  <p class="toolnote"><b>What you see vs what runs.</b> Paste it into a plain terminal and the hidden line
+    auto-runs; paste it into <a href="https://secure-terminal.github.io/">secure-terminal</a>'s review bar and it
+    is held - every hidden byte named - before a byte reaches the shell. Or x-ray any command you copied first with
+    the <a href="/analyze/">Analyze</a> tool. Every PoC doubles as a test fixture: <code>index.json</code> records
+    its class and expected-safe behaviour, and the always-on
+    <a href="https://github.com/org-ai-assisted/dist-ai">terminal-resilience-tests</a> suite checks them all.</p>
 </div></section>
 
 <!-- ===================== COPY SAFELY ===================== -->
