@@ -148,7 +148,7 @@
       pause to notice anything: the copy, the paste, and the execution are one
       motion.</p>
     <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; a pasted attack, not cat</span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/paste-trailing-newline-autoexec" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">POC_CORPUS_IN_SANDBOX=1 tools/reproduce.py paste-trailing-newline-autoexec --out paste.payload
-xclip -selection clipboard &lt; paste.payload    # then Ctrl-Shift-V into a throwaway terminal</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+xclip -selection clipboard &lt; paste.payload    # or wl-copy on Wayland, then Ctrl-Shift-V into a throwaway terminal</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
   </div>
 </div></section>
@@ -237,7 +237,7 @@ echo "GOTCHA: this second line was hidden in the copy; imagine a real command he
   <div class="copybox"><code class="cmd">cd terminal-poc-corpus &amp;&amp; tools/reproduce.py --list</code><button class="copybtn" type="button" hidden>Copy</button></div>
   <p class="cmdlabel">Reproduce a pastejacking payload, then put it on the clipboard to paste (sandbox VM only):</p>
   <div class="copybox"><code class="cmd">POC_CORPUS_IN_SANDBOX=1 tools/reproduce.py paste-trailing-newline-autoexec --out paste.payload
-xclip -selection clipboard &lt; paste.payload    # then Ctrl-Shift-V into a throwaway terminal</code><button class="copybtn" type="button" hidden>Copy</button></div>
+xclip -selection clipboard &lt; paste.payload    # or wl-copy on Wayland, then Ctrl-Shift-V into a throwaway terminal</code><button class="copybtn" type="button" hidden>Copy</button></div>
   <p class="toolnote"><b>What you see vs what runs.</b> Paste it into a plain terminal and the hidden line
     auto-runs; paste it into <a href="https://secure-terminal.github.io/">secure-terminal</a>'s review bar and it
     is held - every hidden byte named - before a byte reaches the shell. Or x-ray any command you copied first with
