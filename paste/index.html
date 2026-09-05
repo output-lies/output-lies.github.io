@@ -147,7 +147,7 @@
     <p class="catch"><b>Why it bites:</b> combined with a hidden line, there is no
       pause to notice anything: the copy, the paste, and the execution are one
       motion.</p>
-    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; a pasted attack, not cat</span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/paste-trailing-newline-autoexec" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">POC_CORPUS_IN_SANDBOX=1 tools/reproduce.py paste-trailing-newline-autoexec --out paste.payload
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; a pasted attack, not cat</span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/paste-trailing-newline-autoexec" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">sed 's/#.*//' poc/paste-trailing-newline-autoexec/payload.hex | tr -d '[:space:]' | xxd -r -p &gt; paste.payload
 xclip -selection clipboard &lt; paste.payload    # or wl-copy on Wayland, then Ctrl-Shift-V into a throwaway terminal</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
   </div>
@@ -234,9 +234,9 @@ echo "GOTCHA: this second line was hidden in the copy; imagine a real command he
     throwaway sandbox VM, watch a plain terminal auto-run it - then see it held for review, or x-rayed, instead.</p>
   <p class="cmdlabel">Clone the corpus (read SAFETY.md first) and list every class:</p>
   <div class="copybox"><code class="cmd">git clone https://github.com/secure-terminal/terminal-poc-corpus</code><button class="copybtn" type="button" hidden>Copy</button></div>
-  <div class="copybox"><code class="cmd">cd terminal-poc-corpus &amp;&amp; tools/reproduce.py --list</code><button class="copybtn" type="button" hidden>Copy</button></div>
+  <div class="copybox"><code class="cmd">cd terminal-poc-corpus &amp;&amp; ls poc/</code><button class="copybtn" type="button" hidden>Copy</button></div>
   <p class="cmdlabel">Reproduce a pastejacking payload, then put it on the clipboard to paste (sandbox VM only):</p>
-  <div class="copybox"><code class="cmd">POC_CORPUS_IN_SANDBOX=1 tools/reproduce.py paste-trailing-newline-autoexec --out paste.payload
+  <div class="copybox"><code class="cmd">sed 's/#.*//' poc/paste-trailing-newline-autoexec/payload.hex | tr -d '[:space:]' | xxd -r -p &gt; paste.payload
 xclip -selection clipboard &lt; paste.payload    # or wl-copy on Wayland, then Ctrl-Shift-V into a throwaway terminal</code><button class="copybtn" type="button" hidden>Copy</button></div>
   <p class="toolnote"><b>What you see vs what runs.</b> Paste it into a plain terminal and the hidden line
     auto-runs; paste it into <a href="https://secure-terminal.github.io/">secure-terminal</a>'s review bar and it
