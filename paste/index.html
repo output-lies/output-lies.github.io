@@ -116,9 +116,12 @@
       element, is still part of what you select and copy. The page shows one
       command; the clipboard gets two. Like invisible ink on a page you photocopy:
       the copy captures what your eyes skipped.</p>
-    <p class="catch"><b>Why it bites:</b> if the hidden portion ends in a newline,
+    <p class="catch"><b>The catch:</b> if the hidden portion ends in a newline,
       pasting it into a terminal <em>submits</em> it; the second command runs
       before you have read the first.</p>
+    <p class="backdoor"><b>Backdoor path:</b> the hidden line is a real command (a
+      <code>curl | sh</code> installer, a key exfiltration); its trailing newline runs
+      it the instant you paste, before your eyes reach the harmless line you meant to copy.</p>
   </article>
 
   <article class="issue" id="invisible-chars">
@@ -128,8 +131,11 @@
       nothing. A command that reads <code>pip install requests</code> can carry an
       invisible break, or a look-alike letter, so the thing your shell runs is not
       the thing you read: an invisible extra character wedged inside a word.</p>
-    <p class="catch"><b>Why it bites:</b> the payload survives a glance, a code
+    <p class="catch"><b>The catch:</b> the payload survives a glance, a code
       font, even a careful proofread. It is not on the screen to be seen.</p>
+    <p class="backdoor"><b>Backdoor path:</b> the look-alike or zero-width character
+      binds the command to a different target -- a typosquatted package name, a different
+      host -- so the shell fetches attacker code while the text still reads as the trusted one.</p>
   </article>
 
   <article class="issue" id="autorun">
@@ -144,9 +150,12 @@
       busybox ash, and any non-shell prompt (<code>cat</code>, a language REPL, a
       serial console, <code>ssh</code> into an old box) still submit a multi-line
       paste immediately.</p>
-    <p class="catch"><b>Why it bites:</b> combined with a hidden line, there is no
+    <p class="catch"><b>The catch:</b> combined with a hidden line, there is no
       pause to notice anything: the copy, the paste, and the execution are one
       motion.</p>
+    <p class="backdoor"><b>Backdoor path:</b> no hidden line is even needed -- a visible
+      command that ends in a newline runs the moment it lands, before you can cancel, and
+      any multi-line paste executes every line in sequence.</p>
     <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; a pasted attack, not cat - then paste (Ctrl-Shift-V) into a throwaway terminal</span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/paste-trailing-newline-autoexec" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/paste-trailing-newline-autoexec/payload.b64 &gt; paste.payload</code><button class="copybtn" type="button" hidden>Copy</button></div><div class="copybox"><code class="cmd">xclip -selection clipboard &lt; paste.payload    # X11</code><button class="copybtn" type="button" hidden>Copy</button></div><div class="copybox"><code class="cmd">wl-copy &lt; paste.payload    # Wayland</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
   </div>
@@ -223,6 +232,13 @@ echo "GOTCHA: this second line was hidden in the copy; imagine a real command he
       name. The string is not <code>requests</code> but a look-identical typosquat that a package index can hold as
       a separate name. It survives a glance, a code font and a careful proofread, because it is not on the screen
       to be seen - only a byte-level tool surfaces it.</p>
+    <p class="backdoor"><b>Backdoor path:</b> the invisible byte makes the copied text bind to an
+      attacker-registered look-alike package, so <code>pip install</code> pulls their code while the line you read
+      names the trusted one.</p>
+    <p class="onrecord"><b>Proof of concept:</b> the invisible-character class was formalized as
+      <a href="https://trojansource.codes/">Trojan Source</a><a class="arch" href="https://web.archive.org/web/20260616040501/https://trojansource.codes/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+      (<a href="https://www.cve.org/CVERecord?id=CVE-2021-42574">CVE-2021-42574</a><a class="arch" href="https://web.archive.org/web/20260303144948/https://www.cve.org/CVERecord?id=CVE-2021-42574" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>);
+      no documented in-the-wild source-code use.</p>
   </article>
 </div></section>
 

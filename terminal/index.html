@@ -361,10 +361,11 @@ src/pay.py
       a control-byte repaint, an SGR-hidden string, an <a href="#osc8">OSC 8</a> link whose text is not its
       target, and a <a href="#altscreen">?1049h</a> alternate-screen switch -- with honest Greek as the
       non-attack contrast.</p>
-    <p class="backdoor"><b>Safe to run.</b> It is display-only: it sets the window title and switches to the
+    <div class="limits"><h4>Safe to run</h4>
+      <p>It is display-only: it sets the window title and switches to the
       alternate screen (both undone by <code>reset</code>), and copies, types and runs nothing. Its first bytes
       are a plaintext warning; it runs on the alternate screen so your scrollback is preserved. The dangerous
-      classes (clipboard, notification, input reflection, RCE) are deliberately NOT in a cat-able file.</p>
+      classes (clipboard, notification, input reflection, RCE) are deliberately NOT in a cat-able file.</p></div>
     <p class="toolnote"><a class="dl" href="https://secure-terminal.github.io/terminal-safe-corpus/demos/terminal-attack-demo-WARNING-display-only-safe.txt" rel="noopener">Get the board (2.4 KB .txt)</a>
       from the <a href="https://github.com/secure-terminal/terminal-safe-corpus" rel="noopener">terminal-safe-corpus</a>
       -- then read it SAFELY before you cat it, or paste it into the <a href="/analyze/">x-ray tool</a>.</p>
@@ -432,6 +433,10 @@ Get the installer: <span class="neut">_</span>]8;;https://example.org<span class
       sight, and secure-terminal ships OSC 8 off by default. Real class:
       <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-46322" rel="noopener">CVE-2023-46322</a> and the
       hyperlink rows in the <a href="#classes">attack-class table</a>.</p>
+    <p class="backdoor"><b>Backdoor path:</b> print a link that reads
+      <code>example.com</code> but targets an attacker site; the reader clicks the label they trust and lands on
+      the payload, or a <code>ssh://</code>-style scheme smuggles arguments into the command the click runs.</p>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="/paste/#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; view with <code>stcat</code>, never bare <code>cat</code></span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/osc8-hyperlink-phishing" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/osc8-hyperlink-phishing/payload.b64 | stcat</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 
   <!-- ---------- alt-screen restore (dramatic playback) ---------- -->
@@ -455,6 +460,10 @@ Get the installer: <span class="neut">_</span>]8;;https://example.org<span class
       supports; the deception is painting a convincing fake, then restoring so you never scroll back to catch
       it. secure-terminal's default line mode strips <code>?1049h</code> and shows the log as inert text with
       your scrollback intact, offering opt-in TUI mode if you actually want full-screen programs.</p>
+    <p class="backdoor"><b>Backdoor path:</b> a log or README enters the alternate screen, paints a convincing
+      fake (an all-green build, a clean scan), then leaves -- your scrollback is restored untouched, so no trace
+      of the forged view survives for you to scroll back and catch.</p>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="/paste/#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; view with <code>stcat</code>, never bare <code>cat</code></span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/alt-screen-hijack" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/alt-screen-hijack/payload.b64 | stcat</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
     <script src="/terminal/playback.js"></script>
   </article>
 </div></section>

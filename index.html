@@ -156,10 +156,11 @@
       <em>displays</em> without changing how the compiler <em>reads</em> it. A reviewer sees an early
       <code>return</code> or a harmless comment; the compiler sees logic that ships a backdoor. It hit nearly
       every compiler and language at once, because the deception lives in the text layer, below the language.</p>
-    <p class="backdoor"><b>The fix:</b> compilers and linters now warn on bidi controls in source; GitHub shows a
+    <p class="catch"><b>The fix:</b> compilers and linters now warn on bidi controls in source; GitHub shows a
       warning banner on affected files and GitLab highlights the characters inline. Catch it before merge with <code>unicode-show</code> and
       <code>check-ref-commits-for-unicode</code>.</p>
-    <p class="wild"><b>Source:</b> <a href="https://trojansource.codes/">trojansource.codes</a>
+    <p class="onrecord"><b>Proof of concept:</b> research disclosure with no documented in-the-wild source-code use --
+      <a href="https://trojansource.codes/">trojansource.codes</a>
       (<a href="https://nvd.nist.gov/vuln/detail/CVE-2021-42574" rel="noopener">CVE-2021-42574</a>, <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-42694" rel="noopener">CVE-2021-42694</a>).</p>
   </article>
 
@@ -169,10 +170,10 @@
       LETTER A, not Latin <code>a</code>. It is a different domain that can hold its own valid TLS certificate and
       padlock. Xudong Zheng's 2017 proof-of-concept registered a Cyrillic <code>apple.com</code> that Chrome and
       Firefox then displayed indistinguishably from the real one.</p>
-    <p class="backdoor"><b>The fix:</b> Chrome, Safari and Edge now show the punycode form (<code>xn--...</code>) for
+    <p class="catch"><b>The fix:</b> Chrome, Safari and Edge now show the punycode form (<code>xn--...</code>) for
       confusable domains, though Firefox still renders whole-script Cyrillic look-alikes by default; registrars also restrict mixed-script registrations. The same trick still
       works on package names and command names, which have no such guard.</p>
-    <p class="wild"><b>Source:</b>
+    <p class="wild"><b>Seen in the wild:</b> homoglyph domains are an active phishing technique --
       <a href="https://www.xudongz.com/blog/2017/idn-phishing/">xudongz.com - Phishing with Unicode Domains</a>.</p>
   </article>
 
@@ -181,10 +182,11 @@
     <p class="lead">2016, Dylan Ayrey. A command shown on a web page is copied, but a JavaScript copy handler
       (or CSS-hidden text, or a trailing newline) places something <em>else</em> on your clipboard. Paste it into
       a terminal and a hidden trailing newline runs it immediately, before you can read it.</p>
-    <p class="backdoor"><b>The fix:</b> paste into an editor first, never straight into a shell; enable bracketed
+    <p class="catch"><b>The fix:</b> paste into an editor first, never straight into a shell; enable bracketed
       paste so a pasted newline cannot auto-execute; and treat every "copy" button as untrusted. There is a live,
       safe demonstration on the <a href="/paste/">Paste</a> page.</p>
-    <p class="wild"><b>Source:</b>
+    <p class="onrecord"><b>Proof of concept:</b> a 2016 research demonstration; its in-the-wild social-engineering
+      cousin "ClickFix" is on the <a href="/paste/#wild">Paste</a> page --
       <a href="https://github.com/dxa4481/Pastejacking">github.com/dxa4481/Pastejacking</a>.</p>
   </article>
   </div>
