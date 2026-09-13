@@ -188,12 +188,13 @@ footer .fcopy{color:var(--muted);font-size:.84rem}
 .backdoor b{color:var(--accent)}
 .wild{margin:7px 0 0;font-size:.87rem;color:var(--muted)}
 .wild b{color:var(--accent)} .wild a{color:var(--accent)}
-.onrecord{margin:7px 0 0;font-size:.87rem;color:var(--muted)}
-.onrecord b{color:var(--muted)} .onrecord a{color:var(--accent)}
+.onrecord,.knowntech{margin:7px 0 0;font-size:.87rem;color:var(--muted)}
+.onrecord b,.knowntech b{color:var(--muted)} .onrecord a,.knowntech a{color:var(--accent)}
 
 /* evidence badges (wild = red, on-record = grey) */
 .tag.evi-wild{color:#fff;background:var(--accent);border-color:var(--accent)}
 .tag.evi-rec{color:var(--ink);background:var(--line);border-color:var(--line)}
+.tag.evi-known{color:var(--muted);border-style:dashed;border-color:var(--muted)}
 .issue .tag + .tag{margin-left:6px}
 
 /* inline "on this page" table of contents (replaces the old second sticky bar) */
@@ -274,7 +275,7 @@ footer .ftag .logo{display:block;flex:0 0 auto}
 /* harmonize the label lines under example cards (one size scale; drop brownish backdoor) */
 .catch{font-size:.92rem;color:#3a3c41}
 .backdoor{margin:10px 0 0;font-size:.92rem;color:#3a3c41}
-.wild,.onrecord{margin:8px 0 0;font-size:.88rem}
+.wild,.onrecord,.knowntech{margin:8px 0 0;font-size:.88rem}
 /* reproduce line: tighter top space; "Reproduce" reads as a link */
 .repro{margin:13px 0 0;padding-top:10px}
 .repro .reprohd{margin:0 0 6px}

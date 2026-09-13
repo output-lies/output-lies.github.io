@@ -413,6 +413,7 @@ h&#x301;&#x300;&#x323;&#x308;e&#x301;&#x300;&#x323;&#x308;llo
 
   <!-- ---------- OSC 8 hyperlink spoof ---------- -->
   <article class="issue" id="osc8">
+    <span class="tag evi-rec">Proof of concept</span>
     <span class="tag">OSC 8 hyperlink spoof</span>
     <h3><a class="cardanchor" href="#osc8">The link text is not the link</a></h3>
     <p class="lead">The <b>OSC 8</b> escape turns terminal text into a clickable hyperlink -- and, like an HTML
@@ -430,17 +431,17 @@ Get the installer: <span class="neut">_</span>]8;;https://example.org<span class
     <p class="catch"><b>The catch:</b> the label and the target are independent, so the text you read is not the
       site you reach -- the terminal twin of an HTML link whose text lies about its <code>href</code>.
       <code>stcat</code> neutralizes the OSC 8 escape to an inert <code>_</code>, so the real target is in plain
-      sight, and secure-terminal ships OSC 8 off by default. Real class:
-      <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-46322" rel="noopener">CVE-2023-46322</a> and the
-      hyperlink rows in the <a href="#classes">attack-class table</a>.</p>
+      sight, and secure-terminal ships OSC 8 off by default.</p>
     <p class="backdoor"><b>Backdoor path:</b> print a link that reads
       <code>example.com</code> but targets an attacker site; the reader clicks the label they trust and lands on
       the payload, or a <code>ssh://</code>-style scheme smuggles arguments into the command the click runs.</p>
+    <p class="onrecord"><b>Proof of concept:</b> OSC 8 hyperlink phishing was disclosed as <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-46322" rel="noopener">CVE-2023-46322</a> (and related CVE-2023-46321 / CVE-2022-46663); see the hyperlink rows in the <a href="#classes">attack-class table</a>. No documented in-the-wild campaign.</p>
     <div class="repro"><div class="reprohd"><a class="repro-try" href="/paste/#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; view with <code>stcat</code>, never bare <code>cat</code></span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/osc8-hyperlink-phishing" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/osc8-hyperlink-phishing/payload.b64 | stcat</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 
   <!-- ---------- alt-screen restore (dramatic playback) ---------- -->
   <article class="issue" id="altscreen">
+    <span class="tag evi-known">Known technique</span>
     <span class="tag">alt-screen restore</span>
     <h3><a class="cardanchor" href="#altscreen">The screen it painted leaves no trace</a></h3>
     <p class="lead">The <b>alternate screen</b> (<code>?1049h</code>) is the full-screen buffer <code>vim</code>,
@@ -463,6 +464,7 @@ Get the installer: <span class="neut">_</span>]8;;https://example.org<span class
     <p class="backdoor"><b>Backdoor path:</b> a log or README enters the alternate screen, paints a convincing
       fake (an all-green build, a clean scan), then leaves -- your scrollback is restored untouched, so no trace
       of the forged view survives for you to scroll back and catch.</p>
+    <p class="knowntech"><b>Known technique:</b> the alternate screen is a legitimate, universal terminal feature; painting a fake view then restoring is a recognized abuse with no specific CVE or documented campaign.</p>
     <div class="repro"><div class="reprohd"><a class="repro-try" href="/paste/#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; view with <code>stcat</code>, never bare <code>cat</code></span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/alt-screen-hijack" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/alt-screen-hijack/payload.b64 | stcat</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
     <script src="/terminal/playback.js"></script>
   </article>

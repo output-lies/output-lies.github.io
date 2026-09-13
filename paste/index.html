@@ -110,6 +110,7 @@
 
   <div class="cards">
   <article class="issue" id="extra-line">
+    <span class="tag evi-rec">Proof of concept</span>
     <span class="tag">Hidden line</span>
     <h3><a class="cardanchor" href="#extra-line">The extra line you never saw</a></h3>
     <p class="lead">Text placed off-screen with CSS, or tucked into a zero-height
@@ -122,9 +123,14 @@
     <p class="backdoor"><b>Backdoor path:</b> the hidden line is a real command (a
       <code>curl | sh</code> installer, a key exfiltration); its trailing newline runs
       it the instant you paste, before your eyes reach the harmless line you meant to copy.</p>
+    <p class="onrecord"><b>Proof of concept:</b> the page-side hidden-copy trick was demonstrated as
+      <a href="https://github.com/dxa4481/Pastejacking">pastejacking</a><a class="arch" href="https://web.archive.org/web/20260525042730/https://github.com/dxa4481/Pastejacking" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+      (2016; no CVE -- inherent browser clipboard behavior). Its active in-the-wild social-engineering cousin,
+      <a href="#clickfix">ClickFix</a>, is below.</p>
   </article>
 
   <article class="issue" id="invisible-chars">
+    <span class="tag evi-rec">Proof of concept</span>
     <span class="tag">Invisible characters</span>
     <h3><a class="cardanchor" href="#invisible-chars">Characters that ride along unseen</a></h3>
     <p class="lead">Zero-width and control characters copy perfectly but display as
@@ -136,9 +142,14 @@
     <p class="backdoor"><b>Backdoor path:</b> the look-alike or zero-width character
       binds the command to a different target -- a typosquatted package name, a different
       host -- so the shell fetches attacker code while the text still reads as the trusted one.</p>
+    <p class="onrecord"><b>Proof of concept:</b> the invisible-character class was formalized as
+      <a href="https://trojansource.codes/">Trojan Source</a><a class="arch" href="https://web.archive.org/web/20260616040501/https://trojansource.codes/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+      (<a href="https://www.cve.org/CVERecord?id=CVE-2021-42574">CVE-2021-42574</a><a class="arch" href="https://web.archive.org/web/20260303144948/https://www.cve.org/CVERecord?id=CVE-2021-42574" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>);
+      invisible Unicode is now used in the wild by the <a href="https://www.aikido.dev/blog/glassworm-returns-unicode-attack-github-npm-vscode">GlassWorm</a> supply-chain worm.</p>
   </article>
 
   <article class="issue" id="autorun">
+    <span class="tag evi-wild">Seen in the wild</span>
     <span class="tag">Auto-run on paste</span>
     <h3><a class="cardanchor" href="#autorun">The paste that presses Enter for you</a></h3>
     <p class="lead">A snippet ending in a newline runs the moment it is pasted into
@@ -156,6 +167,9 @@
     <p class="backdoor"><b>Backdoor path:</b> no hidden line is even needed -- a visible
       command that ends in a newline runs the moment it lands, before you can cancel, and
       any multi-line paste executes every line in sequence.</p>
+    <p class="wild"><b>Seen in the wild:</b> paste-and-run is the payload step of
+      <a href="#clickfix">ClickFix</a> (<a href="https://attack.mitre.org/techniques/T1204/004/">MITRE ATT&amp;CK T1204.004</a><a class="arch" href="https://web.archive.org/web/20260711194112/https://attack.mitre.org/techniques/T1204/004/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>),
+      an active initial-access campaign detailed below.</p>
     <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; a pasted attack, not cat - then paste (Ctrl-Shift-V) into a throwaway terminal</span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/paste-trailing-newline-autoexec" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/paste-trailing-newline-autoexec/payload.b64 &gt; paste.payload</code><button class="copybtn" type="button" hidden>Copy</button></div><div class="copybox"><code class="cmd">xclip -selection clipboard &lt; paste.payload    # X11</code><button class="copybtn" type="button" hidden>Copy</button></div><div class="copybox"><code class="cmd">wl-copy &lt; paste.payload    # Wayland</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
   </div>
@@ -174,6 +188,7 @@
     <p class="lead">A page shows a fake CAPTCHA or "fix this error" box and tells you to press Win+R (or open a terminal) and paste. The command was silently pre-loaded onto your clipboard by the page, so you run the attacker's installer thinking you are just proving you are human.</p>
     <p class="backdoor"><b>Backdoor path:</b> the pasted one-liner fetches and runs an infostealer or RAT (<a href="https://attack.mitre.org/software/S1213/">Lumma Stealer</a><a class="arch" href="https://web.archive.org/web/20260711194212/https://attack.mitre.org/software/S1213/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, <a href="https://attack.mitre.org/software/S1111/">DarkGate</a><a class="arch" href="https://web.archive.org/web/20260603091721/https://attack.mitre.org/software/S1111/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, <a href="https://malpedia.caad.fkie.fraunhofer.de/details/win.netsupportmanager_rat">NetSupport</a><a class="arch" href="https://web.archive.org/web/20260630162143/https://malpedia.caad.fkie.fraunhofer.de/details/win.netsupportmanager_rat" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, <a href="https://attack.mitre.org/software/S1087/">AsyncRAT</a><a class="arch" href="https://web.archive.org/web/20260415164132/https://attack.mitre.org/software/S1087/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>), handing over your credentials, session, and a foothold.</p>
     <p class="wild"><b>Seen in the wild:</b> named by <a href="https://www.proofpoint.com/us/blog/threat-insight/security-brief-clickfix-social-engineering-technique-floods-threat-landscape">Proofpoint</a><a class="arch" href="https://web.archive.org/web/20260630155159/https://www.proofpoint.com/us/blog/threat-insight/security-brief-clickfix-social-engineering-technique-floods-threat-landscape" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, who coined "ClickFix" from a <a href="https://www.proofpoint.com/us/blog/threat-insight/clipboard-compromise-powershell-self-pwn">100,000-message campaign</a><a class="arch" href="https://web.archive.org/web/20260630160348/https://www.proofpoint.com/us/blog/threat-insight/clipboard-compromise-powershell-self-pwn" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> by the broker TA571. It is now its own <a href="https://attack.mitre.org/techniques/T1204/004/">MITRE ATT&amp;CK technique (T1204.004)</a><a class="arch" href="https://web.archive.org/web/20260711194112/https://attack.mitre.org/techniques/T1204/004/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, ranked by <a href="https://redcanary.com/threat-detection-report/techniques/malicious-copy-and-paste/">Red Canary</a><a class="arch" href="https://web.archive.org/web/20260610203819/https://redcanary.com/threat-detection-report/techniques/malicious-copy-and-paste/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> as the #2 initial-access vector of 2025, and adopted by nation-state actors: <a href="https://www.proofpoint.com/us/blog/threat-insight/around-world-90-days-state-sponsored-actors-try-clickfix">Kimsuky (DPRK), MuddyWater (Iran) and APT28 (Russia)</a><a class="arch" href="https://web.archive.org/web/20260630162730/https://www.proofpoint.com/us/blog/threat-insight/around-world-90-days-state-sponsored-actors-try-clickfix" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>. <a href="https://www.microsoft.com/en-us/security/blog/2025/08/21/think-before-you-clickfix-analyzing-the-clickfix-social-engineering-technique/">Microsoft</a><a class="arch" href="https://web.archive.org/web/20260704055718/https://www.microsoft.com/en-us/security/blog/2025/08/21/think-before-you-clickfix-analyzing-the-clickfix-social-engineering-technique/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, which tracks the technique too, reports campaigns hitting thousands of devices daily.</p>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; the clipboard-preload + paste-and-run step -- the fake CAPTCHA page that delivers it is social engineering, not a static fixture</span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/paste-trailing-newline-autoexec" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/paste-trailing-newline-autoexec/payload.b64 | wl-copy    # then paste into a throwaway shell</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 
   <article class="issue" id="clipper">
@@ -183,6 +198,7 @@
     <p class="lead">Malware on the machine watches the clipboard and swaps what you copied for something else (classically a cryptocurrency wallet address replaced with the attacker's look-alike), so the value you paste is not the value you copied.</p>
     <p class="backdoor"><b>Backdoor path:</b> you copy a wallet address and paste it to send funds; the money goes to the attacker. The swap happens silently between copy and paste, with no visible change.</p>
     <p class="wild"><b>Seen in the wild:</b> a long-running malware class: <a href="https://www.kaspersky.com/blog/cryptoshuffler-bitcoin-stealer/19976/">CryptoShuffler</a><a class="arch" href="https://web.archive.org/web/20260411044629/https://www.kaspersky.com/blog/cryptoshuffler-bitcoin-stealer/19976/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> (2017, ~$140k stolen) and the <a href="https://thehackernews.com/2022/11/new-laplas-clipper-malware-targeting.html">Laplas Clipper</a><a class="arch" href="https://web.archive.org/web/20260214231144/https://thehackernews.com/2022/11/new-laplas-clipper-malware-targeting.html" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> malware-as-a-service (2022), which mints a look-alike address matching the first and last characters of yours. <a href="https://www.bleepingcomputer.com/news/security/new-clipboard-hijacker-replaces-crypto-wallet-addresses-with-lookalikes/">More reporting</a><a class="arch" href="https://web.archive.org/web/20260228112147/https://www.bleepingcomputer.com/news/security/new-clipboard-hijacker-replaces-crypto-wallet-addresses-with-lookalikes/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.</p>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; a benign hand-run stand-in for the outcome -- real clipper malware does the swap automatically, watching for wallet-shaped strings. No resident monitor is shipped here; the values are obvious DEMO placeholders.</span></div><div class="copybox"><code class="cmd">printf 'bc1q-DEMO-your-own-wallet' | wl-copy      # what you meant to copy</code><button class="copybtn" type="button" hidden>Copy</button></div><div class="copybox"><code class="cmd">printf 'bc1q-DEMO-ATTACKER-lookalike' | wl-copy   # a "clipper" silently overwrites it</code><button class="copybtn" type="button" hidden>Copy</button></div><div class="copybox"><code class="cmd">wl-paste    # you paste the attacker address, not yours</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
   </div>
 </div></section>
@@ -195,6 +211,7 @@
     <code>echo</code>, but it could have been anything.</p>
 
   <article class="issue">
+    <span class="tag evi-rec">Proof of concept</span>
     <span class="tag">Try it: echo only, nothing runs</span>
     <h3><a class="cardanchor" href="#demo">Copy one line. Get two.</a></h3>
     <div class="panes">
@@ -217,6 +234,7 @@ echo "GOTCHA: this second line was hidden in the copy; imagine a real command he
   </article>
 
   <article class="issue">
+    <span class="tag evi-rec">Proof of concept</span>
     <span class="tag">Try it: invisible character</span>
     <h3><a class="cardanchor" href="#demo">Copy a clean-looking command. Get a hidden character.</a></h3>
     <div class="panes">

@@ -262,6 +262,7 @@
 
 
   <article class="issue" id="zero-width">
+    <span class="tag evi-rec">Proof of concept</span>
     <span class="tag">Invisible</span>
     <h3><a class="cardanchor" href="#zero-width">Zero-width character</a></h3>
     <p class="lead">A U+200B splits a token where you see none. <code>ADMIN&#x200b;TOKEN</code>
@@ -278,10 +279,12 @@
     <p class="catch"><b>The catch:</b> the invisible becomes visible: one
       inert <code>_</code> exactly where the zero-width byte hid.</p>
     <p class="backdoor"><b>Backdoor path:</b> Split an identifier with a zero-width character so <code>admin_token</code> and <code>admin&lt;zwsp&gt;_token</code> look identical but bind to different values, routing a secret to the attacker's name.</p>
+    <p class="onrecord"><b>Proof of concept:</b> the zero-width / invisible-character half of <a href="https://www.cve.org/CVERecord?id=CVE-2021-42574">Trojan Source (CVE-2021-42574)</a><a class="arch" href="https://web.archive.org/web/20260303144948/https://www.cve.org/CVERecord?id=CVE-2021-42574" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>; research disclosure. Invisible Unicode is now used in the wild by the <a href="https://www.aikido.dev/blog/glassworm-returns-unicode-attack-github-npm-vscode">GlassWorm</a> supply-chain worm.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...content/zero-width">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..content/zero-width</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 
   <article class="issue" id="whitespace">
+    <span class="tag evi-known">Known technique</span>
     <span class="tag">Valid but confusing</span>
     <h3><a class="cardanchor" href="#whitespace">Unicode whitespace</a></h3>
     <p class="lead">A no-break space (U+00A0) stands in for an ordinary space.
@@ -300,11 +303,13 @@
     <p class="catch"><b>The catch:</b> a benign-but-baffling change is shown
       plainly rather than crashing the review: an ordinary-looking space that is really a Unicode character.</p>
     <p class="backdoor"><b>Backdoor path:</b> Swap an ASCII space for U+00A0 in a config key, so the parser reads a different key than the reviewer: a hardening flag that looks set is silently ignored.</p>
+    <p class="knowntech"><b>Known technique:</b> a recognized visual-spoof class; no CVE or documented campaign covers Unicode-whitespace substitution in code review.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...content/unicode-whitespace">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..content/unicode-whitespace</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 
 
   <article class="issue" id="overlong">
+    <span class="tag evi-known">Known technique</span>
     <span class="tag">Hidden by length</span>
     <h3><a class="cardanchor" href="#overlong">Over-long line</a></h3>
     <p class="lead">One 6000-character line. Pagers truncate it or hang; the
@@ -319,10 +324,12 @@
     <p class="catch"><b>The catch:</b> the length is called out up front, so a
       truncating viewer can't quietly swallow the tail.</p>
     <p class="backdoor"><b>Backdoor path:</b> Pad the line with thousands of characters so a payload sits far past where the pager truncates: off-screen, and unreviewed.</p>
+    <p class="knowntech"><b>Known technique:</b> a well-understood pager/diff truncation evasion; no CVE or documented campaign.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...content/overlong-line">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..content/overlong-line</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 
   <article class="issue" id="nul">
+    <span class="tag evi-known">Known technique</span>
     <span class="tag">Hidden as binary</span>
     <h3><a class="cardanchor" href="#nul">Embedded NUL byte</a></h3>
     <p class="lead">One <code>\0</code> makes git treat the file as binary. The
@@ -340,6 +347,7 @@ b/data/config.env differ</span>
     <p class="catch"><b>The catch:</b> the binary flip itself is flagged, so
       "git treated this as binary" can't be mistaken for "nothing to see".</p>
     <p class="backdoor"><b>Backdoor path:</b> One NUL byte flips a source file to 'binary', so <code>git diff</code> shows only 'Binary files differ' and the added backdoor line is never rendered for review.</p>
+    <p class="knowntech"><b>Known technique:</b> documented, intended git behavior (a NUL flips a file to binary); no CVE or documented campaign.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...content/nul-byte">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..content/nul-byte</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
   <div class="strip">
@@ -358,6 +366,7 @@ b/data/config.env differ</span>
 
 
   <article class="issue" id="gitattributes">
+    <span class="tag evi-known">Known technique</span>
     <span class="tag">Fails closed</span>
     <h3><a class="cardanchor" href="#gitattributes">.gitattributes that hides a change</a></h3>
     <p class="lead">Add a <code>.gitattributes</code> marking a changed file
@@ -378,6 +387,7 @@ b/data/config.env differ</span>
       blind it, the tool refuses. The same holds when the file sits in a
       non-ASCII directory that git quotes in its output.</p>
     <p class="backdoor"><b>Backdoor path:</b> Commit a <code>.gitattributes</code> marking <code>auth.c -diff</code>, then backdoor <code>auth.c</code>: the pull request shows no change for that file, so the edit ships invisibly.</p>
+    <p class="knowntech"><b>Known technique:</b> named as an abuse vector in supply-chain research, but no CVE or confirmed in-the-wild campaign.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...path/gitattributes-hide-diff">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..path/gitattributes-hide-diff</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
   <div class="strip">
@@ -397,6 +407,7 @@ b/data/config.env differ</span>
     the metadata.</p>
 
   <article class="issue" id="mode-exec">
+    <span class="tag evi-known">Known technique</span>
     <span class="tag">Invisible change</span>
     <h3><a class="cardanchor" href="#mode-exec">Executable bit, no content change</a></h3>
     <p class="lead">Flip a file to <code>+x</code> without touching a byte of
@@ -412,12 +423,14 @@ b/data/config.env differ</span>
     <p class="catch"><b>The catch:</b> the mode transition is reported explicitly,
       so "nothing changed" can't hide "it's executable now".</p>
     <p class="backdoor"><b>Backdoor path:</b> Set <code>+x</code> on a committed data or config file with no content change; a content-only diff shows nothing, but a build step or cron now executes it.</p>
+    <p class="knowntech"><b>Known technique:</b> universally documented git behavior (a mode-only change); no CVE or documented campaign.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...type/mode-exec">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..type/mode-exec</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 
 
 
   <article class="issue" id="gitlink-mimic">
+    <span class="tag evi-known">Known technique</span>
     <span class="tag">Spoof</span>
     <h3><a class="cardanchor" href="#gitlink-mimic">File that mimics a gitlink</a></h3>
     <p class="lead">An ordinary file whose contents read
@@ -434,6 +447,7 @@ b/data/config.env differ</span>
     <p class="catch"><b>The catch:</b> the tool checks the real object mode, not
       the text, and flags the disguise.</p>
     <p class="backdoor"><b>Backdoor path:</b> A file whose content reads <code>Subproject commit &lt;hash&gt;</code> makes a reviewer believe a submodule pointer moved, masking what really changed, or disguising a payload as an inert gitlink line.</p>
+    <p class="knowntech"><b>Known technique:</b> a plausible obfuscation; no CVE or documented use.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...type/gitlink-mimic">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..type/gitlink-mimic</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
   <div class="strip">
@@ -452,6 +466,7 @@ b/data/config.env differ</span>
     spoof another.</p>
 
   <article class="issue" id="refname">
+    <span class="tag evi-rec">Proof of concept</span>
     <span class="tag">Branch name</span>
     <h3><a class="cardanchor" href="#refname">Spoofed ref names</a></h3>
     <p class="lead">One branch reads as <code>releasegpj</code>; the other sits
@@ -470,6 +485,7 @@ b/data/config.env differ</span>
     <p class="catch"><b>The catch:</b> scan ref names, not just file content --
       a fetched branch list is attacker-controlled text too.</p>
     <p class="backdoor"><b>Backdoor path:</b> Push a branch whose name is a homoglyph of <code>master</code>; a maintainer merges the look-alike and pulls attacker code, believing they merged the real default branch.</p>
+    <p class="onrecord"><b>Proof of concept:</b> ref names extend the <a href="https://www.cve.org/CVERecord?id=CVE-2021-42574">Trojan Source</a><a class="arch" href="https://web.archive.org/web/20260303144948/https://www.cve.org/CVERecord?id=CVE-2021-42574" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> bidi (CVE-2021-42574) and <a href="https://www.cve.org/CVERecord?id=CVE-2021-42694">homoglyph (CVE-2021-42694)</a><a class="arch" href="https://web.archive.org/web/20260216114235/https://www.cve.org/CVERecord?id=CVE-2021-42694" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> classes to branch names; research disclosure, no documented in-the-wild use.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> <span class="rnote">&middot; the branch list itself is the attack: a bidi-reordered name and a homoglyph <code>master</code>.</span> &middot; <a href="https://github.com/output-lies/git-diffs-lie/branches/all">all branches &rarr;</a></div><div class="copybox"><code class="cmd">git for-each-ref --format='%(refname)' refs/heads</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 </div></section>
