@@ -150,6 +150,20 @@
 
   <div class="cards">
   <article class="issue">
+    <span class="tag evi-wild">Seen in the wild</span>
+    <h3>Homoglyph domains - a padlock on the wrong site</h3>
+    <p class="lead">A registrable look-alike: <code>&#x0430;pple.com</code> begins with U+0430 CYRILLIC SMALL
+      LETTER A, not Latin <code>a</code>. It is a different domain that can hold its own valid TLS certificate and
+      padlock. Xudong Zheng's 2017 proof-of-concept registered a Cyrillic <code>apple.com</code> that Chrome and
+      Firefox then displayed indistinguishably from the real one.</p>
+    <p class="catch"><b>The fix:</b> Chrome, Safari and Edge now show the punycode form (<code>xn--...</code>) for
+      confusable domains, though Firefox still renders whole-script Cyrillic look-alikes by default; registrars also restrict mixed-script registrations. The same trick still
+      works on package names and command names, which have no such guard.</p>
+    <p class="wild"><b>Seen in the wild:</b> homoglyph domains are an active phishing technique --
+      <a href="https://www.xudongz.com/blog/2017/idn-phishing/">xudongz.com - Phishing with Unicode Domains</a>.</p>
+  </article>
+
+  <article class="issue">
     <span class="tag evi-rec">Proof of concept</span>
     <h3>Trojan Source - a backdoor your eyes cannot see</h3>
     <p class="lead">2021, <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-42574" rel="noopener">CVE-2021-42574</a> (bidi) and <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-42694" rel="noopener">CVE-2021-42694</a> (homoglyph), Boucher &amp; Anderson at Cambridge.
@@ -166,25 +180,11 @@
   </article>
 
   <article class="issue">
-    <span class="tag evi-wild">Seen in the wild</span>
-    <h3>Homoglyph domains - a padlock on the wrong site</h3>
-    <p class="lead">A registrable look-alike: <code>&#x0430;pple.com</code> begins with U+0430 CYRILLIC SMALL
-      LETTER A, not Latin <code>a</code>. It is a different domain that can hold its own valid TLS certificate and
-      padlock. Xudong Zheng's 2017 proof-of-concept registered a Cyrillic <code>apple.com</code> that Chrome and
-      Firefox then displayed indistinguishably from the real one.</p>
-    <p class="catch"><b>The fix:</b> Chrome, Safari and Edge now show the punycode form (<code>xn--...</code>) for
-      confusable domains, though Firefox still renders whole-script Cyrillic look-alikes by default; registrars also restrict mixed-script registrations. The same trick still
-      works on package names and command names, which have no such guard.</p>
-    <p class="wild"><b>Seen in the wild:</b> homoglyph domains are an active phishing technique --
-      <a href="https://www.xudongz.com/blog/2017/idn-phishing/">xudongz.com - Phishing with Unicode Domains</a>.</p>
-  </article>
-
-  <article class="issue">
     <span class="tag evi-rec">Proof of concept</span>
     <h3>Pastejacking - you copied one command, you ran another</h3>
     <p class="lead">2016, Dylan Ayrey. A command shown on a web page is copied, but a JavaScript copy handler
       (or CSS-hidden text, or a trailing newline) places something <em>else</em> on your clipboard. Paste it into
-      a terminal and a hidden trailing newline runs it immediately, before you can read it.</p>
+      an unprotected terminal and a hidden trailing newline runs it before you can read it.</p>
     <p class="catch"><b>The fix:</b> paste into an editor first, never straight into a shell; enable bracketed
       paste so a pasted newline cannot auto-execute; and treat every "copy" button as untrusted. There is a live,
       safe demonstration on the <a href="/paste/">Paste</a> page.</p>

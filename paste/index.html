@@ -53,8 +53,8 @@
   <h1>What you copy is not always what you <span class="u">paste</span>.</h1>
   <p class="sub">You copy one harmless-looking command from a web page. What lands
     in your clipboard can carry extra lines and invisible characters you never
-    saw, and a single trailing newline runs them the instant they hit a
-    terminal.</p>
+    saw, and a single trailing newline can run them the instant they hit an
+    unprotected terminal.</p>
   <div class="cta">
     <a class="btn primary" href="#demo">See it happen (safely)</a>
     <a class="btn ghost" href="#how">Copy safely</a>
@@ -66,8 +66,8 @@
 <div class="wrap"><nav class="toc" aria-label="On this page">
   <p class="toch">On this page</p>
   <ul>
-    <li><a href="#trick">The trick</a></li>
     <li><a href="#wild">In the wild</a></li>
+    <li><a href="#trick">The trick</a></li>
     <li><a href="#demo">Live demo</a></li>
     <li><a href="#try">Try it yourself</a></li>
     <li><a href="#how">Copy safely</a></li>
@@ -102,79 +102,6 @@
   </div>
 </div></section>
 
-<!-- ===================== THE TRICK ===================== -->
-<section class="cat" id="trick"><div class="wrap">
-  <h2 class="catname"><a class="h-anchor" href="#trick">The trick</a></h2>
-  <p class="catdesc">A rendered snippet and its underlying text are two different
-    things. Three ways they come apart on the way to your shell.</p>
-
-  <div class="cards">
-  <article class="issue" id="extra-line">
-    <span class="tag evi-rec">Proof of concept</span>
-    <span class="tag">Hidden line</span>
-    <h3><a class="cardanchor" href="#extra-line">The extra line you never saw</a></h3>
-    <p class="lead">Text placed off-screen with CSS, or tucked into a zero-height
-      element, is still part of what you select and copy. The page shows one
-      command; the clipboard gets two. Like invisible ink on a page you photocopy:
-      the copy captures what your eyes skipped.</p>
-    <p class="catch"><b>The catch:</b> if the hidden portion ends in a newline,
-      pasting it into a terminal <em>submits</em> it; the second command runs
-      before you have read the first.</p>
-    <p class="backdoor"><b>Backdoor path:</b> the hidden line is a real command (a
-      <code>curl | sh</code> installer, a key exfiltration); its trailing newline runs
-      it the instant you paste, before your eyes reach the harmless line you meant to copy.</p>
-    <p class="onrecord"><b>Proof of concept:</b> the page-side hidden-copy trick was demonstrated as
-      <a href="https://github.com/dxa4481/Pastejacking">pastejacking</a><a class="arch" href="https://web.archive.org/web/20260525042730/https://github.com/dxa4481/Pastejacking" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
-      (2016; no CVE -- inherent browser clipboard behavior). Its active in-the-wild social-engineering cousin,
-      <a href="#clickfix">ClickFix</a>, is below.</p>
-  </article>
-
-  <article class="issue" id="invisible-chars">
-    <span class="tag evi-rec">Proof of concept</span>
-    <span class="tag">Invisible characters</span>
-    <h3><a class="cardanchor" href="#invisible-chars">Characters that ride along unseen</a></h3>
-    <p class="lead">Zero-width and control characters copy perfectly but display as
-      nothing. A command that reads <code>pip install requests</code> can carry an
-      invisible break, or a look-alike letter, so the thing your shell runs is not
-      the thing you read: an invisible extra character wedged inside a word.</p>
-    <p class="catch"><b>The catch:</b> the payload survives a glance, a code
-      font, even a careful proofread. It is not on the screen to be seen.</p>
-    <p class="backdoor"><b>Backdoor path:</b> the look-alike or zero-width character
-      binds the command to a different target -- a typosquatted package name, a different
-      host -- so the shell fetches attacker code while the text still reads as the trusted one.</p>
-    <p class="onrecord"><b>Proof of concept:</b> the invisible-character class was formalized as
-      <a href="https://trojansource.codes/">Trojan Source</a><a class="arch" href="https://web.archive.org/web/20260616040501/https://trojansource.codes/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
-      (<a href="https://www.cve.org/CVERecord?id=CVE-2021-42574">CVE-2021-42574</a><a class="arch" href="https://web.archive.org/web/20260303144948/https://www.cve.org/CVERecord?id=CVE-2021-42574" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>);
-      invisible Unicode is now used in the wild by the <a href="https://www.aikido.dev/blog/glassworm-returns-unicode-attack-github-npm-vscode">GlassWorm</a> supply-chain worm.</p>
-  </article>
-
-  <article class="issue" id="autorun">
-    <span class="tag evi-wild">Seen in the wild</span>
-    <span class="tag">Auto-run on paste</span>
-    <h3><a class="cardanchor" href="#autorun">The paste that presses Enter for you</a></h3>
-    <p class="lead">A snippet ending in a newline runs the moment it is pasted into
-      a terminal. You meant to read it first; the newline did not wait. Bracketed
-      paste stops this only when both sides cooperate: the terminal wraps the
-      paste (near-universal now) <em>and</em> the program reading it neutralises the
-      embedded newline. Modern shells do by default (bash 5.1+, zsh); older or
-      minimal ones do not -- bash before 5.1, POSIX <code>/bin/sh</code> (dash) and
-      busybox ash, and any non-shell prompt (<code>cat</code>, a language REPL, a
-      serial console, <code>ssh</code> into an old box) still submit a multi-line
-      paste immediately.</p>
-    <p class="catch"><b>The catch:</b> combined with a hidden line, there is no
-      pause to notice anything: the copy, the paste, and the execution are one
-      motion.</p>
-    <p class="backdoor"><b>Backdoor path:</b> no hidden line is even needed -- a visible
-      command that ends in a newline runs the moment it lands, before you can cancel, and
-      any multi-line paste executes every line in sequence.</p>
-    <p class="wild"><b>Seen in the wild:</b> paste-and-run is the payload step of
-      <a href="#clickfix">ClickFix</a> (<a href="https://attack.mitre.org/techniques/T1204/004/">MITRE ATT&amp;CK T1204.004</a><a class="arch" href="https://web.archive.org/web/20260711194112/https://attack.mitre.org/techniques/T1204/004/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>),
-      an active initial-access campaign detailed below.</p>
-    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; a pasted attack, not cat - then paste (Ctrl-Shift-V) into a throwaway terminal</span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/paste-trailing-newline-autoexec" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/paste-trailing-newline-autoexec/payload.b64 &gt; paste.payload</code><button class="copybtn" type="button" hidden>Copy</button></div><div class="copybox"><code class="cmd">xclip -selection clipboard &lt; paste.payload    # X11</code><button class="copybtn" type="button" hidden>Copy</button></div><div class="copybox"><code class="cmd">wl-copy &lt; paste.payload    # Wayland</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
-  </article>
-  </div>
-</div></section>
-
 <!-- ===================== SEEN IN THE WILD ===================== -->
 <section class="cat" id="wild"><div class="wrap">
   <h2 class="catname"><a class="h-anchor" href="#wild">Seen in the wild</a></h2>
@@ -199,6 +126,83 @@
     <p class="backdoor"><b>Backdoor path:</b> you copy a wallet address and paste it to send funds; the money goes to the attacker. The swap happens silently between copy and paste, with no visible change.</p>
     <p class="wild"><b>Seen in the wild:</b> a long-running malware class: <a href="https://www.kaspersky.com/blog/cryptoshuffler-bitcoin-stealer/19976/">CryptoShuffler</a><a class="arch" href="https://web.archive.org/web/20260411044629/https://www.kaspersky.com/blog/cryptoshuffler-bitcoin-stealer/19976/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> (2017, ~$140k stolen) and the <a href="https://thehackernews.com/2022/11/new-laplas-clipper-malware-targeting.html">Laplas Clipper</a><a class="arch" href="https://web.archive.org/web/20260214231144/https://thehackernews.com/2022/11/new-laplas-clipper-malware-targeting.html" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> malware-as-a-service (2022), which mints a look-alike address matching the first and last characters of yours. <a href="https://www.bleepingcomputer.com/news/security/new-clipboard-hijacker-replaces-crypto-wallet-addresses-with-lookalikes/">More reporting</a><a class="arch" href="https://web.archive.org/web/20260228112147/https://www.bleepingcomputer.com/news/security/new-clipboard-hijacker-replaces-crypto-wallet-addresses-with-lookalikes/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.</p>
     <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; a benign hand-run stand-in for the outcome -- real clipper malware does the swap automatically, watching for wallet-shaped strings. No resident monitor is shipped here; the values are obvious DEMO placeholders.</span></div><div class="copybox"><code class="cmd">printf 'bc1q-DEMO-your-own-wallet' | wl-copy      # what you meant to copy</code><button class="copybtn" type="button" hidden>Copy</button></div><div class="copybox"><code class="cmd">printf 'bc1q-DEMO-ATTACKER-lookalike' | wl-copy   # a "clipper" silently overwrites it</code><button class="copybtn" type="button" hidden>Copy</button></div><div class="copybox"><code class="cmd">wl-paste    # you paste the attacker address, not yours</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+  </article>
+  </div>
+</div></section>
+
+<!-- ===================== THE TRICK ===================== -->
+<section class="cat" id="trick"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#trick">The trick</a></h2>
+  <p class="catdesc">A rendered snippet and its underlying text are two different
+    things. Three ways they come apart on the way to your shell.</p>
+
+  <div class="cards">
+  <article class="issue" id="autorun">
+    <span class="tag evi-wild">Seen in the wild</span>
+    <span class="tag">Auto-run on paste</span>
+    <h3><a class="cardanchor" href="#autorun">The paste that presses Enter for you</a></h3>
+    <p class="lead">Modern terminals and shells defend against this by default: on a
+      current emulator with interactive bash (&gt;= 5.1, Dec 2020), zsh or fish, a pasted
+      newline is <em>held</em> on the command line for you to review -- "bracketed paste,"
+      on by default. But it is not universal. It fails wherever the reader does not honour
+      it: bash before 5.1, minimal shells (POSIX <code>/bin/sh</code> (dash), busybox ash),
+      raw REPLs and readers that never request it (<code>cat</code>, a language REPL, a
+      serial or recovery console), <code>ssh</code> into an old host, or an app that turns
+      the mode off. There, a snippet ending in a newline still submits the moment it lands --
+      and it can be bypassed on unpatched terminals by crafted clipboard content
+      (<a href="https://www.tenable.com/cve/CVE-2021-31701" rel="noopener">CVE-2021-31701</a>).</p>
+    <p class="catch"><b>The catch:</b> on such a reader, combined with a hidden line, there
+      is no pause to notice anything: the copy, the paste, and the execution are one
+      motion.</p>
+    <p class="backdoor"><b>Backdoor path:</b> no hidden line is even needed -- on a reader
+      without bracketed paste, a visible command that ends in a newline runs the moment it
+      lands, before you can cancel, and any multi-line paste executes every line in sequence.</p>
+    <p class="wild"><b>Seen in the wild:</b> paste-and-run is the payload step of
+      <a href="#clickfix">ClickFix</a> (<a href="https://attack.mitre.org/techniques/T1204/004/">MITRE ATT&amp;CK T1204.004</a><a class="arch" href="https://web.archive.org/web/20260711194112/https://attack.mitre.org/techniques/T1204/004/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>),
+      an active initial-access campaign detailed above.</p>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; a pasted attack, not cat - then paste (Ctrl-Shift-V) into a throwaway terminal</span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/paste-trailing-newline-autoexec" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/paste-trailing-newline-autoexec/payload.b64 &gt; paste.payload</code><button class="copybtn" type="button" hidden>Copy</button></div><div class="copybox"><code class="cmd">xclip -selection clipboard &lt; paste.payload    # X11</code><button class="copybtn" type="button" hidden>Copy</button></div><div class="copybox"><code class="cmd">wl-copy &lt; paste.payload    # Wayland</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+  </article>
+
+  <article class="issue" id="extra-line">
+    <span class="tag evi-rec">Proof of concept</span>
+    <span class="tag">Hidden line</span>
+    <h3><a class="cardanchor" href="#extra-line">The extra line you never saw</a></h3>
+    <p class="lead">Text placed off-screen with CSS, or tucked into a zero-height
+      element, is still part of what you select and copy. The page shows one
+      command; the clipboard gets two. Like invisible ink on a page you photocopy:
+      the copy captures what your eyes skipped.</p>
+    <p class="catch"><b>The catch:</b> if the hidden portion ends in a newline, a reader
+      without bracketed paste <em>submits</em> it the moment you paste and the second command
+      runs before you have read the first. Modern bash/zsh/fish hold it by default (see
+      <a href="#autorun">Auto-run on paste</a>) -- older or minimal shells, REPLs and old SSH
+      hosts do not, so do not rely on it.</p>
+    <p class="backdoor"><b>Backdoor path:</b> the hidden line is a real command (a
+      <code>curl | sh</code> installer, a key exfiltration); on an unprotected reader its
+      trailing newline runs it the instant you paste, before your eyes reach the harmless
+      line you meant to copy.</p>
+    <p class="onrecord"><b>Proof of concept:</b> the page-side hidden-copy trick was demonstrated as
+      <a href="https://github.com/dxa4481/Pastejacking">pastejacking</a><a class="arch" href="https://web.archive.org/web/20260525042730/https://github.com/dxa4481/Pastejacking" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+      (2016; no CVE -- inherent browser clipboard behavior). Its active in-the-wild social-engineering cousin,
+      <a href="#clickfix">ClickFix</a>, is above.</p>
+  </article>
+
+  <article class="issue" id="invisible-chars">
+    <span class="tag evi-rec">Proof of concept</span>
+    <span class="tag">Invisible characters</span>
+    <h3><a class="cardanchor" href="#invisible-chars">Characters that ride along unseen</a></h3>
+    <p class="lead">Zero-width and control characters copy perfectly but display as
+      nothing. A command that reads <code>pip install requests</code> can carry an
+      invisible break, or a look-alike letter, so the thing your shell runs is not
+      the thing you read: an invisible extra character wedged inside a word.</p>
+    <p class="catch"><b>The catch:</b> the payload survives a glance, a code
+      font, even a careful proofread. It is not on the screen to be seen.</p>
+    <p class="backdoor"><b>Backdoor path:</b> the look-alike or zero-width character
+      binds the command to a different target -- a typosquatted package name, a different
+      host -- so the shell fetches attacker code while the text still reads as the trusted one.</p>
+    <p class="onrecord"><b>Proof of concept:</b> the invisible-character class was formalized as
+      <a href="https://trojansource.codes/">Trojan Source</a><a class="arch" href="https://web.archive.org/web/20260616040501/https://trojansource.codes/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+      (<a href="https://www.cve.org/CVERecord?id=CVE-2021-42574">CVE-2021-42574</a><a class="arch" href="https://web.archive.org/web/20260303144948/https://www.cve.org/CVERecord?id=CVE-2021-42574" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>);
+      research disclosure, no documented in-the-wild use of this copy-paste vector.</p>
   </article>
   </div>
 </div></section>
