@@ -55,32 +55,38 @@
     terminal run commands. "Lie" undersells it: <code>cat</code> does not just
     believe the file, it obeys it. These tools show you what is actually there.</p>
   <div class="cta">
-    <a class="btn primary" href="#unicode-show">See the tools</a>
-    <a class="btn ghost" href="https://github.com/Kicksecure/helper-scripts">Get them</a>
-    <a class="btn ghost" href="/git-diffs-lie/">See the examples</a>
+    <a class="btn primary" href="#wild">See the tricks</a>
+    <a class="btn ghost" href="#solution">Get the tools</a>
+    <a class="btn ghost" href="/git-diffs-lie/">See the diffs</a>
   </div>
-  <p class="coverage">reveal hidden Unicode / neutralize escape sequences / sanitize untrusted strings</p>
+  <p class="coverage">7 techniques &middot; 1 seen in the wild &middot; one safe view</p>
 </div></section>
 
 <div class="wrap"><nav class="toc" aria-label="On this page">
   <p class="toch">On this page</p>
   <ul>
+    <li><a href="#wild">In the wild</a></li>
+    <li><a href="#on-record">Proof of concept</a></li>
+    <li><a href="#known">Known technique</a></li>
+    <li><a href="#solution">The safe tools</a></li>
     <li><a href="#secure-terminal">Live terminal</a></li>
-    <li><a href="#unicode-show">Reveal</a></li>
-    <li><a href="#grep">Find</a></li>
-    <li><a href="#scan">Scan</a></li>
-    <li><a href="#stcat">Neutralize</a></li>
-    <li><a href="#sanitize">Sanitize</a></li>
-    <li><a href="#board">Combined board</a></li>
-    <li><a href="#osc8">Hyperlink</a></li>
-    <li><a href="#altscreen">Alt-screen</a></li>
     <li><a href="#classes">Attack classes</a></li>
     <li><a href="#family">The family</a></li>
-    <li><a href="#record">Proof of concept</a></li>
-    <li><a href="#git-review">The same defense, for diffs</a></li>
+    <li><a href="#board">Combined board</a></li>
+    <li><a href="#try">Try it</a></li>
+    <li><a href="#git-review">Diffs too</a></li>
     <li><a href="#faq">FAQ</a></li>
   </ul>
 </nav></div>
+
+<section class="whatis"><div class="wrap">
+  <p><b>What is this?</b> When you read output in a terminal (a log, a paste, a
+    downloaded file) you trust that what your terminal draws is what the bytes say.
+    This page collects the ways an attacker makes those two differ: your screen shows
+    one thing, the bytes are another, and on a vulnerable terminal they can even run
+    commands. Then it shows the tools that make the safe view the default. Every
+    example here is safe to read.</p>
+</div></section>
 
 <section class="thesis"><div class="wrap">
   <div class="grid">
@@ -99,14 +105,322 @@
   </div>
 </div></section>
 
-<section class="cat"><div class="wrap">
-  <p class="catdesc" style="max-width:74ch"><b>How to reproduce these:</b> each card below shows the exact command. Run the safe tool on any file and you see the same thing. Unlike the <a href="/git-diffs-lie/">diff corpus</a>, where every trick is a real git branch you can <code>git diff master..&lt;branch&gt;</code>, terminal and paste attacks are <em>techniques</em>, not stored fixtures, so they are demonstrated by the commands shown here and by the live demo on the <a href="/paste/">paste page</a>.</p>
+<!-- ===================== IN THE WILD ===================== -->
+<section class="cat" id="wild"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#wild">Seen in the wild</a></h2>
+  <p class="catdesc">Start here: the one trick on this page with documented real-world
+    exploitation. The escape-sequence tricks that follow are high-severity but, as far
+    as public reporting shows, proof-of-concept only. Hiding code in characters your
+    eyes cannot see is not.</p>
+
+  <article class="issue" id="invisible">
+    <span class="tag evi-wild">Seen in the wild</span>
+    <span class="tag">Invisible &amp; look-alike characters</span>
+    <h3><a class="cardanchor" href="#invisible">Code hidden in characters you can't see</a></h3>
+    <p class="lead">A hidden control character, an invisible zero-width byte, or a
+      Cyrillic look-alike letter reads as ordinary code, and <code>cat</code> never
+      mentions it. <code>unicode-show</code> flags every byte outside printable ASCII
+      with its line number, <code>[U+XXXX]</code> marker, name and category.</p>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> cat</div><pre class="term"><span class="p">$</span> cat withdraw.py
+# Subtract funds from the account, then &#x2067;refund the user&#x2069;
+
+<span class="dim"># reads clean; an isolate char quietly reorders it</span></pre></div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> unicode-show</div><pre class="term"><span class="p">$</span> unicode-show withdraw.py
+withdraw.py:1: # Subtract funds ... then <span class="cp">[U+2067]</span>refund the user
+   <span class="cp">-> U+2067 RIGHT-TO-LEFT ISOLATE (Cf)</span>
+<span class="p">$</span> echo $?
+<span class="w">1</span></pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> the exit code reports it too:
+      <code>0</code> clean, <code>1</code> suspicious, <code>2</code>
+      error (unreadable or undecodable). Scriptable, not just visible.
+      (<a href="https://www.kicksecure.com/wiki/Unicode-show">docs</a><a class="arch" href="https://web.archive.org/web/20260311005257/https://www.kicksecure.com/wiki/Unicode-show" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>)</p>
+    <p class="backdoor"><b>Backdoor path:</b> split or disguise an identifier with an
+      invisible or look-alike character, so a call the reviewer reads as
+      <code>validate()</code> binds to a different, attacker-defined symbol, or hide
+      live code in bytes that render as nothing at all.</p>
+    <p class="wild"><b>Seen in the wild:</b> the <a href="https://www.aikido.dev/blog/glassworm-returns-unicode-attack-github-npm-vscode">GlassWorm</a>
+      supply-chain worm (2025-2026) hid live malware in invisible Unicode across 400+
+      code repositories on GitHub, npm and the VS Code marketplace (different mechanism
+      from the escape-sequence cards below, same blind spot). The bidi and
+      homoglyph half of this class was formalized as <a href="https://www.cve.org/CVERecord?id=CVE-2021-42574">Trojan Source (CVE-2021-42574)</a><a class="arch" href="https://web.archive.org/web/20260303144948/https://www.cve.org/CVERecord?id=CVE-2021-42574" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>
+      and <a href="https://www.cve.org/CVERecord?id=CVE-2021-42694">CVE-2021-42694</a><a class="arch" href="https://web.archive.org/web/20260216114235/https://www.cve.org/CVERecord?id=CVE-2021-42694" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.</p>
+    <figure class="shot">
+      <img src="/unicode-show-demo.webp" width="810" height="334" loading="lazy"
+        alt="unicode-show run on a file named auth.py that reads like ordinary code. Each hidden character is flagged inline as a red bracketed codepoint such as [U+202E], and annotated on the next line in cyan with its codepoint, official name and category (RIGHT-TO-LEFT OVERRIDE, CYRILLIC SMALL LETTER A, ZERO WIDTH SPACE, NO-BREAK SPACE, SPACE), plus a note that the final newline is missing.">
+      <figcaption>The real tool in a terminal: run on a file that reads clean, unicode-show names and colors every hidden character right where it hides.</figcaption>
+    </figure>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; view with <code>unicode-show</code> / <code>stcat</code>, never bare <code>cat</code></span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/trojan-source-bidi-2021" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/trojan-source-bidi-2021/payload.b64 | unicode-show /dev/stdin</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+  </article>
+</div></section>
+
+<!-- ===================== ON RECORD ===================== -->
+<section class="cat" id="on-record"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#on-record">Proof of concept</a></h2>
+  <p class="catdesc">High-severity escape-sequence tricks with a 20-year CVE trail and
+    published proofs of concept, but no confirmed in-the-wild campaign. Merely
+    <em>viewing</em> untrusted terminal output is the shared blind spot.</p>
+
+  <article class="issue" id="escape-rce">
+    <span class="tag evi-rec">Proof of concept</span>
+    <span class="tag">Escape-sequence RCE</span>
+    <h3><a class="cardanchor" href="#escape-rce">Merely viewing a file can run commands</a></h3>
+    <p class="lead">A terminal is not only a display. Some escape sequences ask it a <em>question</em> - report the window title, a DECRQSS status, the cursor position - and the terminal answers the only way it can: by writing the reply to its own input, exactly as if you had typed it. A hostile file can set that answer to a command and then ask for it back, so merely <code>cat</code>ing a poisoned log or README (or <code>tail -f</code>-ing a booby-trapped log, even one arriving over SSH) injects keystrokes, and once a newline rides along, a full command runs.</p>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> cat</div><pre class="term"><span class="p">$</span> cat demo.log
+deploy: OK
+
+<span class="dim"># the window title is hijacked and a FAILED line was erased before it printed</span></pre></div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> stcat</div><pre class="term"><span class="p">$</span> stcat demo.log
+deploy: OK
+<span class="neut">_</span>]0;pwned<span class="neut">_</span><span class="neut">_</span>[2K<span class="neut">_</span>build: FAILED</pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> <code>stcat</code> neutralizes every escape to an
+      inert <code>_</code>, so the hijacked title and the erased <code>FAILED</code>
+      line are right there in plain sight, and <code>unicode-show</code> names the
+      smuggled ESC and BEL bytes. On a vulnerable terminal, that same answer-back
+      channel is what escalates to injected keystrokes.</p>
+    <p class="backdoor"><b>Backdoor path:</b> ship a poisoned log, README, or git repo; when a developer or admin views it in a vulnerable terminal, attacker bytes are echoed into the shell and run.</p>
+    <p class="onrecord"><b>Proof of concept:</b> a well-documented class: iTerm2 <a href="https://nvd.nist.gov/vuln/detail/CVE-2019-9535">CVE-2019-9535</a><a class="arch" href="https://web.archive.org/web/20260414161101/https://nvd.nist.gov/vuln/detail/CVE-2019-9535" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> and <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-45872">CVE-2022-45872</a><a class="arch" href="https://web.archive.org/web/20260102055000/https://nvd.nist.gov/vuln/detail/CVE-2022-45872" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> (RCE), xterm <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-27135">CVE-2021-27135</a><a class="arch" href="https://web.archive.org/web/20260312102057/https://nvd.nist.gov/vuln/detail/CVE-2021-27135" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, Windows Terminal <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-44702">CVE-2022-44702</a><a class="arch" href="https://web.archive.org/web/20251210235445/https://nvd.nist.gov/vuln/detail/CVE-2022-44702" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, and the <a href="https://dgl.cx/2023/09/ansi-terminal-security">ten CVEs</a><a class="arch" href="https://web.archive.org/web/20260617084902/https://dgl.cx/2023/09/ansi-terminal-security" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> David Leadbeater catalogued in 2023. And it keeps recurring: iTerm2 <a href="https://nvd.nist.gov/vuln/detail/CVE-2024-38396">CVE-2024-38396</a> and the brand-new terminal <a href="https://dgl.cx/2024/12/ghostty-terminal-title">Ghostty</a> (<a href="https://nvd.nist.gov/vuln/detail/CVE-2024-56803" rel="noopener">CVE-2024-56803</a>) were both hit by the same window-title-into-keystrokes trick in 2024, with a public proof of concept that opens the calculator from a single <code>cat</code>. The origin paper is <a href="https://hdm.io/writing/termulation.txt">HD Moore's "Terminal Emulator Security Issues" (2003)</a><a class="arch" href="https://web.archive.org/web/20260617084903/https://hdm.io/writing/termulation.txt" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>; see also <a href="https://www.cyberark.com/resources/threat-research-blog/dont-trust-this-title-abusing-terminal-emulators-with-ansi-escape-characters">CyberArk</a><a class="arch" href="https://web.archive.org/web/20260511163824/https://www.cyberark.com/resources/threat-research-blog/dont-trust-this-title-abusing-terminal-emulators-with-ansi-escape-characters" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>. All responsibly disclosed; none observed in the wild.</p>
+    <figure class="shot">
+      <img src="/escape-rce-demo.webp" width="790" height="277" loading="lazy"
+        alt="A terminal where cat notice.txt prints only 'Update installed. System healthy.' while the file secretly carries an OSC terminal-control sequence. stcat reveals the hidden payload as _]0;attacker@evil:~# _ before the visible text, and unicode-show names the hidden bytes U+001B (ESC) and U+0007 (BEL).">
+      <figcaption>A safe demonstration of the mechanism: <code>cat</code> shows one innocuous line, but the file smuggles a terminal-control sequence that <code>cat</code> feeds straight to the terminal. <code>stcat</code> neutralizes it and <code>unicode-show</code> names the hidden ESC and BEL bytes. On a vulnerable terminal, this same channel is what escalates to injected keystrokes.</figcaption>
+    </figure>
+    <p class="toolnote"><b>Build a safe stand-in and watch it neutralized</b> (no real terminal is harmed, the payload only sets a title and erases a line):</p>
+    <pre class="term"><span class="dim"># write a "log" that hides a title-change and a line-erase redraw</span>
+<span class="p">$</span> printf 'deploy: OK\n\033]0;pwned\007\033[2K\rbuild: FAILED\n' &gt; demo.log
+
+<span class="dim"># cat obeys the bytes: the window title is hijacked and FAILED is erased</span>
+<span class="p">$</span> cat demo.log
+deploy: OK
+
+<span class="dim"># stcat neutralizes every escape to _, so nothing is hidden or run</span>
+<span class="p">$</span> stcat demo.log
+deploy: OK
+<span class="neut">_</span>]0;pwned<span class="neut">_</span><span class="neut">_</span>[2K<span class="neut">_</span>build: FAILED
+
+<span class="dim"># unicode-show names the smuggled bytes with line numbers</span>
+<span class="p">$</span> unicode-show demo.log
+demo.log:2: <span class="cp">[U+001B]</span>]0;pwned<span class="cp">[U+0007]</span>...
+   <span class="cp">-&gt; U+001B ESCAPE (Cc), U+0007 BELL (Cc)</span></pre>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; view with <code>stcat</code>, never bare <code>cat</code></span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/title-report-echoback-2003" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/title-report-echoback-2003/payload.b64 | stcat</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+  </article>
+
+  <!-- ---------- OSC 8 hyperlink spoof ---------- -->
+  <article class="issue" id="osc8">
+    <span class="tag evi-rec">Proof of concept</span>
+    <span class="tag">OSC 8 hyperlink spoof</span>
+    <h3><a class="cardanchor" href="#osc8">The link text is not the link</a></h3>
+    <p class="lead">The <b>OSC 8</b> escape turns terminal text into a clickable hyperlink -- and, like an HTML
+      <code>&lt;a&gt;</code>, the visible label and the real target are set separately. So program output can
+      print a link that <em>reads</em> <code>example.com</code> but <em>points</em> at <code>example.org</code>.
+      You see the label; the target hides in the escape.</p>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what you see</div><pre class="term"><span class="p">$</span> cat release-notes.txt
+Get the installer: <span style="color:#6ea8fe;text-decoration:underline">example.com</span>
+<span class="dim"># an ordinary-looking, clickable link</span></pre></div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what is really there</div><pre class="term"><span class="p">$</span> stcat release-notes.txt
+Get the installer: <span class="neut">_</span>]8;;https://example.org<span class="neut">_</span>\example.com<span class="neut">_</span>]8;;<span class="neut">_</span>\
+   <span class="cp">-&gt; label "example.com"  --  target https://example.org</span></pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> the label and the target are independent, so the text you read is not the
+      site you reach -- the terminal twin of an HTML link whose text lies about its <code>href</code>.
+      <code>stcat</code> neutralizes the OSC 8 escape to an inert <code>_</code>, so the real target is in plain
+      sight, and secure-terminal ships OSC 8 off by default.</p>
+    <p class="backdoor"><b>Backdoor path:</b> print a link that reads
+      <code>example.com</code> but targets an attacker site; the reader clicks the label they trust and lands on
+      the payload, or a <code>ssh://</code>-style scheme smuggles arguments into the command the click runs.</p>
+    <p class="onrecord"><b>Proof of concept:</b> OSC 8 hyperlink phishing was disclosed as <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-46322" rel="noopener">CVE-2023-46322</a> (and related CVE-2023-46321 / CVE-2022-46663); see the hyperlink rows in the <a href="#classes">attack-class table</a>. No documented in-the-wild campaign.</p>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; view with <code>stcat</code>, never bare <code>cat</code></span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/osc8-hyperlink-phishing" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/osc8-hyperlink-phishing/payload.b64 | stcat</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+  </article>
+
+  <!-- ---------- logs as a surface ---------- -->
+  <article class="issue" id="log-injection">
+    <span class="tag evi-rec">Proof of concept</span>
+    <span class="tag">Logs as a surface</span>
+    <h3><a class="cardanchor" href="#log-injection">Logs can attack the person reading them</a></h3>
+    <p class="lead">Escape sequences smuggled into a log line do nothing to the file, but when an admin views that log in an ANSI-capable console, they can rewrite what is shown, forge entries, or manipulate the clipboard to trick the admin into running a command. You <code>cat</code> and <code>tail</code> logs from places you do not control: CI output, container and <code>kubectl</code> logs, a remote server over SSH, a honeypot. A log is just a file an attacker can write into.</p>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> cat</div><pre class="term"><span class="p">$</span> cat access.log
+INFO: system all-good!
+
+<span class="dim"># a \r returned the cursor and "all-good" repainted over the real ERROR line</span></pre></div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> stcat</div><pre class="term"><span class="p">$</span> stcat access.log
+ERROR: breach detected<span class="neut">_</span>INFO: system all-good!</pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> the log file is honest; only the rendering lies. An attacker-controlled field (a username, a URL, a header) carries a carriage return that overwrites the real entry with a forged one. <code>stcat</code> neutralizes the CR to <code>_</code>, so the real <code>ERROR</code> is right there.</p>
+    <p class="backdoor"><b>Backdoor path:</b> get attacker-controlled text into a log (via a crafted URL, a username, a header), then wait for someone to read the log in a terminal.</p>
+    <p class="onrecord"><b>Proof of concept:</b> Apache Tomcat's <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-55754">CVE-2025-55754</a><a class="arch" href="https://web.archive.org/web/20260611002953/https://nvd.nist.gov/vuln/detail/CVE-2025-55754" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> did not escape ANSI in log messages. Note the honesty gap these tools argue against: NVD scores it <b>9.6</b>, but <a href="https://tomcat.apache.org/security-9.html">Apache rates it Low</a><a class="arch" href="https://web.archive.org/web/20260630151002/https://tomcat.apache.org/security-9.html" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> ("no attack vector was found"): theoretical, not demonstrated end to end. There is no ATT&amp;CK technique for this display-layer forgery; the nearest, <a href="https://attack.mitre.org/techniques/T1070/003/">T1070.003</a><a class="arch" href="https://web.archive.org/web/20260616003318/https://attack.mitre.org/techniques/T1070/003/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, is about deleting logs, not deceiving the reader of an intact one.</p>
+    <figure class="shot">
+      <img src="/log-injection-demo.webp" width="930" height="277" loading="lazy"
+        alt="A terminal where cat access.log prints a benign-looking line, 10.0.0.9 - GET /health 200 ok, while the log line hides an OSC 52 clipboard-write escape. stcat reveals the payload as _]52;c;ZWNobyBwd25lZAo=_ and unicode-show names the hidden U+001B (ESC) and U+0007 (BEL) bytes.">
+      <figcaption>A safe demonstration: viewing the log looks like a routine health check, but the line hides an OSC 52 sequence that silently loads the reader's clipboard (here with a harmless <code>echo pwned</code>). <code>stcat</code> and <code>unicode-show</code> expose what plain <code>cat</code> hid.</figcaption>
+    </figure>
+    <p class="toolnote"><b>Reproduce the forgery</b> with a benign stand-in:</p>
+    <pre class="term"><span class="dim"># the field value hides a \r that returns the cursor to column 0</span>
+<span class="p">$</span> printf 'ERROR: breach detected\rINFO: system all-good!\n' &gt;&gt; access.log
+
+<span class="dim"># cat renders the CR: "all-good" repaints over the real ERROR line</span>
+<span class="p">$</span> cat access.log
+INFO: system all-good!
+
+<span class="dim"># stcat neutralizes the CR to _, so the real ERROR is right there</span>
+<span class="p">$</span> stcat access.log
+ERROR: breach detected<span class="neut">_</span>INFO: system all-good!</pre>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; view with <code>stcat</code>, never bare <code>cat</code></span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/crafted-hostile-log" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/crafted-hostile-log/payload.b64 | stcat</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+  </article>
+
+  <!-- ---------- editor modelines ---------- -->
+  <article class="issue" id="modeline">
+    <span class="tag evi-rec">Proof of concept</span>
+    <span class="tag">Editor modelines</span>
+    <h3><a class="cardanchor" href="#modeline">A comment that reconfigures your editor</a></h3>
+    <p class="lead">A modeline is a comment like <code># vim: ...</code> that Vim and Emacs
+      read and obey when they open the file: it can change settings and, historically,
+      <em>execute code</em>. <code>cat</code> shows it as an ordinary trailing comment.
+      <code>modeline-show</code> (run on its own or via <code>text-safety-scan</code>)
+      flags it.</p>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> cat</div><pre class="term"><span class="p">$</span> cat changelog
+- fix typo in release notes
+# vim: set fdm=expr fde=system('...'):
+
+<span class="dim"># reads like a harmless editor hint at the end of the file</span></pre></div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> text-safety-scan</div><pre class="term"><span class="p">$</span> text-safety-scan changelog
+<span class="dim"># runs unicode-show AND modeline-show</span>
+<span class="w">[modeline]</span> changelog:2: Vim modeline found:
+   # vim: set fdm=expr fde=system('...'):
+<span class="p">$</span> echo $?
+<span class="w">1</span>   <span class="dim"># 0 clean, 1 finding, 2 hard error</span></pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> <code>text-safety-scan</code> runs every configured
+      plugin in one pass (today <code>unicode-show</code> plus <code>modeline-show</code>),
+      and <code>text-safety-scan-find</code> walks a whole tree with recursion and pruning
+      under your control via plain <code>find</code> expressions. It is an <em>auditing</em>
+      tool, not a race-proof guard: run it on a tree the attacker cannot write to during
+      the scan.
+      (<a href="https://github.com/Kicksecure/helper-scripts/blob/master/man/text-safety-scan.1.ronn">docs</a><a class="arch" href="https://web.archive.org/web/20260711194113/https://github.com/Kicksecure/helper-scripts/blob/master/man/text-safety-scan.1.ronn" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>)</p>
+    <p class="backdoor"><b>Backdoor path:</b> append a modeline to a file a target is
+      likely to open in a misconfigured editor; opening it reconfigures the editor or,
+      on a vulnerable version, runs the attacker's expression.</p>
+    <p class="onrecord"><b>Proof of concept:</b> opening a crafted file has meant code
+      execution: Vim/Neovim modeline RCE <a href="https://www.cve.org/CVERecord?id=CVE-2019-12735">CVE-2019-12735</a><a class="arch" href="https://web.archive.org/web/20260224131015/https://www.cve.org/CVERecord?id=CVE-2019-12735" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.
+      No documented in-the-wild campaign.</p>
+    <figure class="shot">
+      <img src="/text-safety-scan-demo.webp" width="950" height="296" loading="lazy"
+        alt="A terminal running text-safety-scan on ./repo/changelog. One pass fires both plugins: unicode-show names a hidden U+0430 Cyrillic character, and modeline-show warns that a Vim modeline was found, quoting the line. text-safety-scan then reports FAIL with two findings, and echo $? prints 1.">
+      <figcaption>The real tool: a single <code>text-safety-scan</code> run fires every plugin at once, here catching both a hidden Unicode character and a Vim modeline, and returns <code>1</code> (0 clean, 1 finding, 2 hard error). <code>text-safety-scan-find</code> runs the same checks over a whole tree.</figcaption>
+    </figure>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; no stored fixture: a benign hand-run stand-in (harmless modeline, no exploit)</span></div><div class="copybox"><code class="cmd">printf '- notes\n# vim: set ai:\n' &gt; changelog; text-safety-scan changelog</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+  </article>
+</div></section>
+
+<!-- ===================== KNOWN TECHNIQUE ===================== -->
+<section class="cat" id="known"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#known">Known technique</a></h2>
+  <p class="catdesc">Recognized abuses of legitimate, universal terminal features. No
+    specific CVE or documented campaign: the feature is working as designed, and the
+    deception is in how it is used.</p>
+
+  <!-- ---------- alt-screen restore (dramatic playback) ---------- -->
+  <article class="issue" id="altscreen">
+    <span class="tag evi-known">Known technique</span>
+    <span class="tag">alt-screen restore</span>
+    <h3><a class="cardanchor" href="#altscreen">The screen it painted leaves no trace</a></h3>
+    <p class="lead">The <b>alternate screen</b> (<code>?1049h</code>) is the full-screen buffer <code>vim</code>,
+      <code>less</code> and <code>htop</code> use: enter it, paint, then leave and your original scrollback is
+      back untouched. Legitimate -- until a log enters it, paints <em>fake</em> output, and leaves. The forged
+      full-screen view flashes by and vanishes, and your scrollback looks like nothing ever happened. Press
+      Play:</p>
+    <div class="asplayer">
+      <div class="tbar"><span class="dots"><i></i><i></i><i></i></span> <span id="as-cap">primary screen</span></div>
+      <pre class="term" id="as-screen" style="min-height:12.5em"><span class="p">$</span> cat deploy.log</pre>
+    </div>
+    <div class="ascontrols"><button class="btn ghost" id="as-play" type="button">Play</button>
+      <span class="dim" id="as-state">a safe re-enactment -- no real terminal is touched</span></div>
+    <p class="catch"><b>The catch:</b> the fake "ALL GREEN" dashboard was painted on the alternate screen, so
+      leaving it (the log never draws a scrollbar or newline into your buffer) restores your primary screen
+      exactly as it was -- no trace in scrollback. Alt-screen itself is a legitimate feature every terminal
+      supports; the deception is painting a convincing fake, then restoring so you never scroll back to catch
+      it. secure-terminal's default line mode strips <code>?1049h</code> and shows the log as inert text with
+      your scrollback intact, offering opt-in TUI mode if you actually want full-screen programs.</p>
+    <p class="backdoor"><b>Backdoor path:</b> a log or README enters the alternate screen, paints a convincing
+      fake (an all-green build, a clean scan), then leaves -- your scrollback is restored untouched, so no trace
+      of the forged view survives for you to scroll back and catch.</p>
+    <p class="knowntech"><b>Known technique:</b> the alternate screen is a legitimate, universal terminal feature; painting a fake view then restoring is a recognized abuse with no specific CVE or documented campaign.</p>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; view with <code>stcat</code>, never bare <code>cat</code></span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/alt-screen-hijack" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/alt-screen-hijack/payload.b64 | stcat</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+    <script src="/terminal/playback.js"></script>
+  </article>
+
+  <!-- ---------- cursor / line-erase ---------- -->
+  <article class="issue" id="cursor-erase">
+    <span class="tag evi-known">Known technique</span>
+    <span class="tag">Cursor / line erase</span>
+    <h3><a class="cardanchor" href="#cursor-erase">Cursor tricks hide a failure</a></h3>
+    <p class="lead">An escape sequence can erase a line and repaint it. To
+      <code>cat</code> that means "hide the failure". <code>stcat</code> turns
+      the ESC byte into an inert <code>_</code> and keeps only safe color codes.</p>
+    <div class="panes">
+      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> cat</div><pre class="term"><span class="p">$</span> cat build.log
+<span class="ok">[ ok ] all checks passed</span>
+
+<span class="dim"># an escape erased the FAILED line before it printed</span></pre></div>
+      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> stcat</div><pre class="term"><span class="p">$</span> stcat build.log
+<span class="e">FAILED: auth bypass</span><span class="neut">_</span>[2K<span class="neut">_</span><span class="ok">[ ok ] all checks passed</span></pre></div>
+    </div>
+    <p class="catch"><b>The catch:</b> the erase (<code>ESC[2K</code>) and the
+      carriage return are neutralized to <code>_</code>, so the hidden
+      <code>FAILED</code> line is right there in plain sight. That is
+      <code>stcat</code> specifically: it renders a byte stream and applies no line
+      editing. A live terminal, secure-terminal included, honours the erase within
+      the current line, so use <code>stcat</code> when you need the byte-exact
+      record.</p>
+    <p class="backdoor"><b>Backdoor path:</b> a build or scan log erases and repaints
+      its own failure line, so a reader watching output scroll past sees only a
+      green pass where a red <code>FAILED</code> really printed.</p>
+    <p class="knowntech"><b>Known technique:</b> cursor addressing and erase-in-line are standard terminal control; using them to overwrite a failure is a recognized abuse with no specific CVE or documented campaign.</p>
+    <figure class="shot">
+      <img src="/stcat-demo.webp" width="930" height="277" loading="lazy"
+        alt="A terminal comparing cat and stcat on build.log. cat shows three green [ ok ] lines including all checks passed, hiding the failure. stcat reveals the red FAILED: auth bypass in login() line, with the erase and carriage return neutralized to _[2K_ and the green [ ok ] all checks passed kept.">
+      <figcaption>The real tool: <code>cat</code> replays the escape and shows only the green pass, while <code>stcat</code> neutralizes the erase and carriage return to <code>_</code>, keeps the colors, and surfaces the hidden red FAILED line.</figcaption>
+    </figure>
+    <div class="repro"><div class="reprohd"><a class="repro-try" href="#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; view with <code>stcat</code>, never bare <code>cat</code></span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/cursor-addressing-spoof" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/cursor-addressing-spoof/payload.b64 | stcat</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+  </article>
+</div></section>
+
+<!-- ===================== SOLUTION ===================== -->
+<section class="outro" id="solution"><div class="wrap">
+  <h2><a class="h-anchor" href="#solution">How the safe tools catch all of this</a></h2>
+  <p style="max-width:66ch;color:#3a3c41;margin:0">The fix is a set of safe text tools
+    that sit between the raw bytes and your screen. Instead of dumping a file straight at
+    your terminal, they render every byte defensively. Every one of them does three
+    things:</p>
+  <div class="steps">
+    <div class="step"><div class="num">01</div><h4>Neutralize</h4>
+      <p>Dangerous bytes (escapes, cursor and screen control, overrides, invisibles,
+        NUL) become inert <code>_</code> placeholders. Real color codes are kept so
+        honest output still renders.</p></div>
+    <div class="step"><div class="num">02</div><h4>Surface</h4>
+      <p>Every anomaly is named: the codepoint by <code>[U+XXXX]</code>, the escape,
+        the modeline, the file that hides it. Exit codes report it, so a script catches
+        it too.</p></div>
+    <div class="step"><div class="num">03</div><h4>Fail closed</h4>
+      <p>When a file can't be decoded or shown safely, the tools stop and say so instead
+        of passing raw bytes through to a terminal that would obey them.</p></div>
+  </div>
+  <p class="toolnote">The commands (<code>unicode-show</code>, <code>grep-find-unicode-wrapper</code>,
+    <code>text-safety-scan</code>, <code>stcat</code>, <code>sanitize-string</code> and
+    friends) ship in Kicksecure's
+    <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a><a class="arch" href="https://web.archive.org/web/20260325044051/https://github.com/Kicksecure/helper-scripts" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.
+    The full family, and what each replaces, is in the <a href="#family">table below</a>.</p>
 </div></section>
 
 <!-- ============ secure-terminal ============ -->
 <section class="cat" id="secure-terminal"><div class="wrap">
   <h2 class="catname"><a class="h-anchor" href="#secure-terminal">The live terminal</a></h2>
-  <p class="catdesc">The tools below inspect one file when you remember to run them.
+  <p class="catdesc">The commands above inspect one file when you remember to run them.
     <a href="https://secure-terminal.github.io">secure-terminal</a> is the display
     itself: a terminal that renders hostile output inert as it arrives, for every
     command, paste and log line, with nothing to run first.</p>
@@ -137,209 +451,102 @@ Deploying to <span class="cp">[U+2067]</span>production<span class="cp">[U+2069]
   </article>
 </div></section>
 
-<!-- ============ unicode-show ============ -->
-<section class="cat" id="unicode-show"><div class="wrap">
-  <h2 class="catname"><a class="h-anchor" href="#unicode-show">Reveal</a></h2>
-  <p class="catdesc">Hidden, invisible and look-alike characters are the whole
-    point of a Trojan-Source attack, and <code>cat</code> never mentions them.</p>
-  <p class="stfirst"><a href="https://secure-terminal.github.io">secure-terminal</a>
-    does this live: its Reveal mode shows every non-ASCII byte as a
-    <code>&lt;U+XXXX&gt;</code> badge as output arrives, so you see what a program
-    printed without re-running anything. The <code>unicode-show</code> command
-    below is the scriptable, one-file-at-a-time counterpart.</p>
-
+<!-- ============ attack classes ============ -->
+<section class="cat" id="classes"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#classes">Every attack class</a></h2>
+  <p class="catdesc">Twenty years of terminal escape attacks, by class. Each is a way
+    program output tricks the terminal into acting; secure-terminal answers them the same
+    way, by construction -- with one scoped exception, noted in the cursor-spoof row.
+    Most rows are answered by ABSENCE -- the class needs a parser or feature secure-terminal does not
+    implement, so it is not applicable rather than defended. Worth stating plainly: that is not a claim of
+    being defect-free. A long list of known CVEs in other terminals is largely inapplicable here, and says
+    nothing about undiscovered bugs in secure-terminal's own (much smaller) surface.
+    Live, canary-forked proofs for every class are in the
+    <a href="https://github.com/secure-terminal/terminal-poc-corpus">terminal-poc-corpus</a>.</p>
   <article class="issue">
-    <span class="tag">cat vs unicode-show</span>
-    <h3><a class="cardanchor" href="#unicode-show">See the characters, not the story</a></h3>
-    <p class="lead"><code>unicode-show</code> flags every byte outside printable
-      ASCII, every control character, trailing whitespace and a missing final
-      newline: with line number, <code>[U+XXXX]</code> marker, name and
-      category.</p>
-    <div class="panes">
-      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> cat</div><pre class="term"><span class="p">$</span> cat withdraw.py
-# Subtract funds from the account, then &#x2067;refund the user&#x2069;
-
-<span class="dim"># reads clean; an isolate char quietly reorders it</span></pre></div>
-      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> unicode-show</div><pre class="term"><span class="p">$</span> unicode-show withdraw.py
-withdraw.py:1: # Subtract funds ... then <span class="cp">[U+2067]</span>refund the user
-   <span class="cp">-> U+2067 RIGHT-TO-LEFT ISOLATE (Cf)</span>
-<span class="p">$</span> echo $?
-<span class="w">1</span></pre></div>
-    </div>
-    <p class="catch"><b>The catch:</b> the exit code reports it too:
-      <code>0</code> clean, <code>1</code> suspicious, <code>2</code>
-      error (unreadable or undecodable). Scriptable, not just visible.
-      (<a href="https://www.kicksecure.com/wiki/Unicode-show">docs</a><a class="arch" href="https://web.archive.org/web/20260311005257/https://www.kicksecure.com/wiki/Unicode-show" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>)</p>
-    <figure class="shot">
-      <img src="/unicode-show-demo.webp" width="810" height="334" loading="lazy"
-        alt="unicode-show run on a file named auth.py that reads like ordinary code. Each hidden character is flagged inline as a red bracketed codepoint such as [U+202E], and annotated on the next line in cyan with its codepoint, official name and category (RIGHT-TO-LEFT OVERRIDE, CYRILLIC SMALL LETTER A, ZERO WIDTH SPACE, NO-BREAK SPACE, SPACE), plus a note that the final newline is missing.">
-      <figcaption>The real tool in a terminal: run on a file that reads clean, unicode-show names and colors every hidden character right where it hides.</figcaption>
-    </figure>
+    <table class="tbl">
+      <caption>Every publicly-disclosed terminal escape-attack class, with example CVEs
+        and how secure-terminal defeats it. The corpus references 41 CVEs across these
+        classes and proves secure-terminal neutralizes all of them.</caption>
+      <thead><tr><th>Class</th><th>What the terminal is tricked into</th><th>Example CVEs</th><th>secure-terminal defense</th></tr></thead>
+      <tbody>
+        <tr><td>Reflection / echoback</td><td>answering a query (window title, DECRQSS, font, cursor/status report, ENQ answerback) by writing the reply into your shell's input</td><td>CVE-2003-0063, <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-45872" rel="noopener">CVE-2022-45872</a>, <a href="https://nvd.nist.gov/vuln/detail/CVE-2024-38396" rel="noopener">CVE-2024-38396</a>, <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-33477" rel="noopener">CVE-2021-33477</a></td><td>interprets no escapes; nothing on the output path can write to the pty (by construction)</td></tr>
+        <tr><td>Clipboard read (OSC 52)</td><td>a program silently reading your clipboard (passwords, keys) onto its input</td><td>OSC 52 read</td><td>off by default; a human ask-once-per-tab gate that output can trigger but never answer</td></tr>
+        <tr><td>Clipboard write / paste hijack (OSC 52)</td><td>overwriting your clipboard so your next paste inserts text you did not copy</td><td>OSC 52 write</td><td>off by default</td></tr>
+        <tr><td>Hyperlink phishing / URL scheme (OSC 8)</td><td>a link whose visible text differs from its target, or a scheme (ssh://) that injects arguments</td><td>CVE-2023-46321, <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-46322" rel="noopener">CVE-2023-46322</a>, <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-46663" rel="noopener">CVE-2022-46663</a></td><td>OSC 8 off by default</td></tr>
+        <tr><td>Trojan Source (bidi)</td><td>bidi overrides reordering the display so code reads differently than it runs</td><td>CVE-2021-42574</td><td>bidi controls neutralized and revealed</td></tr>
+        <tr><td>Homoglyph</td><td>look-alike code points disguising one identifier as another</td><td>CVE-2021-42694</td><td>non-ASCII revealed and marked</td></tr>
+        <tr><td>Charset shift</td><td>a charset shift (DEC special graphics) rendering ASCII as line-drawing to disguise it</td><td>charset shift</td><td>charset shifts stripped</td></tr>
+        <tr><td>Cursor spoof</td><td>cursor-up + erase + overwrite hiding earlier output in line mode</td><td>cursor addressing</td><td>partly: vertical/absolute cursor addressing is stripped, so an EARLIER line is unreachable. Erase-in-line is honoured, so a program can still overwrite <a href="https://secure-terminal.github.io/#current-line" rel="noopener">the line it is writing</a> -- as <code>\r</code> does. <code>stcat</code> neutralizes both.</td></tr>
+        <tr><td>Notification spoof</td><td>a desktop notification (OSC 9 / 99) carrying attacker text</td><td>CVE-2022-41322</td><td>notifications off by default</td></tr>
+        <tr><td>Window operations</td><td>set/report window title, icon or working directory to reach injection or exec</td><td>CVE-2003-0065, <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-44702" rel="noopener">CVE-2022-44702</a></td><td>window operations stripped</td></tr>
+        <tr><td>Denial of service</td><td>a title-change flood or a huge repeat count hanging or exhausting the terminal</td><td>CVE-2021-28847, <a href="https://nvd.nist.gov/vuln/detail/CVE-2012-2738" rel="noopener">CVE-2012-2738</a></td><td>interprets no escapes; bounded processing</td></tr>
+        <tr><td>Decoder overflow</td><td>a Sixel or ReGIS image overrunning a decoder buffer</td><td>CVE-2022-24130, <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-40359" rel="noopener">CVE-2023-40359</a></td><td>never runs a Sixel or ReGIS decoder</td></tr>
+        <tr><td>Bracketed-paste bypass</td><td>an escape breaking the paste guard so pasted text auto-runs</td><td>CVE-2021-31701</td><td>paste sanitized to ASCII; the guard-breaking escape stripped</td></tr>
+      </tbody>
+    </table>
+    <p class="toolnote">These attacks arrive as ordinary <b>program output</b> -- a
+      compromised program, a log you <code>cat</code> or <code>less</code>, an
+      unfiltered passthrough (kubectl, <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-25743" rel="noopener">CVE-2021-25743</a>), or an LLM CLI smuggling escapes
+      from a prompt-injected model. secure-terminal neutralizes them whatever the source.</p>
   </article>
 </div></section>
 
-<!-- ============ grep-find-unicode ============ -->
-<section class="cat" id="grep"><div class="wrap">
-  <h2 class="catname"><a class="h-anchor" href="#grep">Find</a></h2>
-  <p class="catdesc">Before you can reveal a hidden character, you have to know
-    which file it is in. <code>unicode-show</code> inspects one file;
-    <code>grep-find-unicode-wrapper</code> hunts a whole tree.</p>
-
+<!-- ============ the family ============ -->
+<section class="cat" id="family"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#family">The family</a></h2>
+  <p class="catdesc">Safe drop-in replacements for the usual text commands.</p>
   <article class="issue">
-    <span class="tag">grep vs grep-find-unicode-wrapper</span>
-    <h3><a class="cardanchor" href="#grep">Which file is hiding it?</a></h3>
-    <p class="lead">A grep wrapper that walks files and folders for non-ASCII and
-      suspicious Unicode, so you can audit an entire repository for injected
-      backdoors, not just the one file you already suspect.</p>
-    <div class="panes">
-      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> grep</div><pre class="term"><span class="p">$</span> grep --recursive "validate" src/
-src/clean.js:function ok(){ return validate(true) }
-<span class="dim"># grep matched the honest file and skipped
-# the backdoored calls: the byte you read as
-# "a" is a Cyrillic look-alike.</span></pre></div>
-      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> grep-find-unicode-wrapper</div><pre class="term"><span class="p">$</span> grep-find-unicode-wrapper --recursive src/
-src/auth.js
-src/pay.py
-<span class="p">$</span> echo $?
-<span class="ok">0</span>   <span class="dim"># grep convention: 0 == matches found</span></pre></div>
-    </div>
-    <p class="catch"><b>The catch:</b> the flagged files look ordinary, and the
-      wrapper reports file names, not lines. Each named file hides a non-ASCII
-      byte. The exit code follows <code>grep</code>, not <code>unicode-show</code>:
-      <code>0</code> means it <em>found</em> suspicious Unicode, non-zero means the
-      tree is clean. Pass each flagged file to <code>unicode-show</code> to name
-      the exact codepoint.
-      (<a href="https://www.kicksecure.com/wiki/Unicode#grep-find-unicode-wrapper">docs</a><a class="arch" href="https://web.archive.org/web/20260706215954/https://www.kicksecure.com/wiki/Unicode" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>)</p>
-    <figure class="shot">
-      <img src="/grep-find-unicode-demo.webp" width="850" height="315" loading="lazy"
-        alt="A terminal where plain grep for validate matches only src/clean.js and silently skips the backdoored files, while grep-find-unicode-wrapper --recursive src/ names src/auth.js and src/pay.py with exit 0, and unicode-show src/auth.js identifies the hidden character as U+0430 Cyrillic small letter a.">
-      <figcaption>The real tools: a plain <code>grep</code> for the word you read matches the honest file and skips the backdoored ones, <code>grep-find-unicode-wrapper</code> names the files that hide a look-alike, and <code>unicode-show</code> pins the exact codepoint.</figcaption>
-    </figure>
+    <table class="tbl">
+      <caption><a href="https://secure-terminal.github.io">secure-terminal</a>
+        is the interactive terminal that builds all of this in: it interprets no
+        escape sequences, sanitizes what you paste, and can strip, show or reveal
+        unicode live. The commands below are the scriptable CLI counterparts for
+        one-off audits and pipelines.</caption>
+      <thead><tr><th>Tool</th><th>Replaces</th><th>Does</th></tr></thead>
+      <tbody>
+        <tr id="unicode-show"><td><code>unicode-show</code></td><td><code>cat</code> (audit)</td><td>reveals every suspicious codepoint by name; exit 0/1/2</td></tr>
+        <tr><td><code>grep-find-unicode-wrapper</code></td><td><code>grep</code> (audit)</td><td>finds files/lines with suspicious Unicode across a whole tree; grep-style exit code</td></tr>
+        <tr id="scan"><td><code>text-safety-scan</code></td><td>(all checks)</td><td>runs every safety plugin (unicode-show + modeline-show) on files/stdin; exit 0/1/2</td></tr>
+        <tr><td><code>text-safety-scan-find</code></td><td><code>find</code> + scan</td><td>runs text-safety-scan across a whole tree; recursion via find expressions</td></tr>
+        <tr><td><code>modeline-show</code></td><td>(none)</td><td>flags Vim/Emacs modelines that can reconfigure or execute in your editor</td></tr>
+        <tr id="stcat"><td><code>stcat</code> / <code>stcatn</code></td><td><code>cat</code></td><td>display files/pipes safely; escapes neutralized, colors kept</td></tr>
+        <tr><td><code>stecho</code></td><td><code>echo</code></td><td>print args safely, space-separated + newline</td></tr>
+        <tr><td><code>stprint</code></td><td><code>printf</code></td><td>print exactly as given, sanitized</td></tr>
+        <tr><td><code>sttee</code></td><td><code>tee</code></td><td>display and save a sanitized copy</td></tr>
+        <tr><td><code>stsponge</code></td><td><code>sponge</code></td><td>sanitize a file in place</td></tr>
+        <tr><td><code>sanitize-string</code></td><td>(none)</td><td>strip escapes + HTML markup, cap length</td></tr>
+      </tbody>
+    </table>
+    <p class="toolnote">All ship in Kicksecure's
+      <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a><a class="arch" href="https://web.archive.org/web/20260325044051/https://github.com/Kicksecure/helper-scripts" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.
+      Docs: <a href="https://www.kicksecure.com/wiki/Unicode-show">unicode-show</a><a class="arch" href="https://web.archive.org/web/20260311005257/https://www.kicksecure.com/wiki/Unicode-show" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>,
+      <a href="https://www.kicksecure.com/wiki/Stdisplay">stdisplay</a><a class="arch" href="https://web.archive.org/web/20260706215954/https://www.kicksecure.com/wiki/Stdisplay" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.</p>
   </article>
-</div></section>
 
-<!-- ============ text-safety-scan ============ -->
-<section class="cat" id="scan"><div class="wrap">
-  <h2 class="catname"><a class="h-anchor" href="#scan">Scan everything</a></h2>
-  <p class="catdesc">Unicode is not the only way a file reprograms the tool that
-    opens it. <code>text-safety-scan</code> runs every safety check in one pass.</p>
+  <p class="catdesc" style="margin-top:26px">Two of the family in action: finding which
+    file hides a look-alike across a whole tree, and making an untrusted value safe to
+    embed in your own output.</p>
+  <figure class="shot">
+    <img src="/grep-find-unicode-demo.webp" width="850" height="315" loading="lazy"
+      alt="A terminal where plain grep for validate matches only src/clean.js and silently skips the backdoored files, while grep-find-unicode-wrapper --recursive src/ names src/auth.js and src/pay.py with exit 0, and unicode-show src/auth.js identifies the hidden character as U+0430 Cyrillic small letter a.">
+    <figcaption><code>grep-find-unicode-wrapper</code>: a plain <code>grep</code> for the word you read matches the honest file and skips the backdoored ones; the wrapper names the files that hide a look-alike (grep convention: exit <code>0</code> means suspicious Unicode was found), and <code>unicode-show</code> pins the exact codepoint.</figcaption>
+  </figure>
+  <figure class="shot">
+    <img src="/sanitize-demo.webp" width="870" height="296" loading="lazy"
+      alt="A terminal showing sanitize-string. An untrusted value with an embedded escape prints as red DROP TABLE users when echoed raw; after sanitize-string the escape is inert (shown as _[31m...) and no longer recolors. sanitize-string on a script tag returns plain alert(1) with tags stripped, and sanitize-string 12 caps a long value to leak: secret.">
+    <figcaption><code>sanitize-string</code>: reading is one thing, <em>embedding</em> an untrusted value in your own output is another. It strips terminal escapes AND HTML markup and caps the length, running strip-markup + stdisplay twice so neither can smuggle the other past the sanitizer. Safe for a terminal and for HTML tag contents (not attributes).
+      (<a href="https://github.com/Kicksecure/helper-scripts/blob/master/man/sanitize-string.1.ronn">docs</a><a class="arch" href="https://web.archive.org/web/20260711194126/https://github.com/Kicksecure/helper-scripts/blob/master/man/sanitize-string.1.ronn" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>)</figcaption>
+  </figure>
 
-  <article class="issue">
-    <span class="tag">text-safety-scan / text-safety-scan-find</span>
-    <h3><a class="cardanchor" href="#scan">One command, every check</a></h3>
-    <p class="lead">A single run fires all configured plugins: today
-      <code>unicode-show</code> plus <code>modeline-show</code>, which flags
-      Vim/Emacs modelines: a comment like <code># vim: ...</code> that can
-      reconfigure (historically, <em>execute code in</em>) the editor that
-      opens the file. <code>text-safety-scan-find</code> walks a whole tree, with
-      recursion and pruning under your control via plain <code>find</code>
-      expressions.</p>
-    <div class="panes">
-      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> one check at a time</div><pre class="term"><span class="p">$</span> unicode-show file      <span class="dim"># unicode only</span>
-
-<span class="dim"># but did you also check for editor
-# modelines? and every file in the repo?</span></pre></div>
-      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> text-safety-scan</div><pre class="term"><span class="p">$</span> text-safety-scan ./changelog
-<span class="dim"># runs unicode-show AND modeline-show</span>
-<span class="p">$</span> echo $?
-<span class="w">1</span>   <span class="dim"># 0 clean, 1 finding, 2 hard error</span>
-<span class="p">$</span> text-safety-scan-find /repo \
-      -not -path '*/.git/*'   <span class="dim"># whole tree</span></pre></div>
-    </div>
-    <p class="catch"><b>The catch:</b> it is an <em>auditing</em> tool, not a
-      race-proof guard. Run it on a tree the attacker cannot write to during
-      the scan. Modelines are not hypothetical: opening a crafted file has meant
-      code execution
-      (<a href="https://www.cve.org/CVERecord?id=CVE-2019-12735">CVE-2019-12735</a><a class="arch" href="https://web.archive.org/web/20260224131015/https://www.cve.org/CVERecord?id=CVE-2019-12735" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>).
-      (<a href="https://github.com/Kicksecure/helper-scripts/blob/master/man/text-safety-scan.1.ronn">docs</a><a class="arch" href="https://web.archive.org/web/20260711194113/https://github.com/Kicksecure/helper-scripts/blob/master/man/text-safety-scan.1.ronn" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>)</p>
-    <figure class="shot">
-      <img src="/text-safety-scan-demo.webp" width="950" height="296" loading="lazy"
-        alt="A terminal running text-safety-scan on ./repo/changelog. One pass fires both plugins: unicode-show names a hidden U+0430 Cyrillic character, and modeline-show warns that a Vim modeline was found, quoting the line. text-safety-scan then reports FAIL with two findings, and echo $? prints 1.">
-      <figcaption>The real tool: a single <code>text-safety-scan</code> run fires every plugin at once, here catching both a hidden Unicode character and a Vim modeline, and returns <code>1</code> (0 clean, 1 finding, 2 hard error). <code>text-safety-scan-find</code> runs the same checks over a whole tree.</figcaption>
-    </figure>
-  </article>
-</div></section>
-
-<!-- ============ stcat ============ -->
-<section class="cat" id="stcat"><div class="wrap">
-  <h2 class="catname"><a class="h-anchor" href="#stcat">Neutralize</a></h2>
-  <p class="catdesc"><a href="https://www.kicksecure.com/wiki/Stdisplay">Kicksecure's
-    docs</a><a class="arch" href="https://web.archive.org/web/20260706215954/https://www.kicksecure.com/wiki/Stdisplay" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> put it plainly: "Dangerous terminal control codes can change what
-    you see, hide text, alter the prompt, or otherwise mislead you."
-    <code>stcat</code> is <code>cat</code> that refuses to be fooled.</p>
-  <p class="stfirst"><a href="https://secure-terminal.github.io">secure-terminal</a>
-    applies the same idea to a whole session: in its default line mode escape
-    sequences in program output are neutralized and only safe colours are kept, so
-    nothing a program prints can repaint the screen or reach a line you have already
-    scrolled past. It is not identical to <code>stcat</code>: it honours four edits
-    clamped to <a href="https://secure-terminal.github.io/#current-line" rel="noopener">the
-    line being written</a> so a shell's line editor works, which <code>stcat</code>
-    -- a one-shot filter with no line editor to serve -- neutralizes outright.</p>
-
-  <article class="issue">
-    <span class="tag">cat vs stcat</span>
-    <h3><a class="cardanchor" href="#stcat">Colors survive. Cursor tricks don't.</a></h3>
-    <p class="lead">An escape sequence can erase a line and repaint it. To
-      <code>cat</code> that means "hide the failure". <code>stcat</code> turns
-      the ESC byte into an inert <code>_</code> and keeps only safe color codes.</p>
-    <div class="panes">
-      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> cat</div><pre class="term"><span class="p">$</span> cat build.log
-<span class="ok">[ ok ] all checks passed</span>
-
-<span class="dim"># an escape erased the FAILED line before it printed</span></pre></div>
-      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> stcat</div><pre class="term"><span class="p">$</span> stcat build.log
-<span class="e">FAILED: auth bypass</span><span class="neut">_</span>[2K<span class="neut">_</span><span class="ok">[ ok ] all checks passed</span></pre></div>
-    </div>
-    <p class="catch"><b>The catch:</b> the erase (<code>ESC[2K</code>) and the
-      carriage return are neutralized to <code>_</code>, so the hidden
-      <code>FAILED</code> line is right there in plain sight. That is
-      <code>stcat</code> specifically: it renders a byte stream and applies no line
-      editing. A live terminal, secure-terminal included, honours the erase within
-      the current line, so use <code>stcat</code> when you need the byte-exact
-      record.</p>
-    <figure class="shot">
-      <img src="/stcat-demo.webp" width="930" height="277" loading="lazy"
-        alt="A terminal comparing cat and stcat on build.log. cat shows three green [ ok ] lines including all checks passed, hiding the failure. stcat reveals the red FAILED: auth bypass in login() line, with the erase and carriage return neutralized to _[2K_ and the green [ ok ] all checks passed kept.">
-      <figcaption>The real tool: <code>cat</code> replays the escape and shows only the green pass, while <code>stcat</code> neutralizes the erase and carriage return to <code>_</code>, keeps the colors, and surfaces the hidden red FAILED line.</figcaption>
-    </figure>
-  </article>
-</div></section>
-
-<!-- ============ sanitize-string ============ -->
-<section class="cat" id="sanitize"><div class="wrap">
-  <h2 class="catname"><a class="h-anchor" href="#sanitize">Sanitize</a></h2>
-  <p class="catdesc">Reading is one thing; <em>embedding</em> an untrusted value
-    into your own output is another. A value dropped into a log line or an HTML
-    tag can forge structure.</p>
-
-  <article class="issue">
-    <span class="tag">sanitize-string</span>
-    <h3><a class="cardanchor" href="#sanitize">Make a value safe to put anywhere</a></h3>
-    <p class="lead"><code>sanitize-string</code> strips terminal escapes
-      <em>and</em> HTML markup, and caps the length. Safe for a terminal and for
-      HTML tag contents (not attributes).</p>
-    <div class="panes">
-      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> raw</div><pre class="term"><span class="p">$</span> printf '[INFO] name: %s\n' "$name"
-[INFO] name: <span class="del">&lt;script&gt;alert(1)&lt;/script&gt;</span>
-
-<span class="dim"># and the value also recolored the whole log</span></pre></div>
-      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> sanitize-string</div><pre class="term"><span class="p">$</span> printf '[INFO] name: %s\n' \
-    "$(sanitize-string nolimit "$name")"
-[INFO] name: alert(1)
-
-<span class="p">$</span> sanitize-string nolimit '&lt;b&gt;Hello&lt;/b&gt;'   <span class="dim">-></span> Hello
-<span class="p">$</span> sanitize-string 10 'This is a long...'  <span class="dim">-></span> This is a </pre></div>
-    </div>
-    <p class="catch"><b>The catch:</b> it runs strip-markup + stdisplay
-      <em>twice</em>, so neither markup nor escapes can smuggle the other past
-      the sanitizer.
-      (<a href="https://github.com/Kicksecure/helper-scripts/blob/master/man/sanitize-string.1.ronn">docs</a><a class="arch" href="https://web.archive.org/web/20260711194126/https://github.com/Kicksecure/helper-scripts/blob/master/man/sanitize-string.1.ronn" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>)</p>
-    <figure class="shot">
-      <img src="/sanitize-demo.webp" width="870" height="296" loading="lazy"
-        alt="A terminal showing sanitize-string. An untrusted value with an embedded escape prints as red DROP TABLE users when echoed raw; after sanitize-string the escape is inert (shown as _[31m...) and no longer recolors. sanitize-string on a script tag returns plain alert(1) with tags stripped, and sanitize-string 12 caps a long value to leak: secret.">
-      <figcaption>The real tool: an escape in an untrusted value recolors a raw log line (red), but the sanitized value is inert; HTML markup is stripped and the length is capped.</figcaption>
-    </figure>
-  </article>
+  <div class="limits">
+    <h4>Honest about the limits</h4>
+    <p>These make <b>display</b> safe, nothing more. They do not make
+      copy-pasting untrusted commands safe, do not sanitize data used inside
+      shell scripts, and their output must never be re-interpreted with
+      <code>echo -e</code> or <code>printf %b</code> (that re-enables the very
+      sequences they removed).</p>
+  </div>
 </div></section>
 
 <!-- ============ combined board ============ -->
@@ -398,7 +605,7 @@ h&#x301;&#x300;&#x323;&#x308;e&#x301;&#x300;&#x323;&#x308;llo
     <p class="catch"><b>The catch:</b> the x-ray on the right is the same <a href="/analyze/">analyzer</a> the
       x-ray tool runs -- every non-ASCII byte named by codepoint, live in your browser. The escape-sequence
       classes (title, charset, OSC 8, alt-screen) are not codepoints; see the <a href="#osc8">hyperlink</a> and
-      <a href="#altscreen">alt-screen</a> demos below. Feed the whole file to
+      <a href="#altscreen">alt-screen</a> demos above. Feed the whole file to
       <a href="https://secure-terminal.github.io/comparison/#combined">secure-terminal</a> and it neutralizes
       the entire set in one frame.</p>
     <figure class="shot">
@@ -410,211 +617,25 @@ h&#x301;&#x300;&#x323;&#x308;e&#x301;&#x300;&#x323;&#x308;llo
     </figure>
     <script src="/terminal/xray.js"></script>
   </article>
-
-  <!-- ---------- OSC 8 hyperlink spoof ---------- -->
-  <article class="issue" id="osc8">
-    <span class="tag evi-rec">Proof of concept</span>
-    <span class="tag">OSC 8 hyperlink spoof</span>
-    <h3><a class="cardanchor" href="#osc8">The link text is not the link</a></h3>
-    <p class="lead">The <b>OSC 8</b> escape turns terminal text into a clickable hyperlink -- and, like an HTML
-      <code>&lt;a&gt;</code>, the visible label and the real target are set separately. So program output can
-      print a link that <em>reads</em> <code>example.com</code> but <em>points</em> at <code>example.org</code>.
-      You see the label; the target hides in the escape.</p>
-    <div class="panes">
-      <div class="pane see"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what you see</div><pre class="term"><span class="p">$</span> cat release-notes.txt
-Get the installer: <span style="color:#6ea8fe;text-decoration:underline">example.com</span>
-<span class="dim"># an ordinary-looking, clickable link</span></pre></div>
-      <div class="pane real"><div class="tbar"><span class="dots"><i></i><i></i><i></i></span> what is really there</div><pre class="term"><span class="p">$</span> stcat release-notes.txt
-Get the installer: <span class="neut">_</span>]8;;https://example.org<span class="neut">_</span>\example.com<span class="neut">_</span>]8;;<span class="neut">_</span>\
-   <span class="cp">-&gt; label "example.com"  --  target https://example.org</span></pre></div>
-    </div>
-    <p class="catch"><b>The catch:</b> the label and the target are independent, so the text you read is not the
-      site you reach -- the terminal twin of an HTML link whose text lies about its <code>href</code>.
-      <code>stcat</code> neutralizes the OSC 8 escape to an inert <code>_</code>, so the real target is in plain
-      sight, and secure-terminal ships OSC 8 off by default.</p>
-    <p class="backdoor"><b>Backdoor path:</b> print a link that reads
-      <code>example.com</code> but targets an attacker site; the reader clicks the label they trust and lands on
-      the payload, or a <code>ssh://</code>-style scheme smuggles arguments into the command the click runs.</p>
-    <p class="onrecord"><b>Proof of concept:</b> OSC 8 hyperlink phishing was disclosed as <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-46322" rel="noopener">CVE-2023-46322</a> (and related CVE-2023-46321 / CVE-2022-46663); see the hyperlink rows in the <a href="#classes">attack-class table</a>. No documented in-the-wild campaign.</p>
-    <div class="repro"><div class="reprohd"><a class="repro-try" href="/paste/#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; view with <code>stcat</code>, never bare <code>cat</code></span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/osc8-hyperlink-phishing" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/osc8-hyperlink-phishing/payload.b64 | stcat</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
-  </article>
-
-  <!-- ---------- alt-screen restore (dramatic playback) ---------- -->
-  <article class="issue" id="altscreen">
-    <span class="tag evi-known">Known technique</span>
-    <span class="tag">alt-screen restore</span>
-    <h3><a class="cardanchor" href="#altscreen">The screen it painted leaves no trace</a></h3>
-    <p class="lead">The <b>alternate screen</b> (<code>?1049h</code>) is the full-screen buffer <code>vim</code>,
-      <code>less</code> and <code>htop</code> use: enter it, paint, then leave and your original scrollback is
-      back untouched. Legitimate -- until a log enters it, paints <em>fake</em> output, and leaves. The forged
-      full-screen view flashes by and vanishes, and your scrollback looks like nothing ever happened. Press
-      Play:</p>
-    <div class="asplayer">
-      <div class="tbar"><span class="dots"><i></i><i></i><i></i></span> <span id="as-cap">primary screen</span></div>
-      <pre class="term" id="as-screen" style="min-height:12.5em"><span class="p">$</span> cat deploy.log</pre>
-    </div>
-    <div class="ascontrols"><button class="btn ghost" id="as-play" type="button">Play</button>
-      <span class="dim" id="as-state">a safe re-enactment -- no real terminal is touched</span></div>
-    <p class="catch"><b>The catch:</b> the fake "ALL GREEN" dashboard was painted on the alternate screen, so
-      leaving it (the log never draws a scrollbar or newline into your buffer) restores your primary screen
-      exactly as it was -- no trace in scrollback. Alt-screen itself is a legitimate feature every terminal
-      supports; the deception is painting a convincing fake, then restoring so you never scroll back to catch
-      it. secure-terminal's default line mode strips <code>?1049h</code> and shows the log as inert text with
-      your scrollback intact, offering opt-in TUI mode if you actually want full-screen programs.</p>
-    <p class="backdoor"><b>Backdoor path:</b> a log or README enters the alternate screen, paints a convincing
-      fake (an all-green build, a clean scan), then leaves -- your scrollback is restored untouched, so no trace
-      of the forged view survives for you to scroll back and catch.</p>
-    <p class="knowntech"><b>Known technique:</b> the alternate screen is a legitimate, universal terminal feature; painting a fake view then restoring is a recognized abuse with no specific CVE or documented campaign.</p>
-    <div class="repro"><div class="reprohd"><a class="repro-try" href="/paste/#try">Reproduce</a> <span class="rnote">&middot; sandbox VM only; view with <code>stcat</code>, never bare <code>cat</code></span> &middot; <a href="https://github.com/secure-terminal/terminal-poc-corpus/tree/master/poc/alt-screen-hijack" rel="noopener">view the PoC on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">base64 -d poc/alt-screen-hijack/payload.b64 | stcat</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
-    <script src="/terminal/playback.js"></script>
-  </article>
 </div></section>
 
-<!-- ============ attack classes ============ -->
-<section class="cat" id="classes"><div class="wrap">
-  <h2 class="catname"><a class="h-anchor" href="#classes">Every attack class</a></h2>
-  <p class="catdesc">Twenty years of terminal escape attacks, by class. Each is a way
-    program output tricks the terminal into acting; secure-terminal answers them the same
-    way, by construction -- with one scoped exception, noted in the cursor-spoof row.
-    Most rows are answered by ABSENCE -- the class needs a parser or feature secure-terminal does not
-    implement, so it is not applicable rather than defended. Worth stating plainly: that is not a claim of
-    being defect-free. A long list of known CVEs in other terminals is largely inapplicable here, and says
-    nothing about undiscovered bugs in secure-terminal's own (much smaller) surface.
-    Live, canary-forked proofs for every class are in the
-    <a href="https://github.com/secure-terminal/terminal-poc-corpus">terminal-poc-corpus</a>.</p>
-  <article class="issue">
-    <table class="tbl">
-      <caption>Every publicly-disclosed terminal escape-attack class, with example CVEs
-        and how secure-terminal defeats it. The corpus references 41 CVEs across these
-        classes and proves secure-terminal neutralizes all of them.</caption>
-      <thead><tr><th>Class</th><th>What the terminal is tricked into</th><th>Example CVEs</th><th>secure-terminal defense</th></tr></thead>
-      <tbody>
-        <tr><td>Reflection / echoback</td><td>answering a query (window title, DECRQSS, font, cursor/status report, ENQ answerback) by writing the reply into your shell's input</td><td>CVE-2003-0063, <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-45872" rel="noopener">CVE-2022-45872</a>, <a href="https://nvd.nist.gov/vuln/detail/CVE-2024-38396" rel="noopener">CVE-2024-38396</a>, <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-33477" rel="noopener">CVE-2021-33477</a></td><td>interprets no escapes; nothing on the output path can write to the pty (by construction)</td></tr>
-        <tr><td>Clipboard read (OSC 52)</td><td>a program silently reading your clipboard (passwords, keys) onto its input</td><td>OSC 52 read</td><td>off by default; a human ask-once-per-tab gate that output can trigger but never answer</td></tr>
-        <tr><td>Clipboard write / paste hijack (OSC 52)</td><td>overwriting your clipboard so your next paste inserts text you did not copy</td><td>OSC 52 write</td><td>off by default</td></tr>
-        <tr><td>Hyperlink phishing / URL scheme (OSC 8)</td><td>a link whose visible text differs from its target, or a scheme (ssh://) that injects arguments</td><td>CVE-2023-46321, <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-46322" rel="noopener">CVE-2023-46322</a>, <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-46663" rel="noopener">CVE-2022-46663</a></td><td>OSC 8 off by default</td></tr>
-        <tr><td>Trojan Source (bidi)</td><td>bidi overrides reordering the display so code reads differently than it runs</td><td>CVE-2021-42574</td><td>bidi controls neutralized and revealed</td></tr>
-        <tr><td>Homoglyph</td><td>look-alike code points disguising one identifier as another</td><td>CVE-2021-42694</td><td>non-ASCII revealed and marked</td></tr>
-        <tr><td>Charset shift</td><td>a charset shift (DEC special graphics) rendering ASCII as line-drawing to disguise it</td><td>charset shift</td><td>charset shifts stripped</td></tr>
-        <tr><td>Cursor spoof</td><td>cursor-up + erase + overwrite hiding earlier output in line mode</td><td>cursor addressing</td><td>partly: vertical/absolute cursor addressing is stripped, so an EARLIER line is unreachable. Erase-in-line is honoured, so a program can still overwrite <a href="https://secure-terminal.github.io/#current-line" rel="noopener">the line it is writing</a> -- as <code>\r</code> does. <code>stcat</code> neutralizes both.</td></tr>
-        <tr><td>Notification spoof</td><td>a desktop notification (OSC 9 / 99) carrying attacker text</td><td>CVE-2022-41322</td><td>notifications off by default</td></tr>
-        <tr><td>Window operations</td><td>set/report window title, icon or working directory to reach injection or exec</td><td>CVE-2003-0065, <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-44702" rel="noopener">CVE-2022-44702</a></td><td>window operations stripped</td></tr>
-        <tr><td>Denial of service</td><td>a title-change flood or a huge repeat count hanging or exhausting the terminal</td><td>CVE-2021-28847, <a href="https://nvd.nist.gov/vuln/detail/CVE-2012-2738" rel="noopener">CVE-2012-2738</a></td><td>interprets no escapes; bounded processing</td></tr>
-        <tr><td>Decoder overflow</td><td>a Sixel or ReGIS image overrunning a decoder buffer</td><td>CVE-2022-24130, <a href="https://nvd.nist.gov/vuln/detail/CVE-2023-40359" rel="noopener">CVE-2023-40359</a></td><td>never runs a Sixel or ReGIS decoder</td></tr>
-        <tr><td>Bracketed-paste bypass</td><td>an escape breaking the paste guard so pasted text auto-runs</td><td>CVE-2021-31701</td><td>paste sanitized to ASCII; the guard-breaking escape stripped</td></tr>
-      </tbody>
-    </table>
-    <p class="toolnote">These attacks arrive as ordinary <b>program output</b> -- a
-      compromised program, a log you <code>cat</code> or <code>less</code>, an
-      unfiltered passthrough (kubectl, <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-25743" rel="noopener">CVE-2021-25743</a>), or an LLM CLI smuggling escapes
-      from a prompt-injected model. secure-terminal neutralizes them whatever the source.</p>
-  </article>
-</div></section>
-
-<!-- ============ the family ============ -->
-<section class="cat" id="family"><div class="wrap">
-  <h2 class="catname"><a class="h-anchor" href="#family">The family</a></h2>
-  <p class="catdesc">Safe drop-in replacements for the usual text commands.</p>
-  <article class="issue">
-    <table class="tbl">
-      <caption><a href="https://secure-terminal.github.io">secure-terminal</a>
-        is the interactive terminal that builds all of this in: it interprets no
-        escape sequences, sanitizes what you paste, and can strip, show or reveal
-        unicode live. The commands below are the scriptable CLI counterparts for
-        one-off audits and pipelines.</caption>
-      <thead><tr><th>Tool</th><th>Replaces</th><th>Does</th></tr></thead>
-      <tbody>
-        <tr><td><code>unicode-show</code></td><td><code>cat</code> (audit)</td><td>reveals every suspicious codepoint by name; exit 0/1/2</td></tr>
-        <tr><td><code>grep-find-unicode-wrapper</code></td><td><code>grep</code> (audit)</td><td>finds files/lines with suspicious Unicode across a whole tree; grep-style exit code</td></tr>
-        <tr><td><code>text-safety-scan</code></td><td>(all checks)</td><td>runs every safety plugin (unicode-show + modeline-show) on files/stdin; exit 0/1/2</td></tr>
-        <tr><td><code>text-safety-scan-find</code></td><td><code>find</code> + scan</td><td>runs text-safety-scan across a whole tree; recursion via find expressions</td></tr>
-        <tr><td><code>modeline-show</code></td><td>(none)</td><td>flags Vim/Emacs modelines that can reconfigure or execute in your editor</td></tr>
-        <tr><td><code>stcat</code> / <code>stcatn</code></td><td><code>cat</code></td><td>display files/pipes safely; escapes neutralized, colors kept</td></tr>
-        <tr><td><code>stecho</code></td><td><code>echo</code></td><td>print args safely, space-separated + newline</td></tr>
-        <tr><td><code>stprint</code></td><td><code>printf</code></td><td>print exactly as given, sanitized</td></tr>
-        <tr><td><code>sttee</code></td><td><code>tee</code></td><td>display and save a sanitized copy</td></tr>
-        <tr><td><code>stsponge</code></td><td><code>sponge</code></td><td>sanitize a file in place</td></tr>
-        <tr><td><code>sanitize-string</code></td><td>(none)</td><td>strip escapes + HTML markup, cap length</td></tr>
-      </tbody>
-    </table>
-    <p class="toolnote">All ship in Kicksecure's
-      <a href="https://github.com/Kicksecure/helper-scripts">helper-scripts</a><a class="arch" href="https://web.archive.org/web/20260325044051/https://github.com/Kicksecure/helper-scripts" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.
-      Docs: <a href="https://www.kicksecure.com/wiki/Unicode-show">unicode-show</a><a class="arch" href="https://web.archive.org/web/20260311005257/https://www.kicksecure.com/wiki/Unicode-show" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>,
-      <a href="https://www.kicksecure.com/wiki/Stdisplay">stdisplay</a><a class="arch" href="https://web.archive.org/web/20260706215954/https://www.kicksecure.com/wiki/Stdisplay" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>.</p>
-  </article>
-
-  <div class="limits">
-    <h4>Honest about the limits</h4>
-    <p>These make <b>display</b> safe, nothing more. They do not make
-      copy-pasting untrusted commands safe, do not sanitize data used inside
-      shell scripts, and their output must never be re-interpreted with
-      <code>echo -e</code> or <code>printf %b</code> (that re-enables the very
-      sequences they removed).</p>
-  </div>
-</div></section>
-
-<!-- ============ proof of concept ============ -->
-<section class="cat" id="record"><div class="wrap">
-  <h2 class="catname"><a class="h-anchor" href="#record">Proof of concept</a></h2>
-  <p class="catdesc">Why safe display matters: merely viewing untrusted terminal output is a real, high-severity vulnerability class with a 20-year CVE trail. Honest caveat: for this specific escape-sequence class we found no confirmed in-the-wild exploitation, only CVEs and researcher demonstrations; high severity is not the same as actively abused. But the wider idea it belongs to, weaponizing characters your eyes and tools render differently from the parser, is being exploited right now: the <a href="https://www.aikido.dev/blog/glassworm-returns-unicode-attack-github-npm-vscode">GlassWorm</a> supply-chain worm (2025-2026) hid live malware in invisible Unicode across 400+ code repositories. Different mechanism, same blind spot.</p>
-
-  <article class="issue" id="escape-rce">
-    <span class="tag evi-rec">Proof of concept</span>
-    <span class="tag">Escape-sequence RCE</span>
-    <h3><a class="cardanchor" href="#escape-rce">Merely viewing a file can run commands</a></h3>
-    <p class="lead">A terminal is not only a display. Some escape sequences ask it a <em>question</em> - report the window title, a DECRQSS status, the cursor position - and the terminal answers the only way it can: by writing the reply to its own input, exactly as if you had typed it. A hostile file can set that answer to a command and then ask for it back, so merely <code>cat</code>ing a poisoned log or README (or <code>tail -f</code>-ing a booby-trapped log, even one arriving over SSH) injects keystrokes, and once a newline rides along, a full command runs.</p>
-    <p class="backdoor"><b>Backdoor path:</b> ship a poisoned log, README, or git repo; when a developer or admin views it in a vulnerable terminal, attacker bytes are echoed into the shell and run.</p>
-    <p class="onrecord"><b>Proof of concept:</b> a well-documented class: iTerm2 <a href="https://nvd.nist.gov/vuln/detail/CVE-2019-9535">CVE-2019-9535</a><a class="arch" href="https://web.archive.org/web/20260414161101/https://nvd.nist.gov/vuln/detail/CVE-2019-9535" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> and <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-45872">CVE-2022-45872</a><a class="arch" href="https://web.archive.org/web/20260102055000/https://nvd.nist.gov/vuln/detail/CVE-2022-45872" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> (RCE), xterm <a href="https://nvd.nist.gov/vuln/detail/CVE-2021-27135">CVE-2021-27135</a><a class="arch" href="https://web.archive.org/web/20260312102057/https://nvd.nist.gov/vuln/detail/CVE-2021-27135" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, Windows Terminal <a href="https://nvd.nist.gov/vuln/detail/CVE-2022-44702">CVE-2022-44702</a><a class="arch" href="https://web.archive.org/web/20251210235445/https://nvd.nist.gov/vuln/detail/CVE-2022-44702" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, and the <a href="https://dgl.cx/2023/09/ansi-terminal-security">ten CVEs</a><a class="arch" href="https://web.archive.org/web/20260617084902/https://dgl.cx/2023/09/ansi-terminal-security" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> David Leadbeater catalogued in 2023. And it keeps recurring: iTerm2 <a href="https://nvd.nist.gov/vuln/detail/CVE-2024-38396">CVE-2024-38396</a> and the brand-new terminal <a href="https://dgl.cx/2024/12/ghostty-terminal-title">Ghostty</a> (<a href="https://nvd.nist.gov/vuln/detail/CVE-2024-56803" rel="noopener">CVE-2024-56803</a>) were both hit by the same window-title-into-keystrokes trick in 2024, with a public proof of concept that opens the calculator from a single <code>cat</code>. The origin paper is <a href="https://hdm.io/writing/termulation.txt">HD Moore's "Terminal Emulator Security Issues" (2003)</a><a class="arch" href="https://web.archive.org/web/20260617084903/https://hdm.io/writing/termulation.txt" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>; see also <a href="https://www.cyberark.com/resources/threat-research-blog/dont-trust-this-title-abusing-terminal-emulators-with-ansi-escape-characters">CyberArk</a><a class="arch" href="https://web.archive.org/web/20260511163824/https://www.cyberark.com/resources/threat-research-blog/dont-trust-this-title-abusing-terminal-emulators-with-ansi-escape-characters" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>. All responsibly disclosed; none observed in the wild.</p>
-    <figure class="shot">
-      <img src="/escape-rce-demo.webp" width="790" height="277" loading="lazy"
-        alt="A terminal where cat notice.txt prints only 'Update installed. System healthy.' while the file secretly carries an OSC terminal-control sequence. stcat reveals the hidden payload as _]0;attacker@evil:~# _ before the visible text, and unicode-show names the hidden bytes U+001B (ESC) and U+0007 (BEL).">
-      <figcaption>A safe demonstration of the mechanism: <code>cat</code> shows one innocuous line, but the file smuggles a terminal-control sequence that <code>cat</code> feeds straight to the terminal. <code>stcat</code> neutralizes it and <code>unicode-show</code> names the hidden ESC and BEL bytes. On a vulnerable terminal, this same channel is what escalates to injected keystrokes.</figcaption>
-    </figure>
-    <p class="lead" style="margin-top:18px"><b>Logs are the surface.</b> You <code>cat</code> and <code>tail</code> logs from places you do not control: CI output, container and <code>kubectl</code> logs, a remote server over SSH, a honeypot. A log is just a file an attacker can write into. Build a safe stand-in and watch it neutralized (no real terminal is harmed, the payload only sets a title and erases a line):</p>
-    <pre class="term"><span class="dim"># write a "log" that hides a title-change and a line-erase redraw</span>
-<span class="p">$</span> printf 'deploy: OK\n\033]0;pwned\007\033[2K\rbuild: FAILED\n' &gt; demo.log
-
-<span class="dim"># cat obeys the bytes: the window title is hijacked and FAILED is erased</span>
-<span class="p">$</span> cat demo.log
-deploy: OK
-
-<span class="dim"># stcat neutralizes every escape to _, so nothing is hidden or run</span>
-<span class="p">$</span> stcat demo.log
-deploy: OK
-<span class="neut">_</span>]0;pwned<span class="neut">_</span><span class="neut">_</span>[2K<span class="neut">_</span>build: FAILED
-
-<span class="dim"># unicode-show names the smuggled bytes with line numbers</span>
-<span class="p">$</span> unicode-show demo.log
-demo.log:2: <span class="cp">[U+001B]</span>]0;pwned<span class="cp">[U+0007]</span>...
-   <span class="cp">-&gt; U+001B ESCAPE (Cc), U+0007 BELL (Cc)</span></pre>
-    <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> / <a href="https://github.com/output-lies/git-diffs-lie/compare/master...content/ansi-escape">view the diff on GitHub -&gt;</a></div><div class="copybox"><code class="cmd">git diff master..content/ansi-escape</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
-  </article>
-
-  <article class="issue" id="log-injection">
-    <span class="tag evi-rec">Proof of concept</span>
-    <span class="tag">Logs as a surface</span>
-    <h3><a class="cardanchor" href="#log-injection">Logs can attack the person reading them</a></h3>
-    <p class="lead">Escape sequences smuggled into a log line do nothing to the file, but when an admin views that log in an ANSI-capable console, they can rewrite what is shown, forge entries, or manipulate the clipboard to trick the admin into running a command.</p>
-    <p class="backdoor"><b>Backdoor path:</b> get attacker-controlled text into a log (via a crafted URL, a username, a header), then wait for someone to read the log in a terminal.</p>
-    <p class="onrecord"><b>Proof of concept:</b> Apache Tomcat's <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-55754">CVE-2025-55754</a><a class="arch" href="https://web.archive.org/web/20260611002953/https://nvd.nist.gov/vuln/detail/CVE-2025-55754" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> did not escape ANSI in log messages. Note the honesty gap these tools argue against: NVD scores it <b>9.6</b>, but <a href="https://tomcat.apache.org/security-9.html">Apache rates it Low</a><a class="arch" href="https://web.archive.org/web/20260630151002/https://tomcat.apache.org/security-9.html" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> ("no attack vector was found"): theoretical, not demonstrated end to end. There is no ATT&amp;CK technique for this display-layer forgery; the nearest, <a href="https://attack.mitre.org/techniques/T1070/003/">T1070.003</a><a class="arch" href="https://web.archive.org/web/20260616003318/https://attack.mitre.org/techniques/T1070/003/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>, is about deleting logs, not deceiving the reader of an intact one.</p>
-    <figure class="shot">
-      <img src="/log-injection-demo.webp" width="930" height="277" loading="lazy"
-        alt="A terminal where cat access.log prints a benign-looking line, 10.0.0.9 - GET /health 200 ok, while the log line hides an OSC 52 clipboard-write escape. stcat reveals the payload as _]52;c;ZWNobyBwd25lZAo=_ and unicode-show names the hidden U+001B (ESC) and U+0007 (BEL) bytes.">
-      <figcaption>A safe demonstration: viewing the log looks like a routine health check, but the line hides an OSC 52 sequence that silently loads the reader's clipboard (here with a harmless <code>echo pwned</code>). <code>stcat</code> and <code>unicode-show</code> expose what plain <code>cat</code> hid.</figcaption>
-    </figure>
-    <p class="lead" style="margin-top:18px"><b>Reproduce the forgery.</b> The log file is honest; only the rendering lies. An attacker-controlled field (a username, a URL, a header) carries a carriage return that overwrites the real entry with a forged one:</p>
-    <pre class="term"><span class="dim"># the field value hides a \r that returns the cursor to column 0</span>
-<span class="p">$</span> printf 'ERROR: breach detected\rINFO: system all-good!\n' &gt;&gt; access.log
-
-<span class="dim"># cat renders the CR: "all-good" repaints over the real ERROR line</span>
-<span class="p">$</span> cat access.log
-INFO: system all-good!
-
-<span class="dim"># stcat neutralizes the CR to _, so the real ERROR is right there</span>
-<span class="p">$</span> stcat access.log
-ERROR: breach detected<span class="neut">_</span>INFO: system all-good!</pre>
-    <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> / <a href="https://github.com/output-lies/git-diffs-lie/compare/master...content/lone-cr">view the diff on GitHub -&gt;</a></div><div class="copybox"><code class="cmd">git diff master..content/lone-cr</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
-  </article>
+<!-- ===================== TRY ===================== -->
+<section class="cat try" id="try"><div class="wrap">
+  <h2 class="catname"><a class="h-anchor" href="#try">Try it yourself</a></h2>
+  <p class="lead">Unlike the <a href="/git-diffs-lie/">diff corpus</a>, where every trick is
+    a real git branch you <code>git diff master..&lt;branch&gt;</code>, terminal attacks are
+    <em>techniques</em>, not stored diffs -- so each is a benign, base64-wrapped payload in
+    the <a href="https://github.com/secure-terminal/terminal-poc-corpus">terminal-poc-corpus</a>.
+    View them with the safe tools, never bare <code>cat</code>, and in a sandbox VM.</p>
+  <p class="cmdlabel">Clone the proofs:</p>
+  <div class="copybox"><code class="cmd">git clone https://github.com/secure-terminal/terminal-poc-corpus</code><button class="copybtn" type="button" hidden>Copy</button></div>
+  <div class="copybox"><code class="cmd">cd terminal-poc-corpus</code><button class="copybtn" type="button" hidden>Copy</button></div>
+  <p class="cmdlabel">What is really there (neutralized, never obeyed):</p>
+  <div class="copybox"><code class="cmd">base64 -d poc/osc8-hyperlink-phishing/payload.b64 | stcat</code><button class="copybtn" type="button" hidden>Copy</button></div>
+  <p class="toolnote">No terminal at all? Paste any of it into the browser
+    <a href="/analyze/">x-ray tool</a>, or watch a live re-enactment on the
+    <a href="/paste/">paste page</a> -- both name every hidden byte without touching a
+    real terminal.</p>
 </div></section>
 
 <!-- ============ git review ============ -->
@@ -635,6 +656,15 @@ ERROR: breach detected<span class="neut">_</span>INFO: system all-good!</pre>
 
 <section class="cat faq" id="faq"><div class="wrap">
   <h2 class="catname"><a class="h-anchor" href="#faq">FAQ</a></h2>
+  <div class="qa" id="q-safe-to-open">
+    <h4><a class="qanchor" href="#q-safe-to-open">Is any of this dangerous to open?</a></h4>
+    <p>The demonstrations on this page are safe to read: they set a window title,
+      erase a line, or carry a named codepoint, and nothing here runs a command. The
+      <a href="https://github.com/secure-terminal/terminal-poc-corpus">terminal-poc-corpus</a>
+      payloads are benign too, but they are real escape sequences -- view them with
+      <code>stcat</code> or <code>unicode-show</code> in a sandbox VM, never bare
+      <code>cat</code> in a terminal you care about.</p>
+  </div>
   <div class="qa" id="q-get-tools">
     <h4><a class="qanchor" href="#q-get-tools">How do I get these tools?</a></h4>
     <p>They are open-source Kicksecure utilities (<code>unicode-show</code>,
