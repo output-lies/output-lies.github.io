@@ -96,6 +96,7 @@ injected.txt
     <p class="backdoor"><b>Backdoor path:</b> A control character in a path can redirect a checkout to an unintended location (e.g. a hooks directory), turning a committed file into code that runs on clone.</p>
     <p class="wild"><b>Seen in the wild:</b> a carriage return in a submodule path redirects a clone into git's hooks (<a href="https://www.crowdstrike.com/en-us/blog/crowdstrike-falcon-blocks-git-vulnerability-cve-2025-48384/">CVE-2025-48384</a><a class="arch" href="https://web.archive.org/web/20260311011047/https://www.crowdstrike.com/en-us/blog/crowdstrike-falcon-blocks-git-vulnerability-cve-2025-48384/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>), exploited in the wild and listed in <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog">CISA's KEV catalog</a><a class="arch" href="https://web.archive.org/web/20260710210619/https://www.cisa.gov/known-exploited-vulnerabilities-catalog" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>. Not attributed to a named group in public reporting.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...path/newline-in-filename">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..path/newline-in-filename</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+      <div class="mitig"><div class="mitighd"><a class="mitig-try" href="/git-diffs-lie/#how">Mitigation</a> <span class="rnote">&middot; neutralized and flagged, never obeyed</span></div><div class="copybox"><code class="cmd">git -c diff.external=git-diff-review diff master..path/newline-in-filename</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 
   <article class="issue" id="file-to-symlink">
@@ -119,6 +120,7 @@ SYMLINK 'swap.txt':
     <p class="backdoor"><b>Backdoor path:</b> Replace a file with a symlink so a later checkout writes through it into <code>.git/hooks</code> (or outside the worktree), planting an executable hook.</p>
     <p class="wild"><b>Seen in the wild:</b> an in-the-wild <a href="https://www.crowdstrike.com/en-us/blog/crowdstrike-falcon-blocks-git-vulnerability-cve-2025-48384/">git RCE</a><a class="arch" href="https://web.archive.org/web/20260311011047/https://www.crowdstrike.com/en-us/blog/crowdstrike-falcon-blocks-git-vulnerability-cve-2025-48384/" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> chained a symlink into <code>.git</code> (<a href="https://www.cve.org/CVERecord?id=CVE-2025-48384">CVE-2025-48384</a><a class="arch" href="https://web.archive.org/web/20260419223636/https://www.cve.org/CVERecord?id=CVE-2025-48384" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>). In <a href="https://www.cisa.gov/known-exploited-vulnerabilities-catalog">CISA's KEV catalog</a><a class="arch" href="https://web.archive.org/web/20260710210619/https://www.cisa.gov/known-exploited-vulnerabilities-catalog" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a>; no public named-group attribution.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...type/file-to-symlink">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..type/file-to-symlink</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+      <div class="mitig"><div class="mitighd"><a class="mitig-try" href="/git-diffs-lie/#how">Mitigation</a> <span class="rnote">&middot; neutralized and flagged, never obeyed</span></div><div class="copybox"><code class="cmd">git -c diff.external=git-diff-review diff master..type/file-to-symlink</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 </div></section>
 
@@ -148,6 +150,7 @@ checksum=<span class="del">&#xfffd;&#xfffd;</span> not valid utf-8
     <p class="backdoor"><b>Backdoor path:</b> Undecodable bytes blind naive review tooling and can crash a viewer: cover for smuggling a payload a reviewer's editor renders as harmless mojibake.</p>
     <p class="knowntech"><b>Known technique:</b> an encoding-ambiguity behavior; no CVE or documented campaign for undecodable bytes as review obfuscation.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...content/invalid-utf8">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..content/invalid-utf8</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+      <div class="mitig"><div class="mitighd"><a class="mitig-try" href="/git-diffs-lie/#how">Mitigation</a> <span class="rnote">&middot; neutralized and flagged, never obeyed</span></div><div class="copybox"><code class="cmd">git -c diff.external=git-diff-review diff master..content/invalid-utf8</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 
   <article class="issue" id="lone-cr">
@@ -173,6 +176,7 @@ DELETE_EVERYTHING=no
     <p class="backdoor"><b>Backdoor path:</b> A carriage return mid-line overwrites the visible text, so the reviewer reads <code>LOG_LEVEL=info</code> while the committed line ends <code>; echo ATTACKER_KEY &gt;&gt; ~/.ssh/authorized_keys</code>.</p>
     <p class="onrecord"><b>Proof of concept:</b> the carriage-return / control-byte log-forgery class was disclosed as <a href="https://www.cve.org/CVERecord?id=CVE-2025-55754">CVE-2025-55754</a><a class="arch" href="https://web.archive.org/web/20260610233655/https://www.cve.org/CVERecord?id=CVE-2025-55754" title="Archived copy (Wayback Machine)" aria-label="Archived copy"></a> (Apache Tomcat); the advisory reports no confirmed in-the-wild attack.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...content/lone-cr">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..content/lone-cr</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+      <div class="mitig"><div class="mitighd"><a class="mitig-try" href="/git-diffs-lie/#how">Mitigation</a> <span class="rnote">&middot; neutralized and flagged, never obeyed</span></div><div class="copybox"><code class="cmd">git -c diff.external=git-diff-review diff master..content/lone-cr</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 </div></section>
 
@@ -202,6 +206,7 @@ A  notes	evil.txt
     <p class="backdoor"><b>Backdoor path:</b> A tab forges column breaks in <code>git status</code>, so a second malicious file hides inside what looks like one benign entry: an extra file slipped past review.</p>
     <p class="knowntech"><b>Known technique:</b> a special-character-in-filename variant; adjacent advisories cover ANSI/terminal path spoofing, not tab confusion, and none covers this.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...path/tab-in-filename">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..path/tab-in-filename</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+      <div class="mitig"><div class="mitighd"><a class="mitig-try" href="/git-diffs-lie/#how">Mitigation</a> <span class="rnote">&middot; neutralized and flagged, never obeyed</span></div><div class="copybox"><code class="cmd">git -c diff.external=git-diff-review diff master..path/tab-in-filename</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 
 
@@ -227,6 +232,7 @@ A  notes	evil.txt
     <p class="backdoor"><b>Backdoor path:</b> The same <code>-diff</code> hiding trick, placed in a non-ASCII directory git quotes in its output, so even reviewers grepping for '.gitattributes' miss it. The backdoored file shows no diff.</p>
     <p class="knowntech"><b>Known technique:</b> a niche path-quoting obfuscation; no CVE or documented use.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...path/gitattributes-nonascii-dir">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..path/gitattributes-nonascii-dir</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+      <div class="mitig"><div class="mitighd"><a class="mitig-try" href="/git-diffs-lie/#how">Mitigation</a> <span class="rnote">&middot; neutralized and flagged, never obeyed</span></div><div class="copybox"><code class="cmd">git -c diff.external=git-diff-review diff master..path/gitattributes-nonascii-dir</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 </div></section>
 
@@ -256,6 +262,7 @@ cat: link-dangling: No such file or directory
     <p class="backdoor"><b>Backdoor path:</b> A symlink to a not-yet-existing target is the setup half of a symlink attack: a later step, or a case-insensitivity race, creates the target and redirects a write into <code>.git/</code>.</p>
     <p class="knowntech"><b>Known technique:</b> the known symlink CVEs cover link-following RCE on checkout, not a dangling link hiding a change; no CVE or campaign for this.</p>
       <div class="repro"><div class="reprohd"><a class="repro-try" href="/git-diffs-lie/#try">Reproduce</a> &middot; <a href="https://github.com/output-lies/git-diffs-lie/compare/master...type/dangling-symlink">view the diff on GitHub &rarr;</a></div><div class="copybox"><code class="cmd">git diff master..type/dangling-symlink</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
+      <div class="mitig"><div class="mitighd"><a class="mitig-try" href="/git-diffs-lie/#how">Mitigation</a> <span class="rnote">&middot; neutralized and flagged, never obeyed</span></div><div class="copybox"><code class="cmd">git -c diff.external=git-diff-review diff master..type/dangling-symlink</code><button class="copybtn" type="button" hidden>Copy</button></div></div>
   </article>
 
   <p class="toolnote">That's the full set. The two ref-name cases (a bidi

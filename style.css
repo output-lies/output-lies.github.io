@@ -295,6 +295,13 @@ section{scroll-margin-top:0}
 .repro .reprohd b{color:var(--accent)}
 .repro .reprohd a{color:var(--accent);white-space:nowrap}
 .repro .reprohd .rnote{color:var(--muted)}
+/* mitigation line -- the safe tool that neutralizes this card's attack; mirrors .repro */
+.mitig{margin:13px 0 0;padding-top:10px;border-top:1px dashed var(--line)}
+.mitig .mitighd{font-size:.9rem;color:#3a3c41;margin:0 0 6px}
+.mitig .mitighd b{color:var(--accent)}
+.mitig .mitighd a{color:var(--muted);white-space:nowrap}
+.mitig .mitighd a.mitig-try{color:var(--accent);font-weight:650}
+.mitig .mitighd .rnote{color:var(--muted);font-weight:400}
 
 /* tidy the footer on small screens (no space-between gaps, tighter columns) */
 @media(max-width:700px){
