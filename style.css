@@ -335,14 +335,19 @@ footer .ftag .logo{display:block;flex:0 0 auto}
 .repro .reprohd{margin:0 0 6px}
 .repro .reprohd a.repro-try{font-weight:650}
 .repro .reprohd .rnote{font-weight:400}
-/* footer: same horizontal gutter as the body (was 0 -> content touched the edges) */
+/* footer: same horizontal gutter as the body (was 0 -> content touched the edges).
+   every centered footer row zeroes its own horizontal padding in its shorthand, so
+   each must re-add the gutter or it sits ~20px out of line with the rest. */
 footer .ftop{padding-left:20px;padding-right:20px}
 footer .fbot{padding-left:20px;padding-right:20px}
+footer .ffree{padding-left:20px;padding-right:20px}
 /* mobile: more side air */
 @media(max-width:640px){
   .wrap{padding-left:22px;padding-right:22px}
   footer .ftop{padding-left:22px;padding-right:22px}
   footer .fbot{padding-left:22px;padding-right:22px}
+  footer .ffree{padding-left:22px;padding-right:22px}
+  footer .fshare{padding-left:22px;padding-right:22px}
 }
 
 /* ===================== polish pass 2 ===================== */
