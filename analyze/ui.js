@@ -74,7 +74,10 @@
   document.getElementById('samples').addEventListener('click', function (e) {
     var btn = e.target.closest('button');
     if (!btn) return;
-    input.value = SAMPLES[btn.getAttribute('data-k')] || '';
+    /* own-property guard: a crafted/polluted data-k (e.g. __proto__, constructor) must not
+       resolve to an inherited value; only our own sample keys load. */
+    var k = btn.getAttribute('data-k');
+    input.value = Object.prototype.hasOwnProperty.call(SAMPLES, k) ? SAMPLES[k] : '';
     render();
     input.focus();
   });

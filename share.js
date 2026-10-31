@@ -14,7 +14,9 @@
   };
   document.querySelectorAll('.fshare a.sh').forEach(function (a) {
     var n = a.getAttribute('data-net');
-    if (L[n]) { a.href = L[n]; if (n !== 'email') { a.target = '_blank'; } }
+    /* own-property guard: a crafted/polluted data-net (e.g. __proto__, constructor) must not
+       resolve to an inherited value and land in href. */
+    if (Object.prototype.hasOwnProperty.call(L, n)) { a.href = L[n]; if (n !== 'email') { a.target = '_blank'; } }
   });
   var m = document.querySelector('.fshare [data-net=mastodon]');
   if (m) m.addEventListener('click', function (e) {
